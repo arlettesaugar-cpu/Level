@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: \({{ github.workflow }}-\){{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -36,20 +36,15 @@ jobs:
       - name: 🔍 Diagnóstico de entorno (Flutter Doctor)
         run: flutter doctor -v
 
-      - name: 📱 Generar scaffolding iOS si es necesario
+      - name: 📱 Asegurar plataforma iOS y dependencias de Flutter
         run: |
-          if [ ! -d "ios" ]; then
-            echo "Directorio ios no encontrado. Generando plataforma iOS..."
-            flutter create . --platforms=ios
-          fi
-
-      - name: 📦 Instalar dependencias de Flutter
-        run: flutter pub get
+          flutter create . --platforms=ios
+          flutter pub get
 
       - name: 🍏 Instalar CocoaPods
         run: |
           cd ios
-          pod install --repo-update || pod install
+          pod install
           cd ..
 
       - name: 🔨 Compilar iOS IPA (Sin firma)
@@ -84,5 +79,4 @@ jobs:
           name: iOS-IPA-Build
           path: |
             build/ios/ipa/*.ipa
-            build/ios/archive/*.xcarchive
-          retention-days: 14
+            build/ios/archive
