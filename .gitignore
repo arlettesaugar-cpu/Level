@@ -1,0 +1,78 @@
+# ==============================================================================
+# Git Ignore Configuration - Flutter Multiplatform, Android, Web & iOS
+# ==============================================================================
+
+# Miscellaneous & OS
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IDEs and Editors
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+
+# Flutter / Dart / Pub
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# Android
+**/android/local.properties
+**/android/.gradle/
+**/android/captures/
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+**/android/app/build/
+*.keystore
+*.jks
+key.properties
+
+# iOS / Xcode
+**/ios/.symlinks/
+**/ios/Pods/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/DerivedData/
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+xcuserdata/
+**/ios/Flutter/.last_build_id
+
+# Executables, Large Archives & Binaries
+cloudflared.exe
+*.zip
+*.apk
+*.aab
+*.ipa
+
+# Symbolication & Obfuscation
+app.*.symbols
+app.*.map.json

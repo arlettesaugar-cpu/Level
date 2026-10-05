@@ -1,0 +1,29 @@
+[
+    {
+        "id": "CSH-5682",
+        "status": "abierta",
+        "openTime": "2026-09-28 18:11:50",
+        "responsible": "Administrador Level Tacambaro",
+        "initialAmount": 0,
+        "notes": "",
+        "cashIncomes": 900,
+        "expectedCash": 900,
+        "totalSales": 900
+    },
+    {
+        "id": "CSH-9892",
+        "status": "cerrada",
+        "openTime": "2026-09-26 08:00:00",
+        "responsible": "Administrador Level Tacambaro",
+        "initialAmount": 500,
+        "notes": "",
+        "closeTime": "2026-09-26 19:33:50",
+        "physicalCash": 650,
+        "expectedCash": 650,
+        "difference": 0,
+        "cashIncomes": 150,
+        "cardIncomes": 0,
+        "manualEntradas": 0,
+        "manualSalidas": 0
+    }
+]

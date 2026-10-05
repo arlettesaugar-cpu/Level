@@ -1,0 +1,172 @@
+﻿[
+    {
+        "id":  "FIN-1121",
+        "clientName":  "Cliente Mostrador",
+        "category":  "Tienda / Pro Shop",
+        "amount":  25,
+        "status":  "Completado",
+        "concept":  "Venta TPV (1 unidades)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-07 15:51"
+    },
+    {
+        "id":  "FIN-6143",
+        "clientName":  "Sofia Valdes",
+        "category":  "Recuperacion de Adeudo",
+        "amount":  600,
+        "status":  "Completado",
+        "concept":  "Recuperacion de Adeudo: Sofia Valdes (No-Show)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-07 12:38"
+    },
+    {
+        "id":  "FIN-6658",
+        "clientName":  "Carlos Palacios",
+        "category":  "Recuperacion de Adeudo",
+        "amount":  600,
+        "status":  "Completado",
+        "concept":  "Recuperacion de Adeudo: Carlos Palacios (No-Show)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-07 12:30"
+    },
+    {
+        "id":  "FIN-8367",
+        "clientName":  "Fernando Silva",
+        "category":  "Recuperacion de Adeudo",
+        "amount":  300,
+        "status":  "Completado",
+        "concept":  "Recuperacion de Adeudo: Fernando Silva (No-Show)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-07 12:28"
+    },
+    {
+        "id":  "FIN-3630",
+        "clientName":  "Mariana Torres",
+        "category":  "Recuperacion de Adeudo",
+        "amount":  300,
+        "status":  "Completado",
+        "concept":  "Recuperacion de Adeudo: Mariana Torres (No-Show)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-07 12:27"
+    },
+    {
+        "id":  "FIN-1786",
+        "clientName":  "Alejandro Ruiz",
+        "category":  "Recuperacion de Adeudo",
+        "amount":  300,
+        "status":  "Completado",
+        "concept":  "Recuperacion de Adeudo: Alejandro Ruiz (No-Show)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-07 12:26"
+    },
+    {
+        "id":  "FIN-8624",
+        "clientName":  "Alejandro Ruiz",
+        "category":  "Recuperacion de Adeudo",
+        "amount":  300,
+        "status":  "Completado",
+        "concept":  "Recuperacion de Adeudo Atrasado: Alejandro Ruiz (No-Show)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-07 12:25"
+    },
+    {
+        "id":  "FIN-1124",
+        "clientName":  "Roberto Mendoza",
+        "category":  "Recuperacion de Adeudo",
+        "amount":  300,
+        "status":  "Completado",
+        "concept":  "Recuperacion de Adeudo: Roberto Mendoza (No-Show)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-07 12:25"
+    },
+    {
+        "id":  "FIN-2782",
+        "clientName":  "Cliente Mostrador",
+        "category":  "Tienda / Pro Shop",
+        "amount":  35,
+        "status":  "Completado",
+        "concept":  "Venta TPV (1 unidades)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-07 10:39"
+    },
+    {
+        "id":  "FIN-2262",
+        "clientName":  "Cliente Mostrador",
+        "category":  "Tienda / Pro Shop",
+        "amount":  160,
+        "status":  "Completado",
+        "concept":  "Venta TPV (1 unidades)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-07 10:17"
+    },
+    {
+        "id":  "FIN-9001",
+        "clientName":  "Alejandro Ruiz",
+        "category":  "Reserva Canchas",
+        "amount":  300,
+        "status":  "Completado",
+        "concept":  "Pago Reserva Cancha 1: PAdel Cristal Pro - Alejandro Ruiz (1 hora)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-05 00:00"
+    },
+    {
+        "id":  "FIN-9002",
+        "clientName":  "Mariana Torres",
+        "category":  "Reserva Canchas",
+        "amount":  300,
+        "status":  "Completado",
+        "concept":  "Pago Reserva Cancha 1: PAdel Cristal Pro - Mariana Torres (1 hora)",
+        "paymentMethod":  "Tarjeta de DAbito",
+        "date":  "2026-09-05 03:00"
+    },
+    {
+        "id":  "FIN-9003",
+        "clientName":  "Fernando Silva",
+        "category":  "Reserva Canchas",
+        "amount":  300,
+        "status":  "Completado",
+        "concept":  "Pago Reserva Cancha 1: PAdel Cristal Pro - Fernando Silva (1 hora)",
+        "paymentMethod":  "Transferencia Bancaria",
+        "date":  "2026-09-05 04:00"
+    },
+    {
+        "id":  "FIN-9004",
+        "clientName":  "Roberto Mendoza",
+        "category":  "Reserva Canchas",
+        "amount":  300,
+        "status":  "Completado",
+        "concept":  "Pago Reserva Cancha 1: PAdel Cristal Pro - Roberto Mendoza (1 hora)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-05 13:00"
+    },
+    {
+        "id":  "FIN-9005",
+        "clientName":  "SofAa ValdAs",
+        "category":  "Reserva Canchas",
+        "amount":  300,
+        "status":  "Completado",
+        "concept":  "Pago Reserva Cancha 2: PAdel PanorAmica VIP - SofAa ValdAs (1 hora)",
+        "paymentMethod":  "Tarjeta de DAbito",
+        "date":  "2026-09-05 18:00"
+    },
+    {
+        "id":  "FIN-9006",
+        "clientName":  "Carlos Palacios",
+        "category":  "Reserva Canchas",
+        "amount":  600,
+        "status":  "Completado",
+        "concept":  "Pago Reserva Cancha 1: PAdel Cristal Pro - Carlos Palacios (2 horas)",
+        "paymentMethod":  "Efectivo en Mostrador",
+        "date":  "2026-09-05 19:00"
+    },
+    {
+        "id":  "FIN-9007",
+        "clientName":  "SofAa ValdAs",
+        "category":  "Tienda / Pro Shop",
+        "amount":  80,
+        "status":  "Completado",
+        "concept":  "Venta Alquiler Pala Pro Bullpadel - SofAa ValdAs",
+        "paymentMethod":  "Tarjeta de DAbito",
+        "date":  "2026-09-05 10:15"
+    }
+]

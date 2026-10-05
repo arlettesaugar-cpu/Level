@@ -1,0 +1,42 @@
+﻿[
+    {
+        "mustChangePassword":  true,
+        "id":  "USR-6229",
+        "username":  "arlette",
+        "tempPassword":  "TAC-9843",
+        "createdAt":  "2026-09-07",
+        "role":  "Administrador",
+        "name":  "Arlette Saucedo",
+        "status":  "Pendiente Cambio Password",
+        "phone":  "4591161880"
+    },
+    {
+        "id":  "USR-1001",
+        "createdAt":  "2026-09-05",
+        "name":  "Carlos Palacios",
+        "username":  "cpalacios",
+        "password":  "123456",
+        "mustChangePassword":  false,
+        "debtAmount":  0,
+        "hasDebt":  false,
+        "tempPassword":  "",
+        "debtReason":  "",
+        "status":  "Activo (Password Personalizada)",
+        "role":  "Cliente",
+        "phone":  "459 1116 18 80"
+    },
+    {
+        "mustChangePassword":  false,
+        "hasDebt":  false,
+        "id":  "USR-1007",
+        "username":  "admin",
+        "tempPassword":  "ADMIN-TAC",
+        "createdAt":  "2026-09-01",
+        "debtReason":  "",
+        "debtAmount":  0,
+        "role":  "Administrador",
+        "name":  "Administrador Level Tacambaro",
+        "status":  "Activo (Administrador)",
+        "phone":  "459 000 1122"
+    }
+]

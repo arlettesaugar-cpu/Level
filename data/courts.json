@@ -1,0 +1,65 @@
+[
+    {
+        "id": "c1",
+        "name": "Cancha 1: Padel Cristal Pro (Azul)",
+        "category": "Padel Cristal Pro",
+        "location": "Tacambaro, Michoacan",
+        "price": 300,
+        "rating": 4.9,
+        "image": "assets\/images\/cancha_padel_1.jpg",
+        "slots": [
+            "08:00",
+            "09:00",
+            "10:00",
+            "11:00",
+            "12:00",
+            "13:00",
+            "14:00",
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00",
+            "19:00",
+            "20:00",
+            "21:00",
+            "22:00",
+            "23:00"
+        ],
+        "slotStatuses": {
+            "13:00": "booked",
+            "19:00": "booked",
+            "20:00": "booked"
+        }
+    },
+    {
+        "id": "c2",
+        "name": "Cancha 2: Padel Panoramica VIP (Verde)",
+        "category": "Padel Panoramica VIP",
+        "location": "Tacambaro, Michoacan",
+        "price": 300,
+        "rating": 4.8,
+        "image": "assets\/images\/cancha_padel_2.jpg",
+        "slots": [
+            "08:00",
+            "09:00",
+            "10:00",
+            "11:00",
+            "12:00",
+            "13:00",
+            "14:00",
+            "15:00",
+            "16:00",
+            "17:00",
+            "18:00",
+            "19:00",
+            "20:00",
+            "21:00",
+            "22:00",
+            "23:00"
+        ],
+        "slotStatuses": {
+            "18:00": "booked",
+            "21:00": "booked"
+        }
+    }
+]

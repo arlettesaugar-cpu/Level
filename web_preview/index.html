@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pádel Club Tacámbaro - Previsualizador & Servidor Real-Time</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let registration of registrations) { registration.unregister(); }
+      });
+    }
+  </script>
+</head>
+<body>
+  <!-- Top Navigation Status Bar -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-badge">
+        <img src="assets/images/logo.jpeg" alt="Logo" class="badge-logo" onerror="this.style.display='none'">
+        <span>Pádel Club Tacámbaro</span>
+      </div>
+      <div class="server-status">
+        <span class="pulse-dot"></span>
+        <span>Servidor Activo: <strong>http://localhost:8085</strong></span>
+      </div>
+    </div>
+
+    <!-- View Mode Switcher -->
+    <div class="view-mode-selector">
+      <button class="view-mode-btn active" id="btnModeSingle" onclick="switchViewMode('single')">
+        <i data-lucide="smartphone"></i> App Móvil
+      </button>
+      <button class="view-mode-btn" id="btnModeAdmin" onclick="switchViewMode('admin')">
+        <i data-lucide="layout-dashboard"></i> Web Administrador
+      </button>
+      <button class="view-mode-btn highlight" id="btnModeConcurrency" onclick="switchViewMode('concurrency')">
+        <i data-lucide="zap"></i> Prueba de Concurrencia Dual ⚡
+      </button>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn-action" onclick="hotReloadApp()" title="Hot Reload">
+        <i data-lucide="refresh-cw"></i>
+        <span>Hot Reload</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container Split Workspace -->
+  <main class="workspace-container">
+    
+    <!-- Mode 1: Single Phone + Code Explorer -->
+    <div id="modeSingleContainer" class="mode-view active">
+      <section class="left-panel">
+        <div class="panel-header">
+          <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchPanelTab('structure')">
+              <i data-lucide="folder-tree"></i> Estructura del Proyecto
+            </button>
+            <button class="tab-btn" onclick="switchPanelTab('code')">
+              <i data-lucide="code-2"></i> Código Flutter (Dart)
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-content">
+          <div id="tab-structure" class="tab-pane active">
+            <div class="project-info-card">
+              <h3>🎾 Pádel Club Tacámbaro</h3>
+              <p>2 Canchas Profesionales, Menú Lateral, 5 Módulos y Panel Administrador con prevención de reservas duplicadas.</p>
+            </div>
+            
+            <div class="file-tree">
+              <div class="tree-item folder open">
+                <i data-lucide="folder-open"></i> <strong>padel_tacambaro/</strong>
+              </div>
+              <div class="tree-children">
+                <div class="tree-item file" onclick="loadCodeSnippet('pubspec')">
+                  <i data-lucide="file-text"></i> <span>pubspec.yaml</span>
+                </div>
+                <div class="tree-item folder open">
+                  <i data-lucide="folder-open"></i> <span>lib/</span>
+                </div>
+                <div class="tree-children">
+                  <div class="tree-item file active" onclick="loadCodeSnippet('main')">
+                    <i data-lucide="file-code"></i> <span>main.dart</span>
+                  </div>
+                  <div class="tree-item file" onclick="loadCodeSnippet('drawer')">
+                    <i data-lucide="file-code"></i> <span>widgets/app_drawer.dart</span>
+                  </div>
+                  <div class="tree-item file" onclick="loadCodeSnippet('court')">
+                    <i data-lucide="file-code"></i> <span>models/court.dart</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-code" class="tab-pane">
+            <div class="code-viewer-header">
+              <span id="currentFileName">lib/main.dart</span>
+              <span class="language-badge">Dart</span>
+            </div>
+            <pre class="code-block"><code id="codeViewerContent">// Cargando código...</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="right-panel">
+        <div class="simulator-wrapper">
+          <div class="phone-frame iphone16" id="phoneFrame1">
+            <div class="phone-header">
+              <div class="dynamic-island"><div class="camera-lens"></div></div>
+              <div class="status-bar">
+                <span class="time liveClock">21:20</span>
+                <div class="status-icons"><i data-lucide="wifi"></i><i data-lucide="battery-charging"></i></div>
+              </div>
+            </div>
+            <div class="phone-screen">
+              <div id="appRoot1"></div>
+            </div>
+            <div class="phone-footer"><div class="home-indicator"></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Mode 2: Admin Web View -->
+    <div id="modeAdminContainer" class="mode-view">
+      <iframe src="/admin/" class="admin-iframe" title="Panel Web Administrador"></iframe>
+    </div>
+
+    <!-- Mode 3: Concurrency Dual Phone Demo -->
+    <div id="modeConcurrencyContainer" class="mode-view">
+      <div class="concurrency-banner">
+        <i data-lucide="zap"></i>
+        <div>
+          <strong>Demostración de Control de Concurrencia en Tiempo Real</strong>
+          <p>Prueba intentar reservar el mismo horario en el <strong>Celular 1 (Cliente A)</strong> y verás como el <strong>Celular 2 (Cliente B)</strong> inactiva ese horario instantáneamente y se registra en el <strong>Panel Web del Administrador</strong>.</p>
+        </div>
+      </div>
+
+      <div class="concurrency-grid">
+        <div class="concurrency-col">
+          <div class="phone-label">📱 Cliente 1 (Juan)</div>
+          <div class="phone-frame iphone16 mini-phone" id="phoneFrameA">
+            <div class="phone-header">
+              <div class="dynamic-island"><div class="camera-lens"></div></div>
+              <div class="status-bar"><span class="time liveClock">21:20</span></div>
+            </div>
+            <div class="phone-screen"><div id="appRootA"></div></div>
+            <div class="phone-footer"><div class="home-indicator"></div></div>
+          </div>
+        </div>
+
+        <div class="concurrency-col">
+          <div class="phone-label">📱 Cliente 2 (Carlos)</div>
+          <div class="phone-frame iphone16 mini-phone" id="phoneFrameB">
+            <div class="phone-header">
+              <div class="dynamic-island"><div class="camera-lens"></div></div>
+              <div class="status-bar"><span class="time liveClock">21:20</span></div>
+            </div>
+            <div class="phone-screen"><div id="appRootB"></div></div>
+            <div class="phone-footer"><div class="home-indicator"></div></div>
+          </div>
+        </div>
+
+        <div class="concurrency-col admin-col">
+          <div class="phone-label">💻 Panel Web Administrador (Vista en Vivo)</div>
+          <iframe src="/admin/" class="admin-iframe-mini" title="Panel Web Mini"></iframe>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch(e){}
+  </script>
+</body>
+</html>

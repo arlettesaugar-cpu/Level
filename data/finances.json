@@ -1,0 +1,529 @@
+[
+    {
+        "id": "FIN-4569",
+        "concept": "Pago Reserva RES-8188 (12:00 (1 hrs))",
+        "amount": 300,
+        "category": "Cancha",
+        "paymentMethod": "Efectivo en Mostrador",
+        "clientName": "Administrador 2",
+        "date": "2026-09-28 18:15:13",
+        "status": "Completado"
+    },
+    {
+        "id": "FIN-6527",
+        "concept": "Pago Reserva BKG-101 (19:00)",
+        "amount": 300,
+        "category": "Cancha",
+        "paymentMethod": "Efectivo",
+        "clientName": "Carlos Palacios",
+        "date": "2026-09-28 18:13:04",
+        "status": "Completado"
+    },
+    {
+        "id": "FIN-4067",
+        "concept": "Pago Reserva RES-1223 (08:00 (1 hrs))",
+        "amount": 300,
+        "category": "Cancha",
+        "paymentMethod": "Efectivo en Mostrador",
+        "clientName": "Administrador 2",
+        "date": "2026-09-28 18:11:54",
+        "status": "Completado"
+    },
+    {
+        "id": "FIN-2220",
+        "date": "2026-09-26 17:10:56",
+        "clientName": "Cliente Mostrador",
+        "concept": "Venta TPV: Balones (1x)",
+        "category": "Tienda",
+        "paymentMethod": "Efectivo en Mostrador",
+        "amount": 150,
+        "status": "Completado"
+    },
+    {
+        "id": "FIN-7023",
+        "type": "",
+        "amount": 300,
+        "concept": "Recuperacion de Adeudo: Carlos Palacios (No-Show)",
+        "category": "Recuperacion de Adeudo",
+        "date": "2026-09-21 21:48",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-7116",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 1: PAdel Cristal Pro (Azul) - Mariana Torres (03:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-21 21:07",
+        "clientName": "Mariana Torres",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-8780",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 2: Azul - Carlos Palacios (19:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-21 21:04",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-6342",
+        "type": "",
+        "amount": 680,
+        "concept": "Venta TPV (1 unidades)",
+        "category": "Tienda \/ Pro Shop",
+        "date": "2026-09-21 21:04",
+        "clientName": "Cliente Mostrador",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-8953",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 2: Azul - Carlos Palacios (13:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-14 09:11",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-6622",
+        "type": "",
+        "amount": 450,
+        "concept": "Reserva Cancha FAtbol 7: Pasto SintAtico Pro - Carlos Palacios (23:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-14 08:59",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-8860",
+        "type": "",
+        "amount": 450,
+        "concept": "Reserva Cancha FAtbol 7: Pasto SintAtico Pro - Carlos Palacios (08:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-14 08:52",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-4355",
+        "type": "",
+        "amount": 450,
+        "concept": "Recuperacion de Adeudo: Carlos Palacios (No-Show)",
+        "category": "Recuperacion de Adeudo",
+        "date": "2026-09-14 08:32",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-7203",
+        "type": "",
+        "amount": 600,
+        "concept": "Reserva Cancha 2: Azul - Carlos Palacios (08:00 (2 horas))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-14 08:32",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-5165",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 2: Azul - Carlos Palacios (21:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-14 08:31",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-4347",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 2: Azul - Carlos Palacios (21:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-11 08:41",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-4776",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 2: PAdel PanorAmica VIP (Verde) - SofAa ValdAs (18:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-10 10:14",
+        "clientName": "SofAa ValdAs",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-4510",
+        "type": "",
+        "amount": 600,
+        "concept": "Reserva Cancha 1: PAdel Cristal Pro (Azul) - Carlos Palacios (19:00 (2 horas))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-10 10:05",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-2491",
+        "type": "",
+        "amount": 320,
+        "concept": "Venta TPV (2 unidades)",
+        "category": "Tienda \/ Pro Shop",
+        "date": "2026-09-10 10:00",
+        "clientName": "Cliente Mostrador",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9871",
+        "type": "",
+        "amount": 320,
+        "concept": "Venta TPV (2 unidades)",
+        "category": "Tienda \/ Pro Shop",
+        "date": "2026-09-10 09:50",
+        "clientName": "Cliente Mostrador",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-3246",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 1: PAdel Cristal Pro (Azul) - Fernando Silva (04:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-10 09:49",
+        "clientName": "Fernando Silva",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9222",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 2: Azul - Carlos (16:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-09 21:07",
+        "clientName": "Carlos",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-6393",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 2: Azul - Carlos (08:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-09 20:28",
+        "clientName": "Carlos",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-8265",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 2: Azul - Carlos (09:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-09 19:52",
+        "clientName": "Carlos",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9128",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 2: Azul - Carlos (18:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-09 19:51",
+        "clientName": "Carlos",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9326",
+        "type": "",
+        "amount": 600,
+        "concept": "Reserva Cancha 2: PAdel PanorAmica VIP (Verde) - Carlos Palacios (17:00 (2 horas))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-08 14:58",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-2696",
+        "type": "",
+        "amount": 300,
+        "concept": "Recuperacion de Adeudo: Roberto Mendoza (No-Show)",
+        "category": "Recuperacion de Adeudo",
+        "date": "2026-09-08 13:31",
+        "clientName": "Roberto Mendoza",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-8707",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 1: PAdel Cristal Pro (Azul) - Mariana Torres (03:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-08 13:30",
+        "clientName": "Mariana Torres",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9127",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 1: PAdel Cristal Pro (Azul) - Alejandro Ruiz (00:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-08 13:30",
+        "clientName": "Alejandro Ruiz",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-5537",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 1: PAdel Cristal Pro (Azul) - SofAa ValdAs (11:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-08 13:20",
+        "clientName": "SofAa ValdAs",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-5458",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 2: PAdel PanorAmica VIP (Verde) - SofAa ValdAs (18:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-08 13:20",
+        "clientName": "SofAa ValdAs",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-8156",
+        "type": "",
+        "amount": 600,
+        "concept": "Reserva Cancha 1: PAdel Cristal Pro (Azul) - Carlos Palacios (19:00 (2 horas))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-08 13:06",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-1655",
+        "type": "",
+        "amount": 300,
+        "concept": "Reserva Cancha 1: PAdel Cristal Pro (Azul) - Fernando Silva (04:00 (1 hora))",
+        "category": "Reserva Canchas",
+        "date": "2026-09-08 12:47",
+        "clientName": "Fernando Silva",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-5029",
+        "type": "",
+        "amount": 50,
+        "concept": "Venta TPV (2 unidades)",
+        "category": "Tienda \/ Pro Shop",
+        "date": "2026-09-08 12:46",
+        "clientName": "Cliente Mostrador",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-1121",
+        "type": "",
+        "amount": 25,
+        "concept": "Venta TPV (1 unidades)",
+        "category": "Tienda \/ Pro Shop",
+        "date": "2026-09-07 15:51",
+        "clientName": "Cliente Mostrador",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-6143",
+        "type": "",
+        "amount": 600,
+        "concept": "Recuperacion de Adeudo: Sofia Valdes (No-Show)",
+        "category": "Recuperacion de Adeudo",
+        "date": "2026-09-07 12:38",
+        "clientName": "Sofia Valdes",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-6658",
+        "type": "",
+        "amount": 600,
+        "concept": "Recuperacion de Adeudo: Carlos Palacios (No-Show)",
+        "category": "Recuperacion de Adeudo",
+        "date": "2026-09-07 12:30",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-8367",
+        "type": "",
+        "amount": 300,
+        "concept": "Recuperacion de Adeudo: Fernando Silva (No-Show)",
+        "category": "Recuperacion de Adeudo",
+        "date": "2026-09-07 12:28",
+        "clientName": "Fernando Silva",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-3630",
+        "type": "",
+        "amount": 300,
+        "concept": "Recuperacion de Adeudo: Mariana Torres (No-Show)",
+        "category": "Recuperacion de Adeudo",
+        "date": "2026-09-07 12:27",
+        "clientName": "Mariana Torres",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-1786",
+        "type": "",
+        "amount": 300,
+        "concept": "Recuperacion de Adeudo: Alejandro Ruiz (No-Show)",
+        "category": "Recuperacion de Adeudo",
+        "date": "2026-09-07 12:26",
+        "clientName": "Alejandro Ruiz",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-8624",
+        "type": "",
+        "amount": 300,
+        "concept": "Recuperacion de Adeudo Atrasado: Alejandro Ruiz (No-Show)",
+        "category": "Recuperacion de Adeudo",
+        "date": "2026-09-07 12:25",
+        "clientName": "Alejandro Ruiz",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-1124",
+        "type": "",
+        "amount": 300,
+        "concept": "Recuperacion de Adeudo: Roberto Mendoza (No-Show)",
+        "category": "Recuperacion de Adeudo",
+        "date": "2026-09-07 12:25",
+        "clientName": "Roberto Mendoza",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-2782",
+        "type": "",
+        "amount": 35,
+        "concept": "Venta TPV (1 unidades)",
+        "category": "Tienda \/ Pro Shop",
+        "date": "2026-09-07 10:39",
+        "clientName": "Cliente Mostrador",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-2262",
+        "type": "",
+        "amount": 160,
+        "concept": "Venta TPV (1 unidades)",
+        "category": "Tienda \/ Pro Shop",
+        "date": "2026-09-07 10:17",
+        "clientName": "Cliente Mostrador",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9001",
+        "type": "",
+        "amount": 300,
+        "concept": "Pago Reserva Cancha 1: PAdel Cristal Pro - Alejandro Ruiz (1 hora)",
+        "category": "Reserva Canchas",
+        "date": "2026-09-05 00:00",
+        "clientName": "Alejandro Ruiz",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9002",
+        "type": "",
+        "amount": 300,
+        "concept": "Pago Reserva Cancha 1: PAdel Cristal Pro - Mariana Torres (1 hora)",
+        "category": "Reserva Canchas",
+        "date": "2026-09-05 03:00",
+        "clientName": "Mariana Torres",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9003",
+        "type": "",
+        "amount": 300,
+        "concept": "Pago Reserva Cancha 1: PAdel Cristal Pro - Fernando Silva (1 hora)",
+        "category": "Reserva Canchas",
+        "date": "2026-09-05 04:00",
+        "clientName": "Fernando Silva",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9004",
+        "type": "",
+        "amount": 300,
+        "concept": "Pago Reserva Cancha 1: PAdel Cristal Pro - Roberto Mendoza (1 hora)",
+        "category": "Reserva Canchas",
+        "date": "2026-09-05 13:00",
+        "clientName": "Roberto Mendoza",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9005",
+        "type": "",
+        "amount": 300,
+        "concept": "Pago Reserva Cancha 2: PAdel PanorAmica VIP - SofAa ValdAs (1 hora)",
+        "category": "Reserva Canchas",
+        "date": "2026-09-05 18:00",
+        "clientName": "SofAa ValdAs",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9006",
+        "type": "",
+        "amount": 600,
+        "concept": "Pago Reserva Cancha 1: PAdel Cristal Pro - Carlos Palacios (2 horas)",
+        "category": "Reserva Canchas",
+        "date": "2026-09-05 19:00",
+        "clientName": "Carlos Palacios",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-9007",
+        "type": "",
+        "amount": 80,
+        "concept": "Venta Alquiler Pala Pro Bullpadel - SofAa ValdAs",
+        "category": "Tienda \/ Pro Shop",
+        "date": "2026-09-05 10:15",
+        "clientName": "SofAa ValdAs",
+        "referenceId": ""
+    },
+    {
+        "id": "FIN-2533",
+        "amount": 300,
+        "paymentMethod": "Efectivo en Mostrador",
+        "date": "2026-09-22 08:48",
+        "concept": "Pago Reserva RES-7978 (18:00 (1 hora))",
+        "category": "Reserva Cancha",
+        "clientName": "Carlos Palacios"
+    },
+    {
+        "id": "FIN-6946",
+        "amount": 300,
+        "paymentMethod": "Efectivo en Mostrador",
+        "date": "2026-09-22 08:49",
+        "concept": "Pago Reserva RES-7978 (18:00 (1 hora))",
+        "category": "Reserva Cancha",
+        "clientName": "Carlos Palacios"
+    },
+    {
+        "id": "FIN-6233",
+        "amount": 450,
+        "paymentMethod": "Efectivo en Mostrador",
+        "date": "2026-09-22 08:56",
+        "concept": "Pago Reserva RES-4243 (23:00 (1 hora))",
+        "category": "Reserva Cancha",
+        "clientName": "Carlos Palacios"
+    }
+]

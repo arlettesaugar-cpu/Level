@@ -1,0 +1,57 @@
+﻿[
+    {
+        "id":  "TOURN-111",
+        "prize":  "$10,000 MXN",
+        "imageUrl":  "assets/images/cancha_padel_2.jpg",
+        "category":  "2ª Categoría Libre",
+        "teams":  [
+
+                  ],
+        "maxTeams":  16,
+        "status":  "Inscripciones Abiertas",
+        "title":  "1er Torneo Abierto Tacámbaro 2026",
+        "dates":  "15 - 18 Octubre, 2026"
+    },
+    {
+        "value":  [
+                      {
+                          "dates":  "15 - 18 Octubre, 2026",
+                          "title":  "1er Torneo Abierto Tacambaro 2026",
+                          "category":  "2 Categoria Libre",
+                          "maxTeams":  16,
+                          "prize":  "$15,000 MXN",
+                          "status":  "Inscripciones Abiertas",
+                          "teams":  [
+                                        {
+                                            "participants":  "Carlos Palacios y Juan PArez",
+                                            "teamName":  "Los Ases de TacAmbaro",
+                                            "id":  "REG-101",
+                                            "registeredAt":  "2026-09-05 10:15"
+                                        },
+                                        {
+                                            "participants":  "Sofia Valdes y Maria Silva",
+                                            "teamName":  "Padel Volea VIP",
+                                            "id":  "REG-102",
+                                            "registeredAt":  "2026-09-05 11:30"
+                                        }
+                                    ],
+                          "id":  "TOURN-101",
+                          "imageUrl":  "assets/images/cancha_padel_1.jpg"
+                      },
+                      {
+                          "dates":  "01 - 03 Noviembre, 2026",
+                          "title":  "Copa Level Tacambaro Padel Nocturno",
+                          "category":  "3 Categoria \u0026 Mixto",
+                          "maxTeams":  12,
+                          "prize":  "$8,000 MXN",
+                          "status":  "Proximamente",
+                          "teams":  [
+
+                                    ],
+                          "id":  "TOURN-102",
+                          "imageUrl":  "assets/images/cancha_padel_2.jpg"
+                      }
+                  ],
+        "Count":  2
+    }
+]

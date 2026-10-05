@@ -1,0 +1,23 @@
+[
+    {
+        "id": "RES-1223",
+        "courtId": "c1",
+        "courtName": "Cancha 1: Padel Cristal Pro (Azul)",
+        "location": "Tacambaro, Michoacan",
+        "date": "2026-09-30",
+        "timeSlot": "08:00 (1 hrs)",
+        "price": 300,
+        "paymentMethod": "Efectivo en Mostrador",
+        "clientName": "Administrador 2",
+        "clientPhone": "4591161880",
+        "status": "Cancelada",
+        "attendance": "Asistio",
+        "paid": true,
+        "receiptImage": "",
+        "referenceCode": "",
+        "bookingType": "renta",
+        "cancelReason": "Cancelación solicitada desde App",
+        "cancelledAt": "2026-09-28 18:12:03",
+        "refundStatus": "Pendiente de Devolución"
+    }
+]

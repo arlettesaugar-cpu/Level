@@ -1,0 +1,2561 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Level Tacambaro - Panel Administrador Ejecutivo</title>
+  <link rel="stylesheet" href="styles.css?v=5.2.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+</head>
+
+<body>
+  <div class="admin-app-layout">
+
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar">
+      <!-- White Header Bar with Centered Vector Brand Logo -->
+      <div class="sidebar-brand-card">
+        <div class="brand-logo-text-wrapper"
+          style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;">
+          <div class="brand-logo-level">
+            <span class="bracket-orange">{</span><span class="level-word">LEVEL</span><span
+              class="bracket-cyan">}</span>
+          </div>
+          <div class="brand-sub-centro"
+            style="font-size: 8px; font-weight: 800; color: #84CC16; letter-spacing: 1.8px; text-transform: uppercase; margin-top: 3px;">
+            CENTRO DEPORTIVO</div>
+        </div>
+      </div>
+
+      <!-- Main Sidebar Scrollable Body (Emerald to Cyan Gradient) -->
+      <div class="sidebar-scroll">
+
+        <!-- OPERACIONES -->
+        <div class="menu-label">OPERACIONES</div>
+        <nav class="sidebar-menu">
+          <button class="nav-btn active" onclick="switchAdminTab('reservas')">
+            <i data-lucide="pie-chart" class="nav-icon icon-cyan"></i>
+            <span class="nav-title">Dashboard</span>
+          </button>
+
+          <button class="nav-btn" onclick="switchAdminTab('planning')">
+            <i data-lucide="calendar" class="nav-icon icon-green"></i>
+            <span class="nav-title">Cuadrante</span>
+            <span class="nav-badge badge-live">24h En Vivo</span>
+          </button>
+
+          <button class="nav-btn" onclick="switchAdminTab('canchas')">
+            <i data-lucide="layout-grid" class="nav-icon icon-blue"></i>
+            <span class="nav-title">Canchas</span>
+          </button>
+
+          <button class="nav-btn" onclick="switchAdminTab('reservas_list')">
+            <i data-lucide="layers" class="nav-icon icon-amber"></i>
+            <span class="nav-title">Reservas</span>
+            <span class="nav-badge badge-gray">12</span>
+          </button>
+
+          <button class="nav-btn" onclick="switchAdminTab('historia')">
+            <i data-lucide="book-open" class="nav-icon icon-cyan"></i>
+            <span class="nav-title">Quienes Somos</span>
+          </button>
+
+          <button class="nav-btn" onclick="switchAdminTab('usuarios')">
+            <i data-lucide="users" class="nav-icon icon-lime"></i>
+            <span class="nav-title">Usuarios</span>
+          </button>
+
+          <button class="nav-btn" onclick="switchAdminTab('finanzas')">
+            <i data-lucide="dollar-sign" class="nav-icon icon-green"></i>
+            <span class="nav-title">Finanzas & Caja</span>
+            <span id="sidebarCashBadge" class="nav-badge badge-green">Abierta</span>
+          </button>
+        </nav>
+
+        <!-- CLUB & COMPETICI"N -->
+        <div class="menu-label">CLUB & COMPETICI"N</div>
+        <nav class="sidebar-menu">
+          <button class="nav-btn" onclick="switchAdminTab('torneos')">
+            <i data-lucide="trophy" class="nav-icon icon-amber"></i>
+            <span class="nav-title">Torneos</span>
+            <span class="nav-badge badge-red">2 Activos</span>
+          </button>
+
+          <button class="nav-btn" onclick="switchAdminTab('productos')">
+            <i data-lucide="shopping-bag" class="nav-icon icon-cyan"></i>
+            <span class="nav-title">Productos</span>
+          </button>
+
+          <button class="nav-btn" onclick="switchAdminTab('tpv')">
+            <i data-lucide="calculator" class="nav-icon icon-lime"></i>
+            <span class="nav-title">Punto de Venta</span>
+          </button>
+
+          <button class="nav-btn" onclick="openBankInfoModal()">
+            <i data-lucide="landmark" class="nav-icon icon-purple" style="color: #7E22CE;"></i>
+            <span class="nav-title">Datos Bancarios</span>
+          </button>
+
+          <button class="nav-btn" onclick="switchAdminTab('cancelaciones')" style="border-left: 3px solid #EF4444; background: rgba(239, 68, 68, 0.05);">
+            <i data-lucide="ban" class="nav-icon" style="color: #EF4444;"></i>
+            <span class="nav-title" style="color: #EF4444; font-weight: 700;">Cancelaciones App</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Sidebar Bottom Logout Button & Security Options -->
+      <div class="sidebar-user-footer" style="display: flex; flex-direction: column; gap: 8px;">
+        <button class="sidebar-key-btn" onclick="openChangePasswordModal()"
+          style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 14px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; color: #10B981; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s ease;">
+          <i data-lucide="key-round" style="width: 16px; height: 16px;"></i>
+          <span>Cambiar Contrasena</span>
+        </button>
+        <button class="sidebar-logout-btn" onclick="handleAdminLogout()">
+          <i data-lucide="log-out" class="logout-icon"></i>
+          <span>Cerrar Sesi&oacute;n</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="admin-main-wrapper">
+
+      <!-- Top Navbar Header -->
+      <header class="admin-navbar">
+        <div class="header-left-section">
+          <span class="pill-item date-pill">   Viernes, 5 de Septiembre 2026</span>
+          <span id="navbarCashBadge" class="pill-item status-pill" onclick="switchAdminTab('caja')"
+            style="cursor: pointer;" title="Ver estado de caja y arqueo">
+            <span id="navbarCashDot" class="dot-green"></span> <span id="navbarCashText">Caja Abierta</span>
+          </span>
+        </div>
+
+        <div class="header-right-profile" style="display: flex; align-items: center; gap: 10px;">
+          <button type="button" onclick="openChangePasswordModal()"
+            style="display: flex; align-items: center; gap: 6px; padding: 8px 14px; background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 10px; color: #059669; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s ease;"
+            title="Cambiar clave de acceso">
+            <i data-lucide="key-round" style="width: 15px; height: 15px;"></i>
+            <span>Cambiar Contrasena</span>
+          </button>
+          <div class="header-user-badge" onclick="handleAdminLogout()" title="Clic para cerrar Sesin"
+            style="cursor: pointer;">
+            <div class="header-avatar-circle">
+              <span>LT</span>
+              <span class="online-indicator"></span>
+            </div>
+            <div class="header-user-info">
+              <strong class="header-user-name">Administrador Level Tacambaro</strong>
+              <span class="header-user-sub">Gerente General   Tacambaro</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Body Container -->
+      <main class="admin-container">
+
+        <!-- TAB 1: MAIN DASHBOARD & KPIS -->
+        <div id="adminTabReservas" class="admin-tab-pane active">
+
+          <!-- Title & Time Filter Bar -->
+          <div class="dashboard-title-row">
+            <div>
+              <h2>Dashboard Ejecutivo Padel Club Tacambaro</h2>
+              <p>Resumen operativo, ocupaci"n de pistas e ingresos en tiempo real.</p>
+            </div>
+            
+          </div>
+
+          <!-- KPI Cards Grid (4 Columns) -->
+          <section class="kpi-grid-executive">
+
+            <!-- KPI 1: INGRESOS DE HOY -->
+            <div class="kpi-card-exec card-green">
+              <div class="kpi-top">
+                <span class="kpi-title" id="kpiTitle1">INGRESOS DE HOY</span>
+                <div class="kpi-icon-circle icon-green-bg"><i data-lucide="dollar-sign"></i></div>
+              </div>
+              <h2 id="kpiTotalIncome">$0.00 <small>MXN</small></h2>
+              <div class="kpi-bottom text-green" id="kpiIncomeSub">
+                <i data-lucide="trending-up"></i> <span>Calculado en tiempo real</span>
+              </div>
+            </div>
+
+            <!-- KPI 2: OCUPACI"N DE PISTAS -->
+            <div class="kpi-card-exec card-blue">
+              <div class="kpi-top">
+                <span class="kpi-title">OCUPACI"N DE PISTAS</span>
+                <div class="kpi-icon-circle icon-blue-bg"><i data-lucide="pie-chart"></i></div>
+              </div>
+              <h2 id="kpiCourtOccupancy">0.0%</h2>
+              <div class="kpi-bottom text-muted" id="kpiOccupancySub">
+                <i data-lucide="check-circle"></i> <span>2 canchas activas   Tacambaro</span>
+              </div>
+            </div>
+
+            <!-- KPI 3: RESERVAS TOTALES HOY -->
+            <div class="kpi-card-exec card-orange">
+              <div class="kpi-top">
+                <span class="kpi-title" id="kpiTitle3">RESERVAS TOTALES HOY</span>
+                <div class="kpi-icon-circle icon-orange-bg"><i data-lucide="calendar"></i></div>
+              </div>
+              <h2 id="kpiActiveBookings">0 <small>Partidos</small></h2>
+              <div class="kpi-bottom text-green" id="kpiBookingsSub">
+                <i data-lucide="trending-up"></i> <span>Registros reales de hoy</span>
+              </div>
+            </div>
+
+            <!-- KPI 4: TIENDA & ALQUILER HOY -->
+            <div class="kpi-card-exec card-purple">
+              <div class="kpi-top">
+                <span class="kpi-title" id="kpiTitle4">TIENDA & ALQUILER HOY</span>
+                <div class="kpi-icon-circle icon-purple-bg"><i data-lucide="shopping-bag"></i></div>
+              </div>
+              <h2 id="kpiShopIncome">$0.00 <small>MXN</small></h2>
+              <div class="kpi-bottom text-muted">
+                <i data-lucide="package"></i> <span>Ventas de caja registradas</span>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- Middle Split Section (Sankey Flow Chart + 3D Isometric Courts) -->
+          <div class="executive-middle-grid">
+
+            <!-- Left Chart Card: Ocupaci&#243;n por Franja Horaria -->
+            <div class="exec-card">
+              <div class="card-header-flex">
+                <div class="header-title-group">
+                  <i data-lucide="bar-chart-2" class="text-green"></i>
+                  <h3>Ocupaci&#243;n por Franja Horaria (Hoy)</h3>
+                </div>
+                <span class="update-badge">Actualizado cada 5 min</span>
+              </div>
+
+              <!-- Sankey Flow Ribbons Graphic Container -->
+              <div class="sankey-chart-container">
+                <svg class="sankey-svg-ribbons" viewBox="0 0 500 130" preserveAspectRatio="none">
+                  <path d="M 40 80 C 90 80, 90 50, 140 50" fill="none" stroke="rgba(16, 185, 129, 0.35)" stroke-width="18" />
+                  <path d="M 140 50 C 190 50, 190 60, 240 60" fill="none" stroke="rgba(2, 132, 199, 0.35)" stroke-width="22" />
+                  <path d="M 240 60 C 290 60, 290 10, 340 10" fill="none" stroke="rgba(132, 204, 22, 0.35)" stroke-width="30" />
+                  <path d="M 340 10 C 390 10, 390 15, 440 15" fill="none" stroke="rgba(239, 68, 68, 0.35)" stroke-width="28" />
+                </svg>
+
+                <div class="sankey-columns-flex">
+                  <div class="sankey-col">
+                    <span class="sankey-percent" id="franja1Percent">0%</span>
+                    <div class="sankey-bar-pill sankey-green-fill" id="franja1Bar" style="height: 12px;"></div>
+                    <span class="sankey-time-label">08:00 - 11:00</span>
+                    <span class="sankey-sub-label">Ma&#241;anas</span>
+                  </div>
+
+                  <div class="sankey-col">
+                    <span class="sankey-percent" id="franja2Percent">0%</span>
+                    <div class="sankey-bar-pill sankey-blue-fill" id="franja2Bar" style="height: 12px;"></div>
+                    <span class="sankey-time-label">11:00 - 14:00</span>
+                    <span class="sankey-sub-label">Mediod&#237;a</span>
+                  </div>
+
+                  <div class="sankey-col">
+                    <span class="sankey-percent" id="franja3Percent">0%</span>
+                    <div class="sankey-bar-pill sankey-blue-fill" id="franja3Bar" style="height: 12px;"></div>
+                    <span class="sankey-time-label">14:00 - 17:00</span>
+                    <span class="sankey-sub-label">Tardes</span>
+                  </div>
+
+                  <div class="sankey-col">
+                    <span class="sankey-percent" id="franja4Percent">0%</span>
+                    <div class="sankey-bar-pill sankey-lime-fill" id="franja4Bar" style="height: 12px;"></div>
+                    <span class="sankey-time-label">17:00 - 20:30</span>
+                    <span class="sankey-sub-label">Prime 1</span>
+                  </div>
+
+                  <div class="sankey-col">
+                    <span class="sankey-percent" id="franja5Percent">0%</span>
+                    <div class="sankey-bar-pill sankey-red-fill" id="franja5Bar" style="height: 12px;"></div>
+                    <span class="sankey-time-label">20:30 - 23:30</span>
+                    <span class="sankey-sub-label">Prime 2</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Card: Estado de las 2 Canchas en Vivo -->
+            <div class="exec-card">
+              <div class="card-header-flex">
+                <div class="header-title-group">
+                  <i data-lucide="layers" class="text-blue"></i>
+                  <h3>Estado de las 2 Canchas en Vivo</h3>
+                </div>
+              </div>
+
+              <div class="courts-3d-wrapper">
+                <img src="assets/images/canchas_3d.jpg" alt="Pistas 3D Padel Club" class="courts-3d-img"
+                  onerror="this.onerror=null; this.onerror=null; this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%231e293b\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2310b981\' font-family=\'sans-serif\' font-size=\'20\' font-weight=\'bold\'%3ELEVEL CLUB%3C/text%3E%3C/svg%3E';;">
+
+                <!-- PISTA 1 OVERLAY BADGE -->
+                <div class="court-overlay-badge badge-pista-1" id="liveCourt1Info">
+                  <span class="tag-pista-num">PISTA 1</span>
+                  <span>Cargando estado...</span>
+                  <span class="badge-status-available">DISPONIBLE</span>
+                </div>
+
+                <!-- PISTA 2 OVERLAY BADGE -->
+                <div class="court-overlay-badge badge-pista-2" id="liveCourt2Info">
+                  <span class="tag-pista-num">PISTA 2</span>
+                  <span>Cargando estado...</span>
+                  <span class="badge-status-available">DISPONIBLE</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <!-- Alert Banner Container for Pending Receipts -->
+          <div id="dashboardPendingReceiptsBanner"></div>
+
+          <!-- Bottom Section:  Ultimas Reservas Registradas -->
+          <div class="exec-card" style="margin-top: 16px;">
+            <div class="card-header-flex">
+              <div class="header-title-group">
+                <i data-lucide="clock" class="text-purple"></i>
+                <h3> Ultimas Reservas Registradas</h3>
+              </div>
+              <a href="javascript:void(0)" onclick="switchAdminTab('reservas_list')" class="link-action">Ver Gestion Completa & Asistencia  </a>
+            </div>
+
+            <div class="table-responsive">
+              <table class="admin-table-exec">
+                <thead>
+                  <tr>
+                    <th>ID RESERVA</th>
+                    <th>CANCHA</th>
+                    <th>HORARIO</th>
+                    <th>CLIENTE</th>
+                    <th>IMPORTE</th>
+                    <th>ESTADO / PAGO</th>
+                    <th>COMPROBANTE / ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody id="adminBookingsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- TAB: Gestion DE CANCHAS -->
+        <div id="adminTabCanchas" class="admin-tab-pane">
+          <div class="dashboard-title-row" style="margin-bottom: 20px;">
+            <div>
+              <h2
+                style="font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 800; color: #0F172A; margin: 0 0 4px 0;">
+                Gestion de Canchas del Club</h2>
+              <p style="font-size: 13px; color: #64748B; margin: 0;">Administra los nombres, Imgenes y precios por hora
+                de las canchas de Padel.</p>
+            </div>
+            <button class="btn-primary" onclick="openCourtCreateModal()"
+              style="display: flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 13px; background: #0284C7; border: none; color: #FFF; cursor: pointer; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);">
+              <i data-lucide="plus-circle" style="width: 16px;"></i> + Agregar Nueva Cancha
+            </button>
+          </div>
+
+          <div id="adminCourtsGrid"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+            <!-- Rendered dynamically by admin.js -->
+          </div>
+        </div>
+
+        <!-- TAB 2: CALENDARIO DE CANCHAS Y DISPONIBILIDAD DE 24 HORAS -->
+        <div id="adminTabPlanning" class="admin-tab-pane">
+          <div class="dashboard-title-row">
+            <div>
+              <h2>Calendario de Canchas y Disponibilidad</h2>
+              <p>Haz clic en cualquier dIa del calendario para abrir el control de horarios de Pista 1 y Pista 2 (24
+                horas).</p>
+            </div>
+            <div class="calendar-month-selector-container">
+              <button class="month-nav-btn" onclick="navigateCalendarMonth(-1)" title="Mes anterior">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                <span id="prevMonthLabel">Agosto 2026</span>
+              </button>
+              <div class="current-month-pill">
+                <span class="month-cal-icon">  </span>
+                <span id="currentMonthLabel">Septiembre 2026</span>
+              </div>
+              <button class="month-nav-btn" onclick="navigateCalendarMonth(1)" title="Mes siguiente">
+                <span id="nextMonthLabel">Octubre 2026</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+              <button class="today-quick-btn" onclick="goToTodayMonth()" title="Volver al dIa actual">
+                <span class="today-pulse-dot"></span>
+                Ir a Hoy
+              </button>
+            </div>
+          </div>
+
+          <!-- Monthly Calendar Grid View -->
+          <div class="monthly-calendar-wrapper">
+            <div class="calendar-weekdays-grid">
+              <div>LUNES</div>
+              <div>MARTES</div>
+              <div>MI RCOLES</div>
+              <div>JUEVES</div>
+              <div>VIERNES</div>
+              <div>S BADO</div>
+              <div>DOMINGO</div>
+            </div>
+
+            <div class="calendar-days-grid" id="monthlyCalendarDaysContainer">
+              <!-- Rendered dynamically by admin.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: Gestion DE RESERVAS DEL Da & ASISTENCIA -->
+        <div id="adminTabReservasList" class="admin-tab-pane">
+          <div class="dashboard-title-row">
+            <div>
+              <h2>Gestion de Reservas del Dia & Asistencia</h2>
+              <p>Control de asistencia en tiempo real, registro de inasistencias (deuda) y cobro a finanzas.</p>
+            </div>
+          </div>
+
+          <div class="exec-card">
+            <!-- Barra de Filtros por Fecha (Ver Hoy, Ver Todas, Selector Fecha) -->
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #E2E8F0; flex-wrap: wrap;">
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <button id="btnFilterToday" class="btn-head-action btn-green" onclick="setBookingDateFilter('today')">
+                  <i data-lucide="calendar"></i> Ver Hoy
+                </button>
+                <button id="btnFilterAll" class="btn-head-action btn-cyan" onclick="setBookingDateFilter('all')">
+                  <i data-lucide="list"></i> Ver Todas
+                </button>
+                <div style="display: flex; align-items: center; gap: 6px; background: #F8FAFC; padding: 6px 12px; border-radius: 10px; border: 1px solid #CBD5E1;">
+                  <i data-lucide="calendar-days" style="width: 14px; height: 14px; color: #0284C7;"></i>
+                  <span style="font-size: 12px; font-weight: 700; color: #334155;">Seleccionar Fecha:</span>
+                  <input type="date" id="bookingDateFilterInput" style="border: 1px solid #94A3B8; border-radius: 6px; padding: 4px 8px; font-size: 12px; font-weight: 600; color: #0F172A;" onchange="setBookingDateFilter(this.value)">
+                </div>
+              </div>
+              <div id="bookingFilterStatusBadge" style="font-size: 12px; font-weight: 700; color: #0284C7; background: #F0F9FF; border: 1px solid #BAE6FD; padding: 4px 12px; border-radius: 20px;">
+                Filtrado por: Reservas de Hoy
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="admin-table-exec">
+                <thead>
+                  <tr>
+                    <th>ID RESERVA</th>
+                    <th>CANCHA</th>
+                    <th>HORARIO</th>
+                    <th>CLIENTE</th>
+                    <th>IMPORTE</th>
+                    <th>ESTADO ASISTENCIA</th>
+                    <th>ESTADO PAGO</th>
+                    <th>ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody id="adminFullBookingsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: QUIENES SOMOS -->
+        <div id="adminTabHistoria" class="admin-tab-pane">
+          <div class="dashboard-title-row">
+            <div>
+              <h2>Administracion de Quienes Somos, Marca & Galera del Club</h2>
+              <p>Edita el texto de presentaciAn, logotipo y fotografAas de las instalaciones para la App MAvil.</p>
+            </div>
+            <button class="btn-head-action btn-green" onclick="handleSaveHistory()">
+              <i data-lucide="save"></i> Guardar Cambios
+            </button>
+          </div>
+
+          <div class="exec-card" style="margin-bottom: 20px;">
+            <div
+              style="display: flex; gap: 24px; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #E2E8F0; flex-wrap: wrap;">
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <div style="position: relative; width: 85px; height: 85px;" title="Logo del Club">
+                  <img id="historyLogoPreview" src="assets/images/logo.jpeg"
+                    style="width: 85px; height: 85px; border-radius: 18px; object-fit: cover; border: 3px solid #0284C7; box-shadow: 0 4px 12px rgba(2,132,199,0.15);">
+                  <span
+                    style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); background: #0284C7; color: #FFF; font-size: 8.5px; font-weight: 800; padding: 2px 6px; border-radius: 8px; white-space: nowrap;">LOGO</span>
+                </div>
+                <div style="position: relative; width: 140px; height: 85px;" title="Foto de Fondo / Portada">
+                  <img id="historyCoverPreview" src="assets/images/cancha_padel_1.jpg"
+                    style="width: 140px; height: 85px; border-radius: 18px; object-fit: cover; border: 3px solid #10B981; box-shadow: 0 4px 12px rgba(16,185,129,0.15);"
+                    onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' fill=\'%23f1f5f9\'><rect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/><text x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2364748b\' font-size=\'12\'>Imagen</text></svg>';">
+                  <span
+                    style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); background: #10B981; color: #FFF; font-size: 8.5px; font-weight: 800; padding: 2px 6px; border-radius: 8px; white-space: nowrap;">PORTADA
+                    / FONDO</span>
+                </div>
+              </div>
+              <div style="flex: 1; min-width: 260px;">
+                <h3 id="historyClubTitleHeader"
+                  style="font-family: 'Outfit', sans-serif; font-size: 20px; margin: 0 0 4px 0;">Level Tacambaro</h3>
+                <p style="color: #64748B; font-size: 13px; margin: 0 0 10px 0;"><i data-lucide="map-pin"
+                    style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 4px; color: #0284C7;"></i>
+                  Valent n G mez Far as #3, Tacambaro de Codallos, Michoacan.</p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <input type="file" id="logoFileInput" accept="image/*" style="display: none;"
+                    onchange="handleLogoFileSelect(event)">
+                  <button class="btn-head-action btn-cyan" style="font-size: 12px; padding: 7px 12px;"
+                    onclick="document.getElementById('logoFileInput').click()">
+                    <i data-lucide="upload-cloud"></i> Cambiar Logo
+                  </button>
+
+                  <input type="file" id="coverFileInput" accept="image/*" style="display: none;"
+                    onchange="handleCoverFileSelect(event)">
+                  <button class="btn-head-action btn-green" style="font-size: 12px; padding: 7px 12px;"
+                    onclick="document.getElementById('coverFileInput').click()">
+                    <i data-lucide="image"></i> Cambiar Foto de Fondo
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+              <div>
+                <label
+                  style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Nombre
+                  Comercial:</label>
+                <input type="text" id="historyClubName"
+                  style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 13px; font-weight: 600;"
+                  value="Level Tacambaro">
+              </div>
+              <div>
+                <label
+                  style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Ubicaci"n
+                  / Direccion:</label>
+                <input type="text" id="historyClubAddress"
+                  style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 13px;"
+                  value="Valent n G mez Far as #3, Tacambaro, Michoacan (frente a Protecci n Civil)">
+              </div>
+              <div>
+                <label
+                  style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Telefono
+                  WhatsApp:</label>
+                <input type="text" id="historyClubPhone"
+                  style="width: 100%; padding: 10px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 13px;"
+                  value="459 102 3849">
+              </div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+              <label style="display: block; font-size: 13px; font-weight: 800; color: #0F172A; margin-bottom: 6px;">  
+                Quienes Somos, MisiAn & Descripcion de la Empresa:</label>
+              <small style="display: block; color: #64748B; margin-bottom: 8px;">Redacta el texto explicativo sobre el
+                origen, concepto y servicios de tu club. Este texto se mostrar  en la App MAvil.</small>
+              <textarea id="historyDescriptionText" rows="6"
+                style="width: 100%; padding: 14px; border: 1px solid #CBD5E1; border-radius: 12px; font-size: 13px; line-height: 1.6; font-family: inherit; resize: vertical;"
+                placeholder="Escribe aqu  la historia de Level Tacambaro...">Level Tacambaro naci" con la visi"n de consolidar el primer centro deportivo de Padel de alto nivel en Tacambaro, Michoacan. Nuestro club cuenta con 2 pistas de tecnologIa profesional (Padel Cristal Pro y Panoramica VIP), iluminaci"n LED nocturna de alta definici n,  Area de espectadores, servicio de pro shop con alquiler de palas y pelotas, y atenci"n personalizada las 24 horas del dIa.</textarea>
+            </div>
+          </div>
+
+          <!-- Galera Fotogr fica Card -->
+          <div class="exec-card">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <h3 id="adminGalleryTitleCount"
+                  style="font-family: 'Outfit', sans-serif; font-size: 17px; margin: 0; color: #0F172A;">Galera
+                  Fotogr fica de Instalaciones</h3>
+                <p style="color: #64748B; font-size: 12px; margin: 2px 0 0 0;">Agrega o elimina Imgenes de las pistas,
+                  instalaciones y servicios del club.</p>
+              </div>
+              <input type="file" id="galleryFileInput" accept="image/*" multiple style="display: none;"
+                onchange="handleGalleryFilesSelect(event)">
+              <button class="btn-head-action btn-cyan" style="padding: 8px 14px; font-size: 12px;"
+                onclick="document.getElementById('galleryFileInput').click()">
+                <i data-lucide="upload-cloud"></i>    + Subir Nuevas Imgenes
+              </button>
+            </div>
+
+            <div id="historyGalleryContainer"
+              style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;">
+              <!-- Dynamic gallery items rendered by admin.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: TORNEOS -->
+        <div id="adminTabTorneos" class="admin-tab-pane">
+          <div class="dashboard-title-row">
+            <div>
+              <h2>Torneos & Ligas de Padel Tacambaro</h2>
+              <p>OrganizaciAn de torneos abiertos, listas de inscritos y bolsa de premios.</p>
+            </div>
+            <button class="btn-head-action btn-green" onclick="openCreateTournamentModal()">
+              <i data-lucide="trophy"></i> + Crear Nuevo Torneo
+            </button>
+          </div>
+
+          <div class="exec-card">
+            <div class="table-responsive">
+              <table class="admin-table-exec">
+                <thead>
+                  <tr>
+                    <th>TORNEO</th>
+                    <th>Categoria</th>
+                    <th>FECHAS</th>
+                    <th>BOLSA PREMIOS</th>
+                    <th>INSCRITOS (PAREJAS)</th>
+                    <th>ESTADO</th>
+                    <th>ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody id="adminTournamentsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 6: PRODUCTOS & INVENTARIO -->
+        <div id="adminTabProductos" class="admin-tab-pane">
+          <div class="dashboard-title-row">
+            <div>
+              <h2>Catalogo & Inventario de Productos</h2>
+              <p>Gestion de productos para venta en mostrador (pelotas, overgrips, bebidas, indumentaria). Alta, baja,
+                cambios y venta en efectivo.</p>
+            </div>
+            <button class="btn-head-action btn-green" onclick="openCreateProductModal()">
+              <i data-lucide="plus-circle"></i> + Agregar Nuevo Producto
+            </button>
+          </div>
+
+          <div class="exec-card">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+              <h3 style="font-family: 'Outfit', sans-serif; font-size: 16px; margin: 0; color: #0F172A;">Inventario de
+                Ventas Mostrador</h3>
+              <div class="time-filter-group" style="margin: 0;">
+                <button class="filter-btn prod-filter-btn active" onclick="setProductFilter('all', this)">Todos</button>
+                <button class="filter-btn prod-filter-btn"
+                  onclick="setProductFilter('Pelotas & Accesorios', this)">Pelotas & Accesorios</button>
+                <button class="filter-btn prod-filter-btn" onclick="setProductFilter('Snacks & Bebidas', this)">Snacks &
+                  Bebidas</button>
+                <button class="filter-btn prod-filter-btn" onclick="setProductFilter('Indumentaria', this)">  
+                  Indumentaria</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="admin-table-exec">
+                <thead>
+                  <tr>
+                    <th>ID PRODUCTO</th>
+                    <th>PRODUCTO</th>
+                    <th>Categoria</th>
+                    <th>PRECIO ($ MXN)</th>
+                    <th>STOCK DISPONIBLE</th>
+                    <th>ACCIONES DE INVENTARIO & TPV</th>
+                  </tr>
+                </thead>
+                <tbody id="adminProductsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: PUNTO DE VENTA (TPV) MOSTRADOR -->
+        <div id="adminTabTpv" class="admin-tab-pane">
+          <div class="dashboard-title-row">
+            <div>
+              <h2>Punto de Venta (TPV Mostrador)</h2>
+              <p>Modulo independiente para venta directa en mostrador con cobro en efectivo, tarjeta o saldo.</p>
+            </div>
+          </div>
+
+          <!-- Split Screen: Left Panel = Products Inventory Grid, Right Panel = Current Ticket Cart -->
+          <div style="display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: start;">
+
+            <!-- LEFT PANEL: ART CULOS EN INVENTARIO -->
+            <div class="exec-card" style="padding: 20px;">
+              <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <i data-lucide="package" style="color: #16A34A; width: 20px; height: 20px;"></i>
+                  <h3 style="font-family: 'Outfit', sans-serif; font-size: 16px; margin: 0; color: #0F172A;">Articulos
+                    en Inventario</h3>
+                </div>
+                <div id="tpvCategoryFilterGroup" class="time-filter-group" style="margin: 0;"></div>
+              </div>
+
+              <!-- Products Grid -->
+              <div id="tpvProductsGrid"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px;"></div>
+            </div>
+
+            <!-- RIGHT PANEL: TICKET DE MOSTRADOR (CART) -->
+            <div class="exec-card" style="padding: 20px; border-top: 4px solid #16A34A; position: sticky; top: 80px;">
+              <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #F1F5F9; padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <i data-lucide="receipt" style="color: #16A34A; width: 20px; height: 20px;"></i>
+                  <h3 style="font-family: 'Outfit', sans-serif; font-size: 16px; margin: 0; color: #0F172A;">Ticket de
+                    Mostrador</h3>
+                </div>
+                <button type="button" onclick="clearTpvTicket()"
+                  style="background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                      Vaciar
+                </button>
+              </div>
+
+              <!-- Ticket Items List -->
+              <div id="tpvTicketItemsContainer"
+                style="min-height: 180px; max-height: 320px; overflow-y: auto; margin-bottom: 16px;">
+                <div style="text-align: center; color: #94A3B8; padding: 40px 10px; font-size: 13px;">
+                     El ticket est  vac o.<br>Haz clic en los productos para agregarlos.
+                </div>
+              </div>
+
+              <!-- Summary Totals -->
+              <div
+                style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 14px; border-radius: 12px; margin-bottom: 16px;">
+                <div
+                  style="display: flex; justify-content: space-between; font-size: 13px; color: #64748B; margin-bottom: 6px;">
+                  <span>Subtotal:</span>
+                  <span id="tpvSubtotalDisplay" style="font-weight: 700; color: #334155;">$0.00 MXN</span>
+                </div>
+                <div
+                  style="display: flex; justify-content: space-between; font-size: 13px; color: #64748B; margin-bottom: 8px;">
+                  <span>IVA (0% Exento):</span>
+                  <span style="font-weight: 700; color: #334155;">$0.00 MXN</span>
+                </div>
+                <div
+                  style="border-top: 1px dashed #CBD5E1; padding-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                  <span
+                    style="font-size: 14px; font-weight: 900; color: #0F172A; font-family: 'Outfit', sans-serif;">TOTAL:</span>
+                  <span id="tpvTotalDisplay"
+                    style="font-size: 24px; font-weight: 900; color: #16A34A; font-family: 'Outfit', sans-serif;">$0.00
+                    MXN</span>
+                </div>
+              </div>
+
+              <!-- Single Prominent Cobrar Button -->
+              <button type="button" onclick="openTpvCashModal()"
+                style="width: 100%; background: #16A34A; color: #FFF; border: none; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Outfit', sans-serif; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); transition: all 0.2s;">
+                <i data-lucide="calculator" style="width: 20px; height: 20px;"></i>
+                <span>   Cobrar Venta</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TAB: Gestion DE USUARIOS -->
+        <div id="adminTabUsuarios" class="admin-tab-pane">
+          <div class="dashboard-title-row">
+            <div>
+              <h2>Gestion de Usuarios & Accesos App MAvil</h2>
+              <p>Crea clientes o administradores y genera contrase'as temporales para su primer acceso.</p>
+            </div>
+            <button class="btn-head-action btn-green" onclick="openCreateUserModal()">
+              <i data-lucide="user-plus"></i> + Crear Nuevo Usuario
+            </button>
+          </div>
+
+          <div class="exec-card">
+            <div class="table-responsive">
+              <table class="admin-table-exec">
+                <thead>
+                  <tr>
+                    <th>ID USUARIO</th>
+                    <th>USUARIO</th>
+                    <th>NOMBRE COMPLETO</th>
+                    <th>Telefono</th>
+                    <th>TIPO DE USUARIO</th>
+                    <th>Contrasena TEMPORAL</th>
+                    <th>ESTADO ACCESO</th>
+                    <th>ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody id="adminUsersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 9: FINANZAS & CAJA CONSOLIDADO -->
+              <!-- TAB: CANCELACIONES DE LA APP & DevolucionES -->
+      <div id="adminTabCancelaciones" class="admin-tab-pane">
+        <div class="card-header-flex" style="margin-bottom: 16px; align-items: center;">
+          <div>
+            <h2 style="font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900; color: #0F172A; margin: 0; display: flex; align-items: center; gap: 8px;">
+              <span style="background: #FEF2F2; color: #EF4444; width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold;">&#10006;</span> Historial de Cancelaciones de la App
+            </h2>
+            <p style="color: #64748B; font-size: 13px; margin: 4px 0 0 0;">Registro de reservaciones canceladas por clientes y control de Devoluciones de pago.</p>
+          </div>
+          <button type="button" class="btn-head-action" style="background: #EF4444; color: #FFF; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(239,68,68,0.25);" onclick="fetchCancelledBookings()">
+            <i data-lucide="refresh-cw" style="width: 16px; height: 16px;"></i> Actualizar Tabla
+          </button>
+        </div>
+
+        <div class="exec-card" style="padding: 0; overflow: hidden; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #E2E8F0;">
+          <div class="table-responsive">
+            <table class="admin-table-exec" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: #F8FAFC; border-bottom: 2px solid #E2E8F0; text-align: left;">
+                  <th style="padding: 14px 16px; font-weight: 800; color: #475569; font-size: 12px;">ID RESERVA</th>
+                  <th style="padding: 14px 16px; font-weight: 800; color: #475569; font-size: 12px;">CANCHA</th>
+                  <th style="padding: 14px 16px; font-weight: 800; color: #475569; font-size: 12px;">CLIENTE / Telefono</th>
+                  <th style="padding: 14px 16px; font-weight: 800; color: #475569; font-size: 12px;">HORARIO RESERVADO</th>
+                  <th style="padding: 14px 16px; font-weight: 800; color: #475569; font-size: 12px;">MONTO & PAGO</th>
+                  <th style="padding: 14px 16px; font-weight: 800; color: #475569; font-size: 12px;">ESTADO Devolucion</th>
+                  <th style="padding: 14px 16px; font-weight: 800; color: #475569; font-size: 12px;">ACCIONES / Gestion</th>
+                </tr>
+              </thead>
+              <tbody id="cancelledBookingsTableBody">
+                <tr><td colspan="7" style="text-align: center; color: #94A3B8; padding: 24px; font-weight: 600;">No hay Cancelaciones registradas a&#250;n en el sistema.     </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="adminTabFinanzas" class="admin-tab-pane">
+          <div class="dashboard-title-row">
+            <div>
+              <h2>Control Financiero, Cajas & Cortes (Tacambaro)</h2>
+              <p>Gestion unificada de ingresos en tiempo real, fondo inicial de caja, movimientos y cierres de turno.
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button id="btnOpenCashModal" class="btn-head-action btn-green" onclick="openOpenCashModal()">
+                <i data-lucide="unlock"></i> Abrir Caja / Turno
+              </button>
+              <button id="btnAddMovementModal" class="btn-head-action" style="background: #0284C7; color: #FFF;"
+                onclick="openCashMovementModal()">
+                <i data-lucide="arrow-left-right"></i> Entradas / Salidas
+              </button>
+              <button id="btnCloseCashModal" class="btn-head-action" style="background: #DC2626; color: #FFF;"
+                onclick="openCashCutModal()">
+                <i data-lucide="lock"></i> Realizar Corte / Cierre
+              </button>
+              <button class="btn-head-action" style="background: #991B1B; color: #FFF;" onclick="openPosSaleModal()">
+                <i data-lucide="alert-circle"></i> Cobrar Adeudo
+              </button>
+              <button class="btn-head-action" style="background: #059669; color: #FFF;"
+                onclick="exportFinancesReportCSV()">
+                <i data-lucide="download"></i> Exportar (CSV)
+              </button>
+            </div>
+          </div>
+
+          <!-- Banner de Estado de Caja -->
+          <div id="cashBannerStatus" class="exec-card"
+            style="margin-bottom: 20px; padding: 18px 24px; border-left: 6px solid #10B981; display: flex; justify-content: space-between; align-items: center; background: #F0FDF4; flex-wrap: wrap; gap: 14px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div
+                style="width: 48px; height: 48px; border-radius: 14px; background: #DCFCE7; color: #15803D; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                <i data-lucide="wallet"></i>
+              </div>
+              <div>
+                <h3 id="cashBannerTitle"
+                  style="margin: 0; font-family: 'Outfit', sans-serif; font-size: 17px; color: #166534;">Caja Abierta
+                  (Turno Activo)</h3>
+                <p id="cashBannerSubtitle" style="margin: 4px 0 0 0; font-size: 13px; color: #15803D;">Apertura: Hoy |
+                  Responsable: Administrador Level Tacambaro</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pesta as Principales del Modulo de Finanzas & Caja -->
+          <div class="exec-card" style="margin-bottom: 20px; padding: 10px 14px;">
+            <div class="cash-tab-segmented">
+              <button class="cash-tab-sub-btn active" onclick="switchCashSubTab('diario', this)">
+                <i data-lucide="wallet"></i>
+                <span>Turno Activo (Caja Abierta)</span>
+                <span class="tab-status-dot"></span>
+              </button>
+              <button class="cash-tab-sub-btn history-tab" onclick="switchCashSubTab('history', this)">
+                <i data-lucide="history"></i>
+                <span>Historial de Cajas Registradas</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB 1: TURNO ACTIVO (CAJA ABIERTA) -->
+          <div id="cashSubTabDiario">
+            <!-- Recuadros de Movimientos del Turno Activo (Sin Fondo Inicial ni Efectivo Esperado) -->
+            <section class="kpi-grid-executive" style="margin-bottom: 20px;">
+              <div class="kpi-card-exec card-green">
+                <div class="kpi-top">
+                  <span class="kpi-title">VENTAS EFECTIVO (TURNO)</span>
+                  <div class="kpi-icon-circle icon-green-bg"><i data-lucide="banknote"></i></div>
+                </div>
+                <h2 id="cashKpiVentasEfectivo">$0.00 <small>MXN</small></h2>
+                <div class="kpi-bottom text-green">
+                  <i data-lucide="check-circle"></i> <span>Reservas, TPV y adeudos en efectivo</span>
+                </div>
+              </div>
+
+              <div class="kpi-card-exec card-purple">
+                <div class="kpi-top">
+                  <span class="kpi-title">COBROS DIGITALES (TURNO)</span>
+                  <div class="kpi-icon-circle icon-purple-bg"><i data-lucide="credit-card"></i></div>
+                </div>
+                <h2 id="cashKpiDigitalTurno">$0.00 <small>MXN</small></h2>
+                <div class="kpi-bottom text-muted">
+                  <i data-lucide="smartphone"></i> <span>Terminales bancarias y SPEI</span>
+                </div>
+              </div>
+
+              <div class="kpi-card-exec card-blue">
+                <div class="kpi-top">
+                  <span class="kpi-title">ENTRADAS / SALIDAS MANUALES</span>
+                  <div class="kpi-icon-circle icon-blue-bg"><i data-lucide="arrow-left-right"></i></div>
+                </div>
+                <h2 id="cashKpiManualsTurno">+$0 / -$0</h2>
+                <div class="kpi-bottom text-muted">
+                  <i data-lucide="list"></i> <span>Gastos menores o fondo de cambio</span>
+                </div>
+              </div>
+
+              <div class="kpi-card-exec card-orange">
+                <div class="kpi-top">
+                  <span class="kpi-title">TOTAL INGRESADO EN TURNO</span>
+                  <div class="kpi-icon-circle icon-orange-bg"><i data-lucide="calculator"></i></div>
+                </div>
+                <h2 id="cashKpiTotalTurno">$0.00 <small>MXN</small></h2>
+                <div class="kpi-bottom text-muted">
+                  <i data-lucide="trending-up"></i> <span>Suma total cobrada en esta caja</span>
+                </div>
+              </div>
+            </section>
+
+            <div class="exec-card">
+              <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <h3 style="font-family: 'Outfit', sans-serif; font-size: 16px; margin: 0; color: #0F172A;">Movimientos
+                    & Transacciones de la Caja Abierta</h3>
+                  <p style="font-size: 12px; color: #64748B; margin: 2px 0 0 0;">Ingresos y movimientos registrados
+                     unicamente durante el turno activo actual.</p>
+                </div>
+                <div class="time-filter-group" style="margin: 0;">
+                  <button class="filter-btn fin-filter-btn active"
+                    onclick="setFinanceFilter('all', this)">Todos</button>
+                  <button class="filter-btn fin-filter-btn" onclick="setFinanceFilter('canchas', this)">Canchas</button>
+                  <button class="filter-btn fin-filter-btn" onclick="setFinanceFilter('tienda', this)">Tienda</button>
+                  <button class="filter-btn fin-filter-btn"
+                    onclick="setFinanceFilter('efectivo', this)">Efectivo</button>
+                  <button class="filter-btn fin-filter-btn" onclick="setFinanceFilter('tarjeta', this)">Digital</button>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="admin-table-exec">
+                  <thead>
+                    <tr>
+                      <th>ID Transaccion</th>
+                      <th>HORA</th>
+                      <th>CLIENTE</th>
+                      <th>CONCEPTO</th>
+                      <th>Categoria</th>
+                      <th>Metodo DE PAGO</th>
+                      <th>MONTO COBRADO</th>
+                      <th>ESTADO CAJA</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminFinancesTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: HISTORIAL DE CAJAS REGISTRADAS -->
+          <div id="cashSubTabHistory" style="display: none;">
+            <div class="exec-card">
+              <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <h3
+                    style="font-family: 'Outfit', sans-serif; font-size: 17px; color: #0F172A; margin: 0; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="history" style="width: 20px; height: 20px; color: #0284C7;"></i> Registro de Cajas &
+                    Cortes Historicos</h3>
+                  <p style="font-size: 12px; color: #64748B; margin: 2px 0 0 0;">Consulta el historial de todas las
+                    cajas abiertas y cerradas con sus desgloses y movimientos.</p>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="admin-table-exec">
+                                    <thead>
+                    <tr>
+                      <th>ID TURNO</th>
+                      <th>APERTURA</th>
+                      <th>CIERRE</th>
+                      <th>RESPONSABLE</th>
+                      <th>FONDO INICIAL</th>
+                      <th>VENTAS EFECTIVO</th>
+                      <th>EFECTIVO ESPERADO</th>
+                      <th>CONTADO REAL</th>
+                      <th>DIFERENCIA</th>
+                      <th>ESTADO</th>
+                      <th>ACCIONES</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cashHistoryTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+    </main>
+
+  </div>
+
+  </div>
+
+  <!-- Modal Dialog: Nueva Reserva de Cancha -->
+  <div id="bookingModalOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="admin-modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i data-lucide="calendar" class="text-green" style="width: 22px; height: 22px;"></i>
+          <h3>Nueva Reserva de Cancha</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeBookingModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+      <form id="bookingModalForm" onsubmit="handleModalSubmit(event)">
+        <div class="form-body">
+          <div class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+              <label>Horario Seleccionado</label>
+              <div class="selected-time-summary">
+                <span id="modalSelectedTimeText" style="font-size: 14px; font-weight: 800; color: #0284C7;">   Hora
+                  elegida: 12:00 hrs</span>
+                <span id="modalRangeText" class="range-badge">Horario: 12:00 a 14:00 (2 horas continuas)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+              <label>Tipo de Registro <span class="req">*</span></label>
+              <select id="modalBookingType" class="admin-input" onchange="handleBookingTypeChange()"
+                style="font-weight: 700; color: #0F172A;">
+                <option value="renta">   Renta Normal de Cancha ($300.00 MXN / hr)</option>
+                <option value="clase">   Clase / Escuela de Padel (Academia & Entrenamiento)</option>
+                <option value="bloqueo">   Mantenimiento / Bloqueo Interno</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="classFieldsContainer" class="form-row"
+            style="display: none; background: #F0FDF4; padding: 12px; border-radius: 12px; border: 1.5px solid #A7F3D0; margin-bottom: 14px;">
+            <div class="form-group">
+              <label><i data-lucide="award" style="width: 14px; height: 14px; color: #059669;"></i> Profesor /
+                Instructor <span class="req">*</span></label>
+              <input type="text" id="modalInstructorName" class="admin-input" placeholder="Ej. Prof. Juan P?rez"
+                value="Prof. Juan P?rez">
+            </div>
+            <div class="form-group">
+              <label><i data-lucide="users" style="width: 14px; height: 14px; color: #0284C7;"></i> Alumno / Grupo
+                (Opcional)</label>
+              <input type="text" id="modalStudentName" class="admin-input"
+                placeholder="Ej. Grupo Principiantes / Carlos" value="Grupo Academia">
+            </div>
+          </div>
+
+          <div id="clientFieldsContainer">
+            <div class="form-row">
+              <div class="form-group" style="grid-column: span 2;">
+                <label>Seleccionar Cliente Registrado <span class="req">*</span></label>
+                <select id="modalClientSelect" class="admin-input" onchange="handleClientDropdownChange()">
+                  <!-- Populated dynamically from usersDAata -->
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nombre del Cliente <span class="req">*</span></label>
+                <input type="text" id="modalClientName" class="admin-input" placeholder="Ej. Carlos Palacios">
+              </div>
+              <div class="form-group">
+                <label>Telefono de Contacto <span class="req">*</span></label>
+                <input type="tel" id="modalClientPhone" class="admin-input" placeholder="Ej. 459 123 4567">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Cancha Seleccionada</label>
+              <select id="modalCourtSelect" class="admin-input" onchange="calculateModalTotal()">
+                <!-- Populated dynamically from courtsDAata -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Duraci n (Horas Completas) <span class="req">*</span></label>
+              <select id="modalDurationSelect" class="admin-input" onchange="calculateModalTotal()">
+                <option value="1">1 Hora Completa</option>
+                <option value="2" selected>2 Horas Completas</option>
+                <option value="3">3 Horas Completas</option>
+                <option value="4">4 Horas Completas</option>
+                <option value="5">5 Horas Completas</option>
+              </select>
+              <small style="color: #64748B; font-size: 10px; display: block; margin-top: 4px;">   Reserva por horas
+                completas (sin fracciones de media hora).</small>
+            </div>
+            <div class="form-group" id="paymentMethodGroup">
+              <label>Metodo de Pago</label>
+              <select id="modalPaymentMethod" class="admin-input">
+                <option value="Efectivo en Mostrador">Efectivo en Mostrador</option>
+                <option value="Tarjeta de Debito/Cr&eacute;dito">Tarjeta de Debito/Cr&eacute;dito</option>
+                <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                <option value="Academia / Convenio Externo">Academia / Convenio Externo</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="total-summary-box">
+            <span>Importe Total a Cobrar:</span>
+            <strong id="modalTotalPrice">$700.00 MXN</strong>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-head-action btn-dark" onclick="handleModalBlockSlot()">
+            <i data-lucide="lock"></i> Bloquear Horario
+          </button>
+          <button type="submit" class="btn-head-action btn-green">
+            <i data-lucide="check-circle"></i> Confirmar Reserva
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Disponibilidad de Canchas por Dia (24 Horas) -->
+  <div id="dayAvailabilityModalOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="admin-modal-card day-modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i data-lucide="calendar" class="text-blue" style="width: 22px; height: 22px;"></i>
+          <h3 id="dayModalTitle">Disponibilidad del Dia</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeDayModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+
+      <div class="form-body" style="padding-bottom: 10px;">
+        <!-- Court Switcher Tabs -->
+        <div id="dayModalCourtsTabs" class="day-modal-courts-tabs">
+          <!-- Populated dynamically from courtsDAata -->
+        </div>
+
+        <p style="font-size: 12px; color: #64748B; margin-bottom: 12px;">
+          Haz clic en cualquier hora <strong>   Disponible</strong> para abrir el formulario de reserva por horas
+          completas.
+        </p>
+
+        <!-- 24 Hours Grid (Clean 6x4 Grid, NO HORIZONTAL SCROLL!) -->
+        <div class="day-24h-grid" id="day24hGridContainer">
+          <!-- Rendered dynamically by admin.js -->
+        </div>
+      </div>
+
+      <div class="modal-footer" style="justify-content: space-between;">
+        <span style="font-size: 11px; color: #64748B; font-weight: 600;">Atendiendo reservas las 24 Horas del Dia en
+          Tacambaro.</span>
+        <button type="button" class="btn-head-action btn-dark" onclick="closeDayModal()"><i data-lucide="x"></i>
+          Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Crear Nuevo Usuario -->
+  <div id="createUserModalOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="admin-modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i data-lucide="user-plus" class="text-blue" style="width: 22px; height: 22px;"></i>
+          <h3>Crear Nuevo Usuario (App / Admin)</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeCreateUserModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+      <form id="createUserModalForm" onsubmit="handleCreateUserSubmit(event)">
+        <div class="form-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre de Usuario (Username) <span class="req">*</span></label>
+              <input type="text" id="newUsername" class="admin-input" placeholder="Ej. pgomez" required>
+            </div>
+            <div class="form-group">
+              <label>Nombre Completo <span class="req">*</span></label>
+              <input type="text" id="newUserName" class="admin-input" placeholder="Ej. Pedro G mez" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Telefono de Contacto <span class="req">*</span></label>
+              <input type="tel" id="newUserPhone" class="admin-input" placeholder="Ej. 459 123 4567" required>
+            </div>
+            <div class="form-group">
+              <label>Tipo de Usuario <span class="req">*</span></label>
+              <select id="newUserRole" class="admin-input" required>
+                <option value="Cliente" selected>Cliente</option>
+                <option value="Administrador">Administrador</option>
+              </select>
+            </div>
+          </div>
+
+          <div
+            style="background: #FFFFFF; border: 1.5px solid #0284C7; padding: 12px 14px; border-radius: 14px; margin-top: 10px; font-size: 11.5px; color: #0369A1; line-height: 1.5;">
+               <strong>Contrasena Temporal Autom tica:</strong> Al guardar se generar  un c digo clave (ej.
+            <code>TAC-8492</code>). Al ingresar por primera vez a la App MAvil con esta clave, el sistema le pedirA al
+            cliente **cambiar la contrase'a obligatoriamente**.
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-head-action btn-dark" onclick="closeCreateUserModal()">Cancelar</button>
+          <button type="submit" class="btn-head-action btn-green">
+            <i data-lucide="check-circle"></i> Guardar y Generar Clave
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Editar Usuario -->
+  <div id="editUserModalOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="admin-modal-card" style="max-width: 540px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i data-lucide="edit" class="text-blue" style="width: 22px; height: 22px;"></i>
+          <h3>Editar DAatos del Usuario</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeEditUserModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+      <form id="editUserModalForm" onsubmit="handleEditUserSubmit(event)">
+        <input type="hidden" id="editUserId">
+        <div class="form-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre de Usuario (Username) <span class="req">*</span></label>
+              <input type="text" id="editUsername" class="admin-input" required>
+            </div>
+            <div class="form-group">
+              <label>Nombre Completo <span class="req">*</span></label>
+              <input type="text" id="editUserName" class="admin-input" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Telefono de Contacto <span class="req">*</span></label>
+              <input type="tel" id="editUserPhone" class="admin-input" required>
+            </div>
+            <div class="form-group">
+              <label>Tipo de Usuario <span class="req">*</span></label>
+              <select id="editUserRole" class="admin-input" required>
+                <option value="Cliente">Cliente</option>
+                <option value="Administrador">Administrador</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-head-action btn-dark" onclick="closeEditUserModal()">Cancelar</button>
+          <button type="submit" class="btn-head-action btn-green">
+            <i data-lucide="check-circle"></i> Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Agregar Nueva Categoria -->
+  <div id="modalAddCategoriay" class="admin-modal-overlay" style="display: none; z-index: 10050;">
+    <div class="admin-modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i data-lucide="tag" class="text-blue" style="width: 22px; height: 22px;"></i>
+          <h3>Agregar Nueva Categoria</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeAddCategoryModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+      <form id="modalAddCategoryForm" onsubmit="handleAddCategorySubmit(event)">
+        <div class="form-body">
+          <div class="form-group">
+            <label>Nombre de la Nueva Categoria <span class="req">*</span></label>
+            <input type="text" id="newCategoriameInput" class="admin-input" required
+              placeholder="Ej. Calzado, Accesorios Pro">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-head-action btn-dark" onclick="closeAddCategoryModal()">Cancelar</button>
+          <button type="submit" class="btn-head-action btn-green">
+            <i data-lucide="check-circle"></i> Guardar Categoria
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Crear / Editar Producto (CRUD Inventario) -->
+  <div id="modalProductOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="admin-modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i data-lucide="package" class="text-green" style="width: 22px; height: 22px;"></i>
+          <h3 id="modalProductTitle">Agregar Nuevo Producto</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeProductModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+      <form id="modalProductForm" onsubmit="handleProductFormSubmit(event)">
+        <input type="hidden" id="prodEditId">
+        <div class="form-body">
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>Nombre del Producto <span class="req">*</span></label>
+            <input type="text" id="prodNameInput" class="admin-input" required
+              placeholder="Ej. Tubo Pelotas Head Tour (x3)">
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Modulo
+              / Departamento <span class="req">*</span></label>
+            <select id="prodDepartmentSelect" class="admin-input" style="width: 100%;" required>
+              <option value="general">Tienda General (Padel, Fstbol, Hidrataci n, Indumentaria)</option>
+              <option value="former">Former</option>
+            </select>
+            <small style="font-size: 10px; color: #64748B; display: block; margin-top: 4px;">
+                 Los productos marcados como Former NO aparecer n en el cat logo General de los clientes.
+            </small>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label
+              style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Categoria
+              del Producto <span class="req">*</span></label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <select id="prodCategorySelect" class="admin-input" style="flex: 1;" required>
+                <option value="Pelotas & Accesorios">Pelotas & Accesorios</option>
+                <option value="Snacks & Bebidas">Snacks & Bebidas</option>
+                <option value="Indumentaria">   Indumentaria</option>
+                <option value="Former">      Former</option>
+                <option value="Suplementos Former">   Suplementos Former</option>
+              </select>
+              <button type="button" class="btn-head-action btn-cyan" onclick="openAddCategoryModal()"
+                style="padding: 9px 12px; font-size: 11px; white-space: nowrap; height: 42px;">
+                + Nueva Categoria
+              </button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Precio de Venta ($ MXN) <span class="req">*</span></label>
+              <input type="number" id="prodPriceInput" class="admin-input" min="1" required placeholder="160">
+            </div>
+            <div class="form-group">
+              <label>Stock / Disponibilidad <span class="req">*</span></label>
+              <input type="number" id="prodStockInput" class="admin-input" min="0" required placeholder="25">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 14px;">
+            <label
+              style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Fotograf a
+              / Imagen del Producto</label>
+
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
+              <input type="file" id="prodFileInput" accept="image/*" style="display: none;"
+                onchange="handleProductFileSelect(event)">
+              <button type="button" class="btn-head-action btn-cyan"
+                style="padding: 8px 14px; font-size: 12px; height: 38px; white-space: nowrap;"
+                onclick="document.getElementById('prodFileInput').click()">
+                <i data-lucide="upload-cloud"></i>    Subir Foto desde mi PC
+              </button>
+              <div id="prodImagePreviewWrapper"
+                style="display: none; align-items: center; gap: 8px; background: #F0FDF4; border: 1px solid #86EFAC; padding: 4px 10px; border-radius: 8px;">
+                <img id="prodImagePreview" src=""
+                  style="width: 32px; height: 32px; border-radius: 6px; object-fit: cover;">
+                <span style="font-size: 11px; color: #166534; font-weight: 700;">  Imagen Cargada</span>
+              </div>
+            </div>
+
+            <label style="display: block; font-size: 11px; font-weight: 600; color: #64748B; margin-bottom: 4px;">O
+              ingresa un enlace / URL:</label>
+            <input type="text" id="prodImageInput" class="admin-input" placeholder="https://... o data:image/..."
+              oninput="updateProductImagePreview()">
+            <div
+              style="margin-top: 8px; font-size: 11px; color: #64748B; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <span style="font-weight: 600;">Presets de fotos:</span>
+              <button type="button" class="btn-head-action btn-dark" style="padding: 3px 8px; font-size: 10px;"
+                onclick="setProductImagePreset('pelotas')">Pelotas</button>
+              <button type="button" class="btn-head-action btn-dark" style="padding: 3px 8px; font-size: 10px;"
+                onclick="setProductImagePreset('overgrip')">Overgrip</button>
+              <button type="button" class="btn-head-action btn-dark" style="padding: 3px 8px; font-size: 10px;"
+                onclick="setProductImagePreset('bebida')">Bebida</button>
+              <button type="button" class="btn-head-action btn-dark" style="padding: 3px 8px; font-size: 10px;"
+                onclick="setProductImagePreset('agua')">Agua</button>
+              <button type="button" class="btn-head-action btn-dark" style="padding: 3px 8px; font-size: 10px;"
+                onclick="setProductImagePreset('gorra')">Gorra</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-head-action btn-dark" onclick="closeProductModal()">Cancelar</button>
+          <button type="submit" class="btn-head-action btn-green">
+            <i data-lucide="check-circle"></i> Guardar Producto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Venta R pida de Producto (TPV Efectivo) -->
+  <div id="modalQuickSaleOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="admin-modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i data-lucide="shopping-cart" class="text-green" style="width: 22px; height: 22px;"></i>
+          <h3>Venta R pida en Efectivo</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeQuickSaleModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+      <form id="modalQuickSaleForm" onsubmit="handleQuickSaleSubmit(event)">
+        <input type="hidden" id="quickSaleProdId">
+        <div class="form-body">
+          <div
+            style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 14px; border-radius: 12px; margin-bottom: 16px;">
+            <h4 id="quickSaleProdName" style="margin: 0 0 6px 0; color: #0F172A; font-family: 'Outfit', sans-serif;">
+              Producto</h4>
+            <div style="display: flex; justify-content: space-between; font-size: 13px; color: #64748B;">
+              <span>Precio Unitario: <strong id="quickSaleProdPrice" style="color: #16A34A;">$0.00 MXN</strong></span>
+              <span>Stock Disponible: <strong id="quickSaleProdStock">0</strong></span>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>CantidadIa Vender <span class="req">*</span></label>
+            <input type="number" id="quickSaleQtyInput" class="admin-input" min="1" value="1" required
+              onchange="updateQuickSaleTotal()" onkeyup="updateQuickSaleTotal()">
+          </div>
+
+          <div
+            style="background: #F0FDF4; border: 1px solid #86EFAC; padding: 12px; border-radius: 10px; text-align: center; margin-bottom: 16px;">
+            <span style="font-size: 12px; color: #166534; font-weight: 700; display: block; margin-bottom: 4px;">TOTAL A
+              COBRAR EN EFECTIVO</span>
+            <span id="quickSaleTotalDisplay"
+              style="font-size: 24px; font-weight: 900; color: #15803D; font-family: 'Outfit', sans-serif;">$0.00
+              MXN</span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-head-action btn-dark" onclick="closeQuickSaleModal()">Cancelar</button>
+          <button type="submit" class="btn-head-action btn-green" style="background: #16A34A; color: #FFF;">
+               Cobrar Venta en Efectivo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Cobro de Adeudo Pendiente (No-Show) -->
+  <div id="posSaleModalOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="admin-modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i data-lucide="alert-circle" style="width: 22px; height: 22px; color: #DC2626;"></i>
+          <h3>Cobro de Adeudo Pendiente (No-Show)</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closePosSaleModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+      <form id="posSaleModalForm" onsubmit="handlePosSaleSubmit(event)">
+        <div class="form-body">
+          <p style="font-size: 12px; color: #64748B; margin-top: 0; margin-bottom: 14px;">
+            Al registrar el pago de un adeudo por inasistencia, el cliente quedar&aacute; <strong>desbloqueado
+              automaticamente</strong> en la App MAvil para volver a reservar.
+          </p>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>Seleccionar Cliente con Adeudo Pendiente</label>
+            <select id="posDebtorSelect" class="admin-input" onchange="handleDebtorSelectChange(this)">
+              <option value="">-- Seleccionar cliente deudor --</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>Concepto / Descripcion del Cobro <span class="req">*</span></label>
+            <input type="text" id="posConceptInput" class="admin-input" required
+              placeholder="Ej. Recuperacion de Adeudo: Roberto Mendoza (No-Show)">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Monto Atrasado a Cobrar ($ MXN) <span class="req">*</span></label>
+              <input type="number" id="posAmountInput" class="admin-input" min="1" required placeholder="300">
+            </div>
+            <div class="form-group">
+              <label>Metodo de Pago <span class="req">*</span></label>
+              <select id="posPaymentMethodSelect" class="admin-input" required>
+                <option value="Efectivo en Mostrador" selected>Efectivo en Mostrador</option>
+                <option value="Tarjeta de Debito/Cr&eacute;dito">Tarjeta (Terminal TPV)</option>
+                <option value="Transferencia SPEI">Transferencia SPEI</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>Nombre del Cliente / Comprador <span class="req">*</span></label>
+            <input type="text" id="posClientInput" class="admin-input" required placeholder="Roberto Mendoza">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-head-action btn-dark" onclick="closePosSaleModal()">Cancelar</button>
+          <button type="submit" class="btn-head-action btn-green"
+            style="background: #DC2626; color: #FFF; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+            <i data-lucide="shield-check"></i> Cobrar Adeudo & Desbloquear Cliente
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Confirmaci&oacute;n de Acci&oacute;n (Custom Modal Elegante) -->
+  <div id="modalConfirmOverlay" class="admin-modal-overlay" style="display: none; z-index: 10080;">
+    <div class="admin-modal-card" style="max-width: 420px; text-align: center; border-top: 4px solid #DC2626;">
+      <div style="padding: 24px 20px;">
+        <div
+          style="width: 60px; height: 60px; background: #FEF2F2; color: #DC2626; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 28px; border: 1px solid #FCA5A5;">
+             
+        </div>
+        <h3 id="confirmModalTitle"
+          style="font-family: 'Outfit', sans-serif; font-size: 18px; color: #0F172A; margin: 0 0 8px 0;"> Confirmar
+          Eliminaci"n?</h3>
+        <p id="confirmModalMessage" style="font-size: 13px; color: #64748B; margin: 0 0 24px 0;">Esta acci"n no se puede
+          deshacer.</p>
+
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button type="button" class="btn-head-action btn-dark" onclick="closeConfirmModal()"
+            style="flex: 1; padding: 10px; justify-content: center;">
+            Cancelar
+          </button>
+          <button type="button" id="confirmModalActionButton" class="btn-head-action"
+            style="flex: 1; padding: 10px; background: #DC2626; color: #FFF; justify-content: center;">
+            S , Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Cobro TPV y Calculadora de Cambio -->
+  <div id="modalTpvCashOverlay" class="admin-modal-overlay" style="display: none; z-index: 10060;">
+    <div class="admin-modal-card" style="max-width: 460px; border-top: 4px solid #16A34A;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i data-lucide="dollar-sign" style="width: 24px; height: 24px; color: #16A34A;"></i>
+          <h3>Cobrar Venta en Mostrador</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeTpvCashModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+      <form id="modalTpvCashForm" onsubmit="handleTpvCashSubmit(event)">
+        <div class="form-body">
+
+          <!-- Total to Pay Box -->
+          <div
+            style="background: #F0FDF4; border: 1px solid #86EFAC; padding: 14px; border-radius: 12px; text-align: center; margin-bottom: 16px;">
+            <span style="font-size: 12px; color: #166534; font-weight: 700; display: block; margin-bottom: 2px;">TOTAL A
+              COBRAR</span>
+            <span id="tpvCashTotalDisplay"
+              style="font-size: 28px; font-weight: 900; color: #15803D; font-family: 'Outfit', sans-serif;">$0.00
+              MXN</span>
+          </div>
+
+          <!-- PaiDamount Input -->
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label style="font-size: 13px; font-weight: 700; color: #0F172A;"> Con cu nto paga el cliente? ($ MXN) <span
+                class="req">*</span></label>
+            <input type="number" id="tpvCashPaidInput" class="admin-input" min="0" step="1" required
+              placeholder="Ej. 200, 500" oninput="calculateTpvChange()"
+              style="font-size: 20px; font-weight: 800; padding: 10px; color: #0F172A;">
+          </div>
+
+          <!-- Fast Preset Cash Buttons -->
+          <div style="display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+            <button type="button" onclick="setTpvPaidPreset('exact')" class="btn-head-action btn-dark"
+              style="padding: 6px 10px; font-size: 11px;">Monto Exacto</button>
+            <button type="button" onclick="setTpvPaidPreset(50)" class="btn-head-action btn-dark"
+              style="padding: 6px 10px; font-size: 11px;">$50</button>
+            <button type="button" onclick="setTpvPaidPreset(100)" class="btn-head-action btn-dark"
+              style="padding: 6px 10px; font-size: 11px;">$100</button>
+            <button type="button" onclick="setTpvPaidPreset(200)" class="btn-head-action btn-dark"
+              style="padding: 6px 10px; font-size: 11px;">$200</button>
+            <button type="button" onclick="setTpvPaidPreset(500)" class="btn-head-action btn-dark"
+              style="padding: 6px 10px; font-size: 11px;">$500</button>
+          </div>
+
+          <!-- Change Box -->
+          <div
+            style="background: #F8FAFC; border: 1px solid #CBD5E1; padding: 14px; border-radius: 12px; text-align: center; margin-bottom: 10px;">
+            <span style="font-size: 12px; color: #64748B; font-weight: 700; display: block; margin-bottom: 2px;">CAMBIO
+              A ENTREGAR AL CLIENTE</span>
+            <span id="tpvCashChangeDisplay"
+              style="font-size: 24px; font-weight: 900; color: #0284C7; font-family: 'Outfit', sans-serif;">$0.00
+              MXN</span>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-head-action btn-dark" onclick="closeTpvCashModal()">Cancelar</button>
+          <button type="submit" id="btnConfirmTpvCash" class="btn-head-action btn-green"
+            style="background: #16A34A; color: #FFF; font-weight: 800;">
+               Finalizar y Registrar Cobro
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container (No Browser Alerts!) -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  
+  <script>
+    lucide.createIcons();
+  </script>
+  <!-- Modal Dialog: Crear / Editar Torneo -->
+  <div id="modalTournamentOverlay" class="admin-modal-overlay" style="display: none; z-index: 10050;">
+    <div class="admin-modal-card" style="max-width: 500px; border-top: 4px solid #0284C7;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i data-lucide="trophy" style="width: 22px; height: 22px; color: #0284C7;"></i>
+          <h3 id="modalTournamentTitle">Crear Nuevo Torneo</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeTournamentModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+      <form id="modalTournamentForm" onsubmit="handleTournamentFormSubmit(event)">
+        <input type="hidden" id="tournEditId">
+        <div class="form-body">
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>Nombre del Torneo / Campeonato <span class="req">*</span></label>
+            <input type="text" id="tournTitleInput" class="admin-input" required
+              placeholder="Ej. 1er Torneo Abierto Tacambaro 2026">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Categoria <span class="req">*</span></label>
+              <input type="text" id="tournCategoryInput" class="admin-input" required
+                placeholder="Ej. 2  Categoria Libre">
+            </div>
+            <div class="form-group">
+              <label>Bolsa de Premios <span class="req">*</span></label>
+              <input type="text" id="tournPrizeInput" class="admin-input" required placeholder="Ej. $15,000 MXN">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fechas de Juego <span class="req">*</span></label>
+              <input type="text" id="tournDatesInput" class="admin-input" required
+                placeholder="Ej. 15 - 18 Octubre, 2026">
+            </div>
+            <div class="form-group">
+              <label>L mite de Parejas <span class="req">*</span></label>
+              <input type="number" id="tournMaxTeamsInput" class="admin-input" min="2" max="64" required
+                placeholder="16">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>Disciplina / Deporte <span class="req">*</span></label>
+            <select id="tournSportSelect" class="admin-input" required>
+              <option value="Padel">   Padel</option>
+              <option value="futbol">  Fstbol</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label>Estado del Torneo <span class="req">*</span></label>
+            <select id="tournStatusSelect" class="admin-input" required>
+              <option value="Inscripciones Abiertas">Inscripciones Abiertas</option>
+              <option value="Pr ximamente">Pr ximamente</option>
+              <option value="Finalizado">Finalizado</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Foto /
+              Cartel del Torneo (para la App MAvil):</label>
+
+            <input type="file" id="tournImageFileInput" accept="image/*" style="display: none;"
+              onchange="handleTournImageUpload(event)">
+            <button type="button" onclick="document.getElementById('tournImageFileInput').click()"
+              style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 2px dashed #0284C7; background: #F0F9FF; color: #0284C7; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px;">
+              <i data-lucide="upload-cloud" style="width: 18px; height: 18px;"></i>
+              Subir Imagen del Torneo desde mi Computadora
+            </button>
+
+            <input type="hidden" id="tournImageUrlInput">
+
+            <div id="tournPreviewContainer" style="margin-bottom: 10px; text-align: center; display: none;">
+              <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px;">Vista previa del
+                cartel / foto del torneo:</div>
+              <img id="tournImagePreview" src="" alt="Vista Previa"
+                style="max-height: 140px; width: 100%; object-fit: cover; border-radius: 12px; border: 1px solid #CBD5E1; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-head-action btn-dark" onclick="closeTournamentModal()">Cancelar</button>
+          <button type="submit" class="btn-head-action btn-green">
+            <i data-lucide="check-circle"></i> Guardar Torneo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Ver Equipos / Parejas Inscritas -->
+  <div id="modalTournamentTeamsOverlay" class="admin-modal-overlay" style="display: none; z-index: 10050;">
+    <div class="admin-modal-card" style="max-width: 520px; border-top: 4px solid #16A34A;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i data-lucide="users" style="width: 22px; height: 22px; color: #16A34A;"></i>
+          <h3 id="modalTeamsTitle">Equipos / Parejas Inscritas</h3>
+        </div>
+        <button class="btn-close-modal" onclick="closeTournamentTeamsModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+      <div class="form-body" style="padding: 16px 20px;">
+        <div id="teamsListContainer" style="max-height: 360px; overflow-y: auto;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-head-action btn-dark" onclick="closeTournamentTeamsModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Administrar / Editar Cancha -->
+  <div id="modalCourtManage" class="admin-modal-overlay" style="display: none; z-index: 10050;">
+    <div class="admin-modal-card"
+      style="max-width: 480px; width: 90%; border-top: 4px solid #0284C7; border-radius: 20px;">
+      <div class="modal-header"
+        style="padding: 18px 20px; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between;">
+        <div class="modal-title-group" style="display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="layout-grid" style="width: 20px; height: 20px; color: #0284C7;"></i>
+          <h3 id="modalCourtTitle"
+            style="font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 800; color: #0F172A; margin: 0;">
+            Editar Cancha</h3>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeCourtModal()"
+          style="background: #F1F5F9; border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; color: #475569;"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+
+      <form id="formCourtManage" onsubmit="saveCourtForm(event)">
+        <div style="padding: 20px;">
+          <input type="hidden" id="courtEditId">
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Nombre
+              de la Cancha:</label>
+            <input type="text" id="courtEditName" required class="admin-input"
+              placeholder="Ej. Cancha 3: Padel Panoramica VIP"
+              style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px; box-sizing: border-box;">
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label
+              style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Disciplina
+              / Deporte:</label>
+            <select id="courtEditSport" class="admin-input"
+              style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px; box-sizing: border-box;">
+              <option value="Padel">   Padel</option>
+              <option value="futbol">  Fstbol</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Precio
+              por Hora (MXN):</label>
+            <div style="position: relative;">
+              <span
+                style="position: absolute; left: 12px; top: 10px; font-weight: 800; color: #10B981; font-size: 14px;">$</span>
+              <input type="number" id="courtEditPrice" required min="50" step="10" class="admin-input" placeholder="300"
+                style="width: 100%; padding: 10px 12px 10px 28px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px; box-sizing: border-box;">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 14px;">
+            <label
+              style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Ubicaci"n:</label>
+            <input type="text" id="courtEditLocation" required class="admin-input" value="Tacambaro, Michoacan"
+              style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 13px; box-sizing: border-box;">
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Imagen
+              de la Cancha:</label>
+
+            <!-- Upload from Computer -->
+            <input type="file" id="courtImageFileInput" accept="image/*" style="display: none;"
+              onchange="handleCourtImageUpload(event)">
+            <button type="button" onclick="document.getElementById('courtImageFileInput').click()"
+              style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 2px dashed #0284C7; background: #F0F9FF; color: #0284C7; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; transition: all 0.2s;">
+              <i data-lucide="upload-cloud" style="width: 18px; height: 18px;"></i>
+              Subir Imagen desde mi Computadora
+            </button>
+
+            <!-- Image Preview Box -->
+            <div id="courtPreviewContainer" style="margin-bottom: 10px; text-align: center; display: none;">
+              <div style="font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px;">Vista previa de la
+                imagen:</div>
+              <img id="courtImagePreview" src="" alt="Vista Previa"
+                style="max-height: 140px; width: 100%; object-fit: cover; border-radius: 10px; border: 1px solid #CBD5E1; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+            </div>
+
+            <!-- Alternative URL or Plantilla -->
+            <details style="margin-bottom: 8px;">
+              <summary style="font-size: 11px; font-weight: 700; color: #64748B; cursor: pointer; user-select: none;">O
+                usar enlace URL o plantillas predefinidas  </summary>
+              <div style="padding-top: 8px;">
+                <input type="text" id="courtEditImage" class="admin-input"
+                  placeholder="assets/images/cancha_padel_1.jpg"
+                  style="width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #CBD5E1; font-size: 12px; margin-bottom: 8px; box-sizing: border-box;"
+                  onchange="updateCourtImagePreviewFromInput()">
+                <div style="display: flex; gap: 8px;">
+                  <button type="button" onclick="setCourtPresetImage('assets/images/cancha_padel_1.jpg')"
+                    style="flex: 1; padding: 7px; border-radius: 6px; border: 1px solid #CBD5E1; background: #F8FAFC; font-size: 11px; font-weight: 700; cursor: pointer; color: #0284C7;">Pista
+                    Azul</button>
+                  <button type="button" onclick="setCourtPresetImage('assets/images/cancha_padel_2.jpg')"
+                    style="flex: 1; padding: 7px; border-radius: 6px; border: 1px solid #CBD5E1; background: #F8FAFC; font-size: 11px; font-weight: 700; cursor: pointer; color: #16A34A;">Pista
+                    Verde</button>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: #F8FAFC; border-top: 1px solid #E2E8F0; border-radius: 0 0 16px 16px;">
+          <button type="button" id="btnDeleteCourtModal" onclick="deleteCourtCurrent()"
+            class="btn-head-action btn-danger" style="font-size: 12px;">
+            <i data-lucide="trash-2"></i> Eliminar Cancha
+          </button>
+
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn-head-action btn-dark" onclick="closeCourtModal()">Cancelar</button>
+            <button type="submit" class="btn-head-action btn-green"><i data-lucide="save"></i> Guardar Cancha</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: APERTURA DE CAJA -->
+  <div id="modalOpenCashOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="logout-confirm-card" style="max-width: 440px; text-align: left;">
+      <div
+        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #E2E8F0; padding-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div
+            style="width: 42px; height: 42px; border-radius: 14px; background: #ECFDF5; color: #10B981; display: flex; align-items: center; justify-content: center; border: 1px solid #A7F3D0;">
+            <i data-lucide="unlock" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div>
+            <h3
+              style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: #0F172A; margin: 0;">
+              Apertura de Caja</h3>
+            <p style="font-size: 12px; color: #64748B; margin: 2px 0 0 0;">Iniciar turno activo y registrar fondo
+              inicial</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeOpenCashModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+
+      <form onsubmit="handleOpenCashSubmit(event); return false;">
+        <div style="margin-bottom: 16px;">
+          <label
+            style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Responsable
+            del Turno</label>
+          <input type="text" class="admin-input" value="Administrador Level Tacambaro" Areadonly
+            style="background: #F1F5F9; border: 1px solid #CBD5E1; color: #475569; font-weight: 700;">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Fondo
+            Inicial de Caja ($ MXN)</label>
+          <input type="number" step="0.5" id="openCashInitialAmount" class="admin-input" required value="0"
+            placeholder="1000"
+            style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #0F172A; font-weight: 800; font-size: 16px;">
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Notas /
+            Observaciones de Apertura</label>
+          <textarea id="openCashNotes" class="admin-input" rows="2"
+            placeholder="Ej. Cambio de billetes listo en caja chica."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button type="button" class="btn-logout-cancel" onclick="closeOpenCashModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-submit-login">
+            <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> Iniciar Turno
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTRAR ENTRADA / SALIDA DE EFECTIVO -->
+  <div id="modalCashMovementOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="logout-confirm-card" style="max-width: 440px; text-align: left;">
+      <div
+        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #E2E8F0; padding-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div
+            style="width: 42px; height: 42px; border-radius: 14px; background: #F0F9FF; color: #0284C7; display: flex; align-items: center; justify-content: center; border: 1px solid #BAE6FD;">
+            <i data-lucide="arrow-left-right" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div>
+            <h3
+              style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: #0F172A; margin: 0;">
+              Movimiento de Efectivo</h3>
+            <p style="font-size: 12px; color: #64748B; margin: 2px 0 0 0;">Ingreso de cambio extra o retiro por gastos
+              menores</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeCashMovementModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+
+      <form onsubmit="handleCashMovementSubmit(event); return false;">
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Tipo de
+            Movimiento</label>
+          <select id="movType" class="admin-input" style="width: 100%; font-weight: 700;">
+            <option value="salida">   Salida / Gasto de Caja</option>
+            <option value="entrada">   Entrada / Dep sito de Efectivo</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Monto ($
+            MXN)</label>
+          <input type="number" step="0.5" id="movAmount" class="admin-input" required placeholder="Ej. 150"
+            style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #0F172A; font-weight: 800; font-size: 16px;">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Concepto
+            / Motivo</label>
+          <input type="text" id="movConcept" class="admin-input" required
+            placeholder="Ej. Compra de bolsas de hielo / Pago proveedor"
+            style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #0F172A;">
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <label
+            style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Categoriabel>
+          <select id="movCategory" class="admin-input" style="width: 100%;">
+            <option value="Insumos">Insumos & Limpieza</option>
+            <option value="Proveedores">Pago a Proveedores</option>
+            <option value="Cambio Extra">Cambio / Monedas Extra</option>
+            <option value="Gastos Varios">Gastos Varios</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button type="button" class="btn-logout-cancel" onclick="closeCashMovementModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-submit-login">
+            <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> Guardar Movimiento
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REALIZAR CORTE / CIERRE DE CAJA -->
+  <div id="modalCashCutOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="logout-confirm-card" style="max-width: 480px; text-align: left;">
+      <div
+        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #E2E8F0; padding-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div
+            style="width: 42px; height: 42px; border-radius: 14px; background: #FEF2F2; color: #DC2626; display: flex; align-items: center; justify-content: center; border: 1px solid #FCA5A5;">
+            <i data-lucide="lock" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div>
+            <h3
+              style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: #0F172A; margin: 0;">
+              Cierre de Caja & Corte de Turno</h3>
+            <p style="font-size: 12px; color: #64748B; margin: 2px 0 0 0;">Conteo fÃ­sico de efectivo y liquidaciÃ³n del
+              turno activo</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeCashCutModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+
+      <form onsubmit="handleCashCutSubmit(event); return false;">
+        <!-- Resumen R pido de Turno -->
+        <div
+          style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px;">
+          <div
+            style="display: flex; justify-content: space-between; font-size: 12px; color: #64748B; margin-bottom: 6px;">
+            <span>Fondo Inicial:</span>
+            <strong id="cutSummaryInitial" style="color: #334155;">$0.00 MXN</strong>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; font-size: 12px; color: #64748B; margin-bottom: 6px;">
+            <span>Ventas Efectivo en Turno:</span>
+            <strong id="cutSummaryVentas" style="color: #059669;">+$0.00 MXN</strong>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; font-size: 12px; color: #64748B; margin-bottom: 6px;">
+            <span>Entradas Manuales:</span>
+            <strong id="cutSummaryEntradas" style="color: #0284C7;">+$0.00 MXN</strong>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; font-size: 12px; color: #64748B; margin-bottom: 8px;">
+            <span>Salidas Manuales:</span>
+            <strong id="cutSummarySalidas" style="color: #DC2626;">-$0.00 MXN</strong>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; border-top: 1px solid #E2E8F0; padding-top: 8px; color: #166534;">
+            <span>Efectivo Esperado en Caja:</span>
+            <span id="cutSummaryExpected">$0.00 MXN</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Efectivo
+            F sico Contado en Caja ($ MXN)</label>
+          <input type="number" step="0.5" id="cutPhysicalCash" class="admin-input" required
+            oninput="calculateCutDifferenceLive()" placeholder="Ingresa la suma f sica de billetes y monedas"
+            style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #0F172A; font-weight: 800; font-size: 16px;">
+        </div>
+
+        <!-- Caja Viva de Cuadre / Diferencia -->
+        <div id="cutDifferenceBox" style="display: none; padding: 12px 16px; border-radius: 12px; margin-bottom: 16px;">
+          <span id="cutDifferenceAmount" style="font-weight: 800; font-size: 14px; display: block;"></span>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Notas u
+            Observaciones del Cierre</label>
+          <textarea id="cutNotes" class="admin-input" rows="2"
+            placeholder="Ej. Conteo exacto, entregado a gerencia en sobre sellado."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button type="button" class="btn-logout-cancel" onclick="closeCashCutModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-submit-login">
+            <i data-lucide="lock" style="width: 16px; height: 16px;"></i> Procesar Cierre de Caja
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CAMBIAR CONTRASE A DE ADMINISTRADOR -->
+  <div id="modalChangeAdminPasswordOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="logout-confirm-card" style="max-width: 440px; text-align: left;">
+      <div
+        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #E2E8F0; padding-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div
+            style="width: 42px; height: 42px; border-radius: 14px; background: #ECFDF5; color: #10B981; display: flex; align-items: center; justify-content: center; border: 1px solid #A7F3D0;">
+            <i data-lucide="key-round" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div>
+            <h3
+              style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: #0F172A; margin: 0;">
+              Cambiar Contrasena</h3>
+            <p style="font-size: 12px; color: #64748B; margin: 2px 0 0 0;">Actualizar la clave de acceso del
+              Administrador</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeChangePasswordModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+
+      <form id="changePasswordForm" onsubmit="handleSaveNewPassword(event)">
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Nueva
+            Contrasena</label>
+          <input type="password" id="changePassNew" class="admin-input" required placeholder="M nimo 4 caracteres"
+            style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #0F172A;">
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <label
+            style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px;">Confirmar
+            Nueva Contrasena</label>
+          <input type="password" id="changePassConfirm" class="admin-input" required
+            placeholder="Repite la nueva contrase'a"
+            style="background: #F8FAFC; border: 1px solid #CBD5E1; color: #0F172A;">
+        </div>
+
+        <div id="changePassAlertBox" style="display: none; background: #FEF2F2; border: 1px solid #FCA5A5; color: #DC2626; padding: 10px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; margin-bottom: 16px; text-align: center; align-items: center; justify-content: center; gap: 6px;">
+          <i data-lucide="alert-circle" style="width: 16px; height: 16px; flex-shrink: 0;"></i> <span id="changePassAlertText">Las contrase&ntilde;as no coinciden.</span>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" class="btn-logout-cancel" onclick="closeChangePasswordModal()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-submit-login" style="margin-top: 0;">
+            <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL CERRAR Sesin DE ADMINISTRADOR -->
+  <div id="adminLogoutConfirmModalOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="logout-confirm-card">
+      <div class="logout-modal-icon-container">
+        <i data-lucide="log-out" class="logout-modal-icon"></i>
+      </div>
+      <h3 class="logout-modal-title"> Cerrar Sesi&oacute;n?</h3>
+      <p class="logout-modal-text">
+         Deseas salir del panel de Administracion del club como <strong class="logout-user-highlight">Administrador
+          Level Tacambaro</strong>?
+      </p>
+
+      <div class="logout-modal-actions">
+        <button type="button" class="btn-logout-cancel" onclick="closeAdminLogoutModal()">
+          Cancelar
+        </button>
+        <button type="button" class="btn-logout-confirm" onclick="confirmAdminLogout()">
+          <i data-lucide="log-out" style="width: 16px; height: 16px;"></i> S , Cerrar Sesi&oacute;n
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALLES DE TURNO DE CAJA Historico -->
+  <div id="modalShiftDetailsOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="admin-modal-card" style="max-width: 850px; width: 95%;">
+      <div class="modal-header" style="border-bottom: 1px solid #E2E8F0; padding-bottom: 14px;">
+        <div class="modal-title-group" style="display: flex; align-items: center; gap: 10px;">
+          <i data-lucide="receipt" class="text-green" style="width: 24px; height: 24px; color: #10B981;"></i>
+          <div>
+            <h3 id="shiftDetailModalTitle"
+              style="margin: 0; font-family: 'Outfit', sans-serif; font-size: 18px; color: #0F172A;">Detalles del Turno
+              de Caja</h3>
+            <p id="shiftDetailModalSubtitle" style="margin: 2px 0 0 0; font-size: 12px; color: #64748B;">Desglose
+              completo de Transacciones y movimientos registrados en esta caja.</p>
+          </div>
+        </div>
+        <button class="btn-close-modal" onclick="closeShiftDetailsModal()"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+
+      <div style="padding: 20px 0;">
+        <!-- Header Info Bar -->
+        <div
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; background: #F8FAFC; padding: 14px; border-radius: 12px; border: 1px solid #E2E8F0; margin-bottom: 20px;">
+          <div>
+            <span style="font-size: 11px; font-weight: 700; color: #64748B; display: block;">APERTURA</span>
+            <strong id="sdOpenTime" style="font-size: 13px; color: #0F172A;">-</strong>
+          </div>
+          <div>
+            <span style="font-size: 11px; font-weight: 700; color: #64748B; display: block;">CIERRE</span>
+            <strong id="sdCloseTime" style="font-size: 13px; color: #0F172A;">-</strong>
+          </div>
+          <div>
+            <span style="font-size: 11px; font-weight: 700; color: #64748B; display: block;">RESPONSABLE</span>
+            <strong id="sdResponsible" style="font-size: 13px; color: #0F172A;">-</strong>
+          </div>
+          <div>
+            <span style="font-size: 11px; font-weight: 700; color: #64748B; display: block;">EFECTIVO ESPERADO</span>
+            <strong id="sdExpected" style="font-size: 14px; color: #059669;">-</strong>
+          </div>
+          <div>
+            <span style="font-size: 11px; font-weight: 700; color: #64748B; display: block;">DIFERENCIA (CORTE)</span>
+            <strong id="sdDiff" style="font-size: 14px;">-</strong>
+          </div>
+        </div>
+
+        <!-- Section Title -->
+        <h4
+          style="font-family: 'Outfit', sans-serif; font-size: 15px; color: #0F172A; margin: 0 0 10px 0; font-weight: 700;">
+             Movimientos & Transacciones del Turno</h4>
+        <div class="table-responsive"
+          style="max-height: 350px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 12px;">
+          <table class="admin-table-exec">
+            <thead>
+              <tr>
+                <th>HORA</th>
+                <th>CLIENTE / CONCEPTO</th>
+                <th>Categoria</th>
+                <th>M TODO PAGO</th>
+                <th>MONTO</th>
+              </tr>
+            </thead>
+            <tbody id="shiftDetailsTableBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Notes / Observations -->
+        <div id="sdNotesBox"
+          style="margin-top: 14px; padding: 10px 14px; background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 10px; font-size: 12px; color: #92400E; display: none;">
+          <strong>Notas del Cierre:</strong> <span id="sdNotesText"></span>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; padding-top: 14px; border-top: 1px solid #E2E8F0;">
+        <button type="button" class="btn-head-action btn-dark" onclick="closeShiftDetailsModal()"
+          style="padding: 8px 18px;">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANTALLA / OVERLAY: LOGIN DE ADMINISTRADOR -->
+  <div id="adminLoginOverlay" class="admin-login-screen" style="display: flex;">
+    <div class="admin-login-card">
+      <div class="login-brand-header">
+        <div class="login-club-logo-container">
+          <img src="assets/images/logo.jpeg" class="login-club-logo" alt="Level Tacambaro Logo"
+            onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' fill=\'%23f1f5f9\'><rect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/><text x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2364748b\' font-size=\'12\'>Imagen</text></svg>';">
+        </div>
+        <h2 class="login-title">Level Tacambaro</h2>
+        <span class="login-subtitle-badge">
+          <i data-lucide="shield-check" style="width: 13px; height: 13px; color: #059669;"></i>
+          Panel Administrador Ejecutivo
+        </span>
+      </div>
+
+      <form id="adminLoginForm" onsubmit="handleAdminLoginSubmit(event); return false;">
+        <!-- Banner Alerta de Error de Contrasena/Usuario -->
+        <div id="loginErrorMessage" style="display: none; background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%); border: 1.5px solid #FCA5A5; color: #991B1B; padding: 12px 16px; border-radius: 14px; font-size: 13px; font-weight: 700; margin-bottom: 20px; align-items: center; gap: 10px; box-shadow: 0 4px 14px rgba(239, 68, 68, 0.15);">
+  <i data-lucide="shield-alert" style="width: 20px; height: 20px; color: #DC2626; flex-shrink: 0;"></i>
+  <span id="loginErrorText" style="flex: 1; line-height: 1.35;"></span>
+</div>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="login-label">
+            <i data-lucide="user" style="width: 13px; height: 13px; color: #059669;"></i> Usuario Administrador
+          </label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <i data-lucide="user" style="position: absolute; left: 12px; color: #059669; width: 16px; height: 16px; pointer-events: none; z-index: 10;"></i>
+            <input type="text" id="loginUsername" class="login-input" required  placeholder="Usuario administrador">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label class="login-label">
+            <i data-lucide="lock" style="width: 13px; height: 13px; color: #0284C7;"></i> Contrasena de Acceso
+          </label>
+          <div style="position: relative; display: flex; align-items: center;">
+            <i data-lucide="lock" style="position: absolute; left: 12px; color: #0284C7; width: 16px; height: 16px; pointer-events: none; z-index: 10;"></i>
+            <input type="password" id="loginPassword" class="login-input" required  placeholder="        ">
+            <button type="button" onclick="const p = document.getElementById('loginPassword'); if (p) p.type = p.type === 'password' ? 'text' : 'password';" style="position: absolute; right: 10px; background: transparent; border: none; color: #64748B; cursor: pointer; padding: 4px; display: flex; align-items: center;" title="Mostrar / Ocultar">
+              <i data-lucide="eye" style="width: 15px; height: 15px;"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="loginAlertBox" style="display: none; background: #FEF2F2; border: 1px solid #FCA5A5; color: #DC2626; padding: 10px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; margin-bottom: 16px; text-align: center; align-items: center; justify-content: center; gap: 6px;">
+          <i data-lucide="alert-circle" style="width: 16px; height: 16px; flex-shrink: 0;"></i> <span id="loginAlertText">Usuario o contraseña incorrectos. Por favor verifica tus datos.</span>
+        </div>
+        <button type="button" onclick="handleAdminLoginSubmit(event);" class="btn-submit-login">
+          <span>Ingresar al Panel Ejecutivo</span>
+          <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+        </button>
+
+        <div class="login-footer-info">
+          <i data-lucide="shield-check" style="width: 13px; height: 13px; color: #059669;"></i>
+          <span>Acceso seguro SSL 256-bit   Personal Autorizado</span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Receipt Viewer Modal Overlay -->
+  <div id="receiptViewerModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; align-items: center; justify-content: center; z-index: 100000; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px);">
+    <div class="modal-card" style="max-width: 520px; width: 90%; background: #FFF; border-radius: 20px; padding: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.4); position: relative; z-index: 100001;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 900; color: #0F172A; margin: 0;">   Comprobante de Pago por Verificar</h3>
+        <button class="btn-close-modal" onclick="closeReceiptViewerModal()" style="background: #F1F5F9; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: 800;"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+
+      <div id="receiptModalBookingInfo" style="background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 12px; font-size: 12px; text-align: left; margin-bottom: 14px;">
+      </div>
+
+      <div style="max-height: 360px; overflow-y: auto; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 14px; padding: 12px; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; min-height: 200px;">
+        <img id="receiptModalImage" src="" style="max-width: 100%; max-height: 330px; border-radius: 10px; object-fit: contain; box-shadow: 0 8px 20px rgba(0,0,0,0.4);" onerror="this.alt='Imagen no disponible';">
+      </div>
+
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button type="button" class="btn-head-action" style="flex: 1; background: #0284C7; color: #FFF; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(2,132,199,0.3);" onclick="printBookingTicket()">
+          <i data-lucide="printer" style="width: 16px; height: 16px;"></i> Imprimir Ticket    
+        </button>
+        <button type="button" class="btn-head-action" style="flex: 1; background: #059669; color: #FFF; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(5,150,105,0.3);" onclick="confirmApprovePaymentFromModal()">
+          <i data-lucide="check-circle-2" style="width: 16px; height: 16px;"></i> Aprobar Pago
+        </button>
+        <button type="button" class="btn-head-action" style="flex: 1; background: #DC2626; color: #FFF; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(220,38,38,0.3);" onclick="promptRejectPaymentFromModal()">
+          <i data-lucide="x-circle" style="width: 16px; height: 16px;"></i> Rechazar Pago
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Dialog: Editar Datos Bancarios para Transferencias -->
+  <div id="bankInfoModalOverlay" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; align-items: center; justify-content: center; z-index: 100000; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px);">
+    <div class="modal-card" style="max-width: 540px; width: 90%; background: #FFF; border-radius: 20px; padding: 22px; box-shadow: 0 25px 50px rgba(0,0,0,0.4); position: relative; z-index: 100001;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: #7E22CE; color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+              
+          </div>
+          <div>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 900; color: #0F172A; margin: 0;">Editar Datos Bancarios</h3>
+            <p style="margin: 2px 0 0 0; font-size: 11.5px; color: #64748B;">Configura la informaciÃ³n de transferencia SPEI y depÃ³sito para tus clientes.</p>
+          </div>
+        </div>
+        <button class="btn-close-modal" onclick="closeBankInfoModal()" style="background: #F1F5F9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: 800;"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+
+      <form id="adminBankInfoForm" onsubmit="handleSaveBankInfo(event)">
+        <div class="form-body" style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label style="font-size: 11.5px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Nombre del Banco <span style="color:#DC2626;">*</span></label>
+              <input type="text" id="bankInfoBankName" class="admin-input" required placeholder="Ej. BBVA MÃ©xico">
+            </div>
+            <div class="form-group">
+              <label style="font-size: 11.5px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Titular de la Cuenta <span style="color:#DC2626;">*</span></label>
+              <input type="text" id="bankInfoAccountHolder" class="admin-input" required placeholder="Ej. Level Centro Deportivo S.A. de C.V.">
+            </div>
+          </div>
+
+          <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label style="font-size: 11.5px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">CLABE Interbancaria (18 dÃ­gitos) <span style="color:#DC2626;">*</span></label>
+              <input type="text" id="bankInfoClabe" class="admin-input" required placeholder="012 320 001122334455 6" style="font-family: monospace; font-weight: 700;">
+            </div>
+            <div class="form-group">
+              <label style="font-size: 11.5px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">NÃºmero de Tarjeta (Opcional)</label>
+              <input type="text" id="bankInfoCardNumber" class="admin-input" placeholder="4152 3138 9012 3456" style="font-family: monospace;">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 11.5px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Instrucciones de Pago para el Cliente</label>
+            <textarea id="bankInfoInstructions" class="admin-input" rows="3" style="resize: vertical; font-size: 12px;" placeholder="Ingresa tu Nombre y Folio de reserva como concepto..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display: flex; gap: 10px; margin-top: 18px;">
+          <button type="button" class="btn-head-action" style="flex: 1; background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer;" onclick="closeBankInfoModal()">Cancelar</button>
+          <button type="submit" class="btn-head-action" style="flex: 2; background: linear-gradient(135deg, #7E22CE 0%, #6B21A8 100%); color: #FFF; border: none; padding: 10px; border-radius: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(126, 34, 206, 0.3);">
+            <i data-lucide="save" style="width: 15px; height: 15px;"></i> Guardar Datos Bancarios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Custom: Motivo de Rechazo de Comprobante -->
+  <div id="rejectReasonModalOverlay" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; align-items: center; justify-content: center; z-index: 100005; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px);">
+    <div class="modal-card" style="max-width: 480px; width: 90%; background: #FFF; border-radius: 20px; padding: 22px; box-shadow: 0 25px 50px rgba(0,0,0,0.4); position: relative; z-index: 100006;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+              
+          </div>
+          <div>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 16.5px; font-weight: 900; color: #0F172A; margin: 0;">Rechazar Comprobante</h3>
+            <p style="margin: 2px 0 0 0; font-size: 11px; color: #64748B;">Indica la raz"n por la que no se aprueba este pago.</p>
+          </div>
+        </div>
+        <button class="btn-close-modal" onclick="closeRejectReasonModal()" style="background: #F1F5F9; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: 800;"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label style="font-size: 11.5px; font-weight: 700; color: #334155; display: block; margin-bottom: 6px;">Motivo del Rechazo:</label>
+        <textarea id="rejectReasonInput" class="admin-input" rows="3" style="width: 100%; border: 1.5px solid #FCA5A5; border-radius: 10px; padding: 10px; font-size: 12px; resize: vertical; outline: none;" placeholder="Escribe el motivo del rechazo...">El comprobante es ilegible o no coincide con la cuenta bancaria.</textarea>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="btn-head-action" style="flex: 1; background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer;" onclick="closeRejectReasonModal()">Cancelar</button>
+        <button type="button" class="btn-head-action" style="flex: 1.5; background: #DC2626; color: #FFF; border: none; padding: 10px; border-radius: 10px; font-weight: 800; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(220,38,38,0.3);" onclick="confirmRejectPaymentWithReason()">
+          <i data-lucide="x-circle" style="width: 15px; height: 15px;"></i> Confirmar Rechazo
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+    <!-- Modal Dialog: Historial de Cancelaciones desde la App M  vil -->
+    <div id="cancelledBookingsModalOverlay" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; align-items: center; justify-content: center; z-index: 100000; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px);">
+      <div class="modal-card" style="max-width: 950px; width: 94%; background: #FFF; border-radius: 20px; padding: 22px; box-shadow: 0 25px 50px rgba(0,0,0,0.4); position: relative; z-index: 100001; max-height: 88vh; display: flex; flex-direction: column;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 40px; height: 40px; border-radius: 12px; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                  
+            </div>
+            <div>
+              <h3 style="font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 900; color: #0F172A; margin: 0;">Historial de Cancelaciones de la App</h3>
+              <p style="margin: 2px 0 0 0; font-size: 11.5px; color: #64748B;">Registro en tiempo real de reservaciones canceladas por clientes.</p>
+            </div>
+          </div>
+          <button class="btn-close-modal" onclick="closeCancelledBookingsModal()" style="background: #F1F5F9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-weight: 800;"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+        </div>
+
+        <div class="table-responsive" style="flex: 1; overflow-y: auto; max-height: 50vh;">
+          <table class="exec-table">
+            <thead>
+              <tr>
+                <th>ID RESERVA</th>
+                <th>CANCHA</th>
+                <th>CLIENTE / TEL</th>
+                <th>HORARIO RESERVADO</th>
+                <th>MONTO & PAGO</th>
+                <th>ESTADO Devolucion</th>
+                <th>ACCI&Oacute;N Devolucion</th>
+              </tr>
+            </thead>
+            <tbody id="cancelledBookingsTableBody">
+              <tr><td colspan="7" style="text-align: center; color: #94A3B8; padding: 20px;">No hay Cancelaciones registradas en el historial.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal-footer" style="margin-top: 16px; text-align: right;">
+          <button type="button" class="btn-head-action" style="background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; padding: 8px 18px; border-radius: 10px; font-weight: 700; cursor: pointer;" onclick="closeCancelledBookingsModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  <!-- MODAL SELECCION DE Metodo DE Devolucion -->
+  <div id="modalRefundMethodOverlay" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; align-items: center; justify-content: center; z-index: 100010; background: rgba(15,23,42,0.85); backdrop-filter: blur(8px);">
+    <div class="modal-card" style="max-width: 520px; width: 92%; background: #FFF; border-radius: 20px; padding: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.35); position: relative; border: 1px solid #E2E8F0;">
+      <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #E2E8F0; padding-bottom: 14px; margin-bottom: 18px;">
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #0F172A; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 36px; height: 36px; background: #ECFDF5; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #10B981;">
+            <i data-lucide="hand-coins" style="width: 20px; height: 20px;"></i>
+          </div>
+          Confirmar Devolucion de Dinero
+        </h3>
+        <button type="button" class="btn-close-modal" onclick="closeRefundMethodModal()" style="background: #F1F5F9; border: 1px solid #E2E8F0; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #64748B;"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+      </div>
+      
+      <div id="refundModalInfo" style="background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 14px; padding: 16px; margin-bottom: 20px; font-size: 13.5px; color: #334155;">
+      </div>
+
+      <p style="font-weight: 800; color: #0F172A; font-size: 14px; margin: 0 0 12px 0;">Selecciona el Metodo de Devolucion:</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <button type="button" onclick="confirmRefundWithMethod('efectivo')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #ECFDF5; border: 1.5px solid #A7F3D0; border-radius: 14px; cursor: pointer; text-align: left; transition: all 0.2s;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; background: #D1FAE5; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #047857; flex-shrink: 0;">
+              <i data-lucide="banknote" style="width: 22px; height: 22px;"></i>
+            </div>
+            <div>
+              <strong style="color: #047857; font-size: 14.5px; display: block;">Efectivo en Caja (Turno Actual)</strong>
+              <small style="color: #065F46; font-size: 12px; font-weight: 500;">Registra una salida de dinero en la Caja Abierta del turno actual.</small>
+            </div>
+          </div>
+          <span style="background: #10B981; color: #FFF; padding: 8px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;">
+            <i data-lucide="arrow-up-right" style="width: 14px; height: 14px;"></i> Seleccionar
+          </span>
+        </button>
+
+        <button type="button" onclick="confirmRefundWithMethod('transferencia')" style="display: flex; align-items: center; justify-content: space-between; padding: 16px; background: #F0F9FF; border: 1.5px solid #BAE6FD; border-radius: 14px; cursor: pointer; text-align: left; transition: all 0.2s;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; background: #E0F2FE; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #0369A1; flex-shrink: 0;">
+              <i data-lucide="building-2" style="width: 22px; height: 22px;"></i>
+            </div>
+            <div>
+              <strong style="color: #0369A1; font-size: 14.5px; display: block;">Transferencia Bancaria / Digital</strong>
+              <small style="color: #075985; font-size: 12px; font-weight: 500;">Devolucion por Transferencia (No afecta el efectivo f&iacute;sico en caja).</small>
+            </div>
+          </div>
+          <span style="background: #0284C7; color: #FFF; padding: 8px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;">
+            <i data-lucide="arrow-up-right" style="width: 14px; height: 14px;"></i> Seleccionar
+          </span>
+        </button>
+      </div>
+
+      <div style="margin-top: 20px; text-align: right;">
+        <button type="button" onclick="closeRefundMethodModal()" style="background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+          <i data-lucide="x" style="width: 14px; height: 14px;"></i> Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.lucide) { lucide.createIcons(); }
+  });
+  window.addEventListener('load', function() {
+    if (window.lucide) { lucide.createIcons(); }
+  });
+</script>
+<script src="admin.js?v=5.2.0"></script>
+  <!-- Modal: Datos Bancarios -->
+  <div id="modalBankInfoOverlay" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center;">
+    <div class="modal-card" style="background: #FFFFFF; border-radius: 16px; padding: 28px; max-width: 480px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); position: relative;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #E2E8F0; padding-bottom: 12px;">
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 800; color: #0F172A; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="landmark" style="color: #7E22CE;"></i> ConfiguraciÃ³n de Datos Bancarios
+        </h3>
+        <button onclick="closeBankInfoModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #64748B;">&times;</button>
+      </div>
+      <form onsubmit="saveBankInfoForm(event); return false;" style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Banco Receptor</label>
+          <input type="text" id="bankNameInput" placeholder="Ej. BBVA Bancomer" style="width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 13px;" required />
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Titular de la Cuenta</label>
+          <input type="text" id="bankHolderInput" placeholder="Ej. Level Club TacÃ¡mbaro S.A." style="width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 13px;" required />
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">CLABE Interbancaria (18 dÃ­gitos)</label>
+          <input type="text" id="bankClabeInput" placeholder="Ej. 012180001234567890" style="width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 13px;" required />
+        </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">NÃºmero de Cuenta / Tarjeta</label>
+          <input type="text" id="bankAccountInput" placeholder="Ej. 1234 5678 9012" style="width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 8px; font-size: 13px;" />
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px; justify-content: flex-end;">
+          <button type="button" onclick="closeBankInfoModal()" style="padding: 10px 16px; background: #F1F5F9; color: #475569; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Cancelar</button>
+          <button type="submit" style="padding: 10px 18px; background: #7E22CE; color: #FFFFFF; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Guardar Datos</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+﻿[
+    {
+        "status":  "Disponible",
+        "stock":  23,
+        "id":  "PROD-101",
+        "category":  "Pelotas y Accesorios",
+        "price":  160,
+        "name":  "Tubo Pelotas Head Tour (x3)",
+        "icon":  "pack",
+        "imageUrl":  "https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=400"
+    },
+    {
+        "status":  "Disponible",
+        "stock":  35,
+        "id":  "PROD-102",
+        "category":  "Pelotas y Accesorios",
+        "price":  45,
+        "name":  "Overgrip Babolat / Head Pro",
+        "icon":  "ball",
+        "imageUrl":  "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400"
+    },
+    {
+        "status":  "Disponible",
+        "stock":  39,
+        "id":  "PROD-103",
+        "category":  "Snacks y Bebidas",
+        "price":  35,
+        "name":  "Electrolit / Gatorade 625ml",
+        "icon":  "drink",
+        "imageUrl":  "https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=400"
+    },
+    {
+        "status":  "Disponible",
+        "stock":  49,
+        "id":  "PROD-104",
+        "category":  "Snacks y Bebidas",
+        "price":  25,
+        "name":  "Agua Embotellada 1L",
+        "icon":  "water",
+        "imageUrl":  "https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=400"
+    },
+    {
+        "status":  "Disponible",
+        "stock":  12,
+        "id":  "PROD-105",
+        "category":  "Indumentaria",
+        "price":  320,
+        "name":  "Gorra Oficial Level TacAmbaro",
+        "icon":  "cap",
+        "imageUrl":  "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400"
+    }
+]

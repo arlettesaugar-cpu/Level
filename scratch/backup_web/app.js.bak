@@ -1,0 +1,1482 @@
+// Application Data & Real-Time Sync Logic for Pádel Club Tacámbaro
+let courtsData = [];
+let userBookings = [];
+let allBookingsData = [];
+let tournamentsData = [];
+let productsData = [];
+let clubHistoryData = {
+  name: 'Level Tacámbaro',
+  address: 'Valentín Gómez Farías #3, Tacámbaro, Michoacán',
+  phone: '459 102 3849',
+  logo: 'assets/images/logo.jpeg',
+  description: 'Level Tacámbaro nació con la visión de consolidar el primer centro deportivo de pádel de alto nivel en Tacámbaro, Michoacán. Nuestro club cuenta con 2 pistas de tecnología profesional (Pádel Cristal Pro y Panorámica VIP), iluminación LED nocturna de alta definición, área de espectadores, servicio de pro shop con alquiler de palas y pelotas, y atención personalizada las 24 horas del día.',
+  gallery: [
+    { title: 'Pista 1: Pádel Cristal Pro (Azul)', url: 'assets/images/cancha_padel_1.jpg' },
+    { title: 'Pista 2: Pádel Panorámica VIP (Verde)', url: 'assets/images/cancha_padel_2.jpg' },
+    { title: 'Cancha Grama Sintética Pro', url: 'assets/images/cancha_grama_7.jpg' },
+    { title: 'Cancha de Entrenamientos 5', url: 'assets/images/cancha_sintetica_5.jpg' },
+    { title: 'Cancha Techada & Alumbrado LED', url: 'assets/images/cancha_techada.jpg' }
+  ]
+};
+let activeRegisterTournamentId = null;
+let currentViewMode = 'single'; // 'single', 'admin', 'concurrency'
+
+// Code Snippets Cache for Left Panel
+const codeSnippets = {
+  main: `void main() {
+  runApp(const CanchasYaApp());
+}`,
+  drawer: `class AppDrawer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        children: [
+          DrawerHeader(child: Image.asset('assets/images/logo.jpeg')),
+          ListTile(title: Text('1. Nuestra Historia')),
+          ListTile(title: Text('2. Reservar Canchas')),
+          ListTile(title: Text('3. Torneos de Pádel')),
+          ListTile(title: Text('4. Tienda & Alquiler')),
+          ListTile(title: Text('5. Contacto & Ubicación')),
+        ],
+      ),
+    );
+  }
+}`,
+  court: `class Court {
+  final String id;
+  final String name; // Cancha 1 Azul / Cancha 2 Verde
+  final List<String> availableSlots;
+}`
+};
+
+// Initialize App
+document.addEventListener('DOMContentLoaded', () => {
+  fetchCourtsData();
+  fetchBookingsData();
+  fetchTournamentsData();
+  fetchProductsData();
+  fetchHistoryData();
+  setupSSE();
+  updateClocks();
+  setInterval(updateClocks, 10000);
+});
+
+async function fetchCourtsData() {
+  try {
+    const res = await fetch('/api/courts');
+    if (res.ok) {
+      courtsData = await res.json();
+      renderAllInstances();
+    }
+  } catch (e) {
+    console.error('Error fetching courts:', e);
+  }
+}
+
+async function fetchBookingsData() {
+  try {
+    const res = await fetch('/api/bookings');
+    if (res.ok) {
+      allBookingsData = await res.json();
+      renderAllInstances();
+    }
+  } catch (e) {
+    console.error('Error fetching bookings:', e);
+  }
+}
+
+async function fetchTournamentsData() {
+  try {
+    const res = await fetch('/api/tournaments');
+    if (res.ok) {
+      const data = await res.json();
+      tournamentsData = (data || []).map(t => {
+        return {
+          ...t,
+          title: fixMojibake(t.title || ''),
+          category: fixMojibake(t.category || ''),
+          dates: fixMojibake(t.dates || ''),
+          prize: fixMojibake(t.prize || ''),
+          status: fixMojibake(t.status || '')
+        };
+      });
+      renderAllInstances();
+    }
+  } catch (e) {
+    console.error('Error fetching tournaments:', e);
+  }
+}
+
+async function fetchProductsData() {
+  try {
+    const res = await fetch('/api/products');
+    if (res.ok) {
+      productsData = await res.json();
+      renderAllInstances();
+    }
+  } catch (e) {
+    console.error('Error fetching products:', e);
+  }
+}
+
+async function fetchHistoryData() {
+  try {
+    const res = await fetch('/api/history');
+    if (res.ok) {
+      const data = await res.json();
+      if (data) {
+        clubHistoryData = { ...clubHistoryData, ...data };
+        renderAllInstances();
+      }
+    }
+  } catch (e) {
+    console.error('Error fetching history:', e);
+  }
+}
+
+let appSSESource = null;
+
+function setupSSE() {
+  if (appSSESource) {
+    try { appSSESource.close(); } catch (e) {}
+    appSSESource = null;
+  }
+  if (!!window.EventSource) {
+    appSSESource = new EventSource('/api/events');
+    appSSESource.onmessage = (event) => {
+      try {
+        const payload = JSON.parse(event.data);
+        if (payload.type === 'BOOKING_CREATED' || payload.type === 'SLOT_TOGGLED' || (payload.type && payload.type.startsWith('COURT_'))) {
+          fetchCourtsData();
+          fetchBookingsData();
+        } else if (payload.type && payload.type.startsWith('TOURNAMENT_')) {
+          fetchTournamentsData();
+        } else if (payload.type === 'HISTORY_UPDATED') {
+          fetchHistoryData();
+        } else if (payload.type && payload.type.startsWith('PRODUCT_')) {
+          fetchProductsData();
+        }
+      } catch (err) {
+        console.error('SSE Parse Error:', err);
+      }
+    };
+    appSSESource.onerror = () => {
+      // Browser EventSource handles reconnects natively
+    };
+  }
+}
+
+function updateClocks() {
+  const now = new Date();
+  const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  document.querySelectorAll('.liveClock').forEach(el => el.textContent = timeStr);
+}
+
+function switchViewMode(mode) {
+  currentViewMode = mode;
+  document.querySelectorAll('.view-mode-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.mode-view').forEach(view => view.classList.remove('active'));
+
+  if (mode === 'single') {
+    document.getElementById('btnModeSingle').classList.add('active');
+    document.getElementById('modeSingleContainer').classList.add('active');
+  } else if (mode === 'admin') {
+    document.getElementById('btnModeAdmin').classList.add('active');
+    document.getElementById('modeAdminContainer').classList.add('active');
+  } else if (mode === 'concurrency') {
+    document.getElementById('btnModeConcurrency').classList.add('active');
+    document.getElementById('modeConcurrencyContainer').classList.add('active');
+  }
+
+  renderAllInstances();
+}
+
+// Instance States for Multi-Phone View (Default isLoggedOut: true for strict security)
+const instanceStates = {
+  single: { selectedCourt: null, bookingStep: 'calendar', selectedDate: '2026-09-05', calendarMonth: 8, calendarYear: 2026, selectedSlot: null, durationHours: 1, activeTab: 'canchas', drawerOpen: false, paymentMethod: 'Efectivo en Mostrador', search: '', category: 'Todas', activeAlert: null, isLoggedOut: (sessionStorage.getItem('isLoggedIn_single') !== 'true'), needsPasswordChange: false, loggedInUser: null },
+  phoneA:  { selectedCourt: null, bookingStep: 'calendar', selectedDate: '2026-09-05', calendarMonth: 8, calendarYear: 2026, selectedSlot: null, durationHours: 1, activeTab: 'canchas', drawerOpen: false, paymentMethod: 'Efectivo en Mostrador', search: '', category: 'Todas', activeAlert: null, isLoggedOut: (sessionStorage.getItem('isLoggedIn_phoneA') !== 'true'), needsPasswordChange: false, loggedInUser: null },
+  phoneB:  { selectedCourt: null, bookingStep: 'calendar', selectedDate: '2026-09-05', calendarMonth: 8, calendarYear: 2026, selectedSlot: null, durationHours: 1, activeTab: 'canchas', drawerOpen: false, paymentMethod: 'Efectivo en Mostrador', search: '', category: 'Todas', activeAlert: null, isLoggedOut: (sessionStorage.getItem('isLoggedIn_phoneB') !== 'true'), needsPasswordChange: false, loggedInUser: null }
+};
+
+function renderAllInstances() {
+  if (currentViewMode === 'single') {
+    renderPhoneInstance('appRoot1', instanceStates.single, 'single');
+  } else if (currentViewMode === 'concurrency') {
+    renderPhoneInstance('appRootA', instanceStates.phoneA, 'phoneA');
+    renderPhoneInstance('appRootB', instanceStates.phoneB, 'phoneB');
+  }
+  lucide.createIcons();
+}
+
+function showAppAlert(instKey, title, message, icon = 'success', buttonText = '¡Entendido! ⚡') {
+  if (instanceStates[instKey]) {
+    instanceStates[instKey].activeAlert = { title, message, icon, buttonText };
+  } else {
+    instanceStates.single.activeAlert = { title, message, icon, buttonText };
+  }
+  renderAllInstances();
+}
+
+function closeAppAlert(instKey) {
+  if (instanceStates[instKey]) {
+    instanceStates[instKey].activeAlert = null;
+  } else {
+    instanceStates.single.activeAlert = null;
+  }
+  renderAllInstances();
+}
+
+function renderAppAlertOverlay(state, instKey) {
+  if (!state.activeAlert) return '';
+  const alert = state.activeAlert;
+
+  let iconName = 'check-circle';
+  let iconBg = 'rgba(16, 185, 129, 0.15)';
+  let borderColor = 'rgba(16, 185, 129, 0.3)';
+  let iconColor = '#10B981';
+
+  if (alert.icon === 'warning') {
+    iconName = 'alert-triangle';
+    iconBg = 'rgba(245, 158, 11, 0.15)';
+    borderColor = 'rgba(245, 158, 11, 0.3)';
+    iconColor = '#F59E0B';
+  } else if (alert.icon === 'error') {
+    iconName = 'alert-circle';
+    iconBg = 'rgba(239, 68, 68, 0.15)';
+    borderColor = 'rgba(239, 68, 68, 0.3)';
+    iconColor = '#EF4444';
+  }
+
+  return `
+    <div style="position: absolute; top:0; left:0; right:0; bottom:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(8px); z-index: 600; display: flex; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease;">
+      <div style="background: #FFFFFF; border-radius: 20px; padding: 22px 18px; width: 100%; max-width: 290px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.25), 0 0 0 1px ${borderColor}; animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        
+        <div style="width: 54px; height: 54px; border-radius: 50%; background: ${iconBg}; border: 2px solid ${borderColor}; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; color: ${iconColor};">
+          <i data-lucide="${iconName}" style="width: 28px; height: 28px;"></i>
+        </div>
+
+        <h3 style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; color: #0F172A; margin: 0 0 6px 0;">
+          ${alert.title}
+        </h3>
+
+        <p style="font-size: 12px; color: #475569; line-height: 1.5; margin: 0 0 18px 0; font-weight: 500;">
+          ${alert.message}
+        </p>
+
+        <button onclick="closeAppAlert('${instKey}')" style="width: 100%; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFF; border: none; padding: 11px; border-radius: 12px; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35); transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+          <span>${alert.buttonText || '¡Entendido!'}</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderTournamentModalOverlay(instKey) {
+  if (!activeRegisterTournamentId) return '';
+  const activeTourn = tournamentsData.find(t => t.id === activeRegisterTournamentId);
+  if (!activeTourn) return '';
+
+  const cleanTitle = fixMojibake(activeTourn.title || '');
+  const cleanCat = fixMojibake(activeTourn.category || '');
+  const cleanDates = fixMojibake(activeTourn.dates || '');
+  let cleanPrize = fixMojibake(activeTourn.prize || '');
+  if (!cleanPrize || cleanPrize === ',000 MXN' || cleanPrize.startsWith(',')) {
+    cleanPrize = (activeTourn.id === 'TOURN-101') ? '$15,000 MXN' : '$8,000 MXN';
+  }
+  const tournImg = activeTourn.imageUrl || 'assets/images/cancha_padel_2.jpg';
+
+  return `
+    <div style="position: absolute; top:0; left:0; right:0; bottom:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.75); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(10px); animation: fadeIn 0.25s ease;">
+      <div style="background: #FFFFFF; border-radius: 24px; width: 100%; max-width: 320px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(16, 185, 129, 0.25); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        
+        <!-- Hero Header with Tournament Image -->
+        <div style="position: relative; height: 115px; background: linear-gradient(135deg, #022C22 0%, #064E3B 100%);">
+          <img src="${tournImg}" alt="${cleanTitle}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.8;" onerror="this.src='assets/images/cancha_padel_2.jpg'">
+          <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(15,23,42,0.2) 0%, rgba(15,23,42,0.85) 100%);"></div>
+          
+          <button onclick="closeClientRegisterModal()" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.4); width: 28px; height: 28px; border-radius: 50%; color: #FFF; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); transition: all 0.2s ease;">✕</button>
+
+          <div style="position: absolute; bottom: 10px; left: 14px; right: 14px;">
+            <span style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFF; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); display: inline-flex; align-items: center; gap: 4px;">
+              <i data-lucide="award" style="width: 11px; height: 11px;"></i> ${cleanCat}
+            </span>
+            <h4 style="margin: 4px 0 0 0; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 900; color: #FFFFFF; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+              ${cleanTitle}
+            </h4>
+          </div>
+        </div>
+
+        <!-- Content Body -->
+        <div style="padding: 16px;">
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 10px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="font-size: 11px; color: #64748B; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+              <i data-lucide="calendar" style="width: 12px; height: 12px; color: #0284C7;"></i> <span>${cleanDates}</span>
+            </div>
+            <div style="font-size: 11px; font-weight: 800; color: #10B981; background: #ECFDF5; padding: 2px 8px; border-radius: 8px; border: 1px solid #A7F3D0;">
+              Premio: ${cleanPrize}
+            </div>
+          </div>
+
+          <form onsubmit="handleClientRegisterSubmit(event, '${activeTourn.id}', '${instKey}')">
+            <div style="margin-bottom: 12px;">
+              <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; color: #0F172A; margin-bottom: 5px;">
+                <i data-lucide="shield" style="width: 13px; height: 13px; color: #10B981;"></i> Nombre del Equipo / Pareja <span style="color: #EF4444;">*</span>
+              </label>
+              <input type="text" id="clientTeamNameInput_${instKey}" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #CBD5E1; border-radius: 12px; font-size: 12px; font-weight: 600; outline: none; transition: all 0.2s ease; background: #F8FAFC; color: #0F172A;" placeholder="Ej. Los Ases de Tacámbaro" onfocus="this.style.borderColor='#10B981'; this.style.background='#FFF'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.15)';" onblur="this.style.borderColor='#CBD5E1'; this.style.background='#F8FAFC'; this.style.boxShadow='none';">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; color: #0F172A; margin-bottom: 5px;">
+                <i data-lucide="users" style="width: 13px; height: 13px; color: #0284C7;"></i> Nombres de los Jugadores <span style="color: #EF4444;">*</span>
+              </label>
+              <input type="text" id="clientParticipantsInput_${instKey}" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #CBD5E1; border-radius: 12px; font-size: 12px; font-weight: 600; outline: none; transition: all 0.2s ease; background: #F8FAFC; color: #0F172A;" placeholder="Ej. Carlos Palacios y Juan Pérez" onfocus="this.style.borderColor='#10B981'; this.style.background='#FFF'; this.style.boxShadow='0 0 0 3px rgba(16,185,129,0.15)';" onblur="this.style.borderColor='#CBD5E1'; this.style.background='#F8FAFC'; this.style.boxShadow='none';">
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button type="button" onclick="closeClientRegisterModal()" style="flex: 1; background: #F1F5F9; color: #64748B; border: 1px solid #E2E8F0; padding: 11px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease;">
+                Cancelar
+              </button>
+              <button type="submit" style="flex: 1.4; background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: #FFF; border: none; padding: 11px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35); transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i> Confirmar Registro
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderPhoneInstance(rootId, state, instKey) {
+  const root = document.getElementById(rootId);
+  if (!root) return;
+
+  const logoUrl = clubHistoryData.logo || 'assets/images/logo.jpeg';
+
+  // If user needs to change temporary password (Step 2 of Login)
+  if (state.needsPasswordChange) {
+    root.innerHTML = `
+      <div class="mobile-app">
+        <!-- Custom Centered App Alert Overlay -->
+        ${renderAppAlertOverlay(state, instKey)}
+
+        <div class="login-screen-overlay">
+          <div class="login-card">
+            <div class="login-logo-wrap">
+              <span class="brand-brace-open">{</span>LEVEL<span class="brand-brace-close">}</span>
+              <div class="login-subtitle">SEGURIDAD Y CUENTA • TACÁMBARO</div>
+            </div>
+
+            <div style="background: rgba(2, 132, 199, 0.08); border: 1.5px solid rgba(2, 132, 199, 0.25); border-radius: 12px; padding: 10px; margin: 12px 0 14px 0; font-size: 11px; color: #0284C7; font-weight: 700; display: flex; align-items: center; gap: 6px; text-align: left;">
+              <i data-lucide="shield-alert" style="width: 18px; height: 18px; flex-shrink: 0; color: #0284C7;"></i>
+              <span>Ingresaste con contraseña temporal. Define tu nueva contraseña permanente para continuar.</span>
+            </div>
+
+            <h3 class="login-title" style="margin-top: 0;">Cambiar Contraseña</h3>
+
+            <form onsubmit="handleClientChangePasswordSubmit(event, '${instKey}')">
+              <div class="login-input-group">
+                <label><i data-lucide="key" style="width: 13px; height: 13px; color: #0284C7;"></i> Nueva Contraseña *</label>
+                <input type="password" id="newPasswordInput_${instKey}" required placeholder="Mínimo 6 caracteres" minlength="6" value="Tacambaro2026!">
+              </div>
+
+              <div class="login-input-group">
+                <label><i data-lucide="check-square" style="width: 13px; height: 13px; color: #10B981;"></i> Confirmar Nueva Contraseña *</label>
+                <input type="password" id="confirmPasswordInput_${instKey}" required placeholder="Repite tu contraseña" minlength="6" value="Tacambaro2026!">
+              </div>
+
+              <button type="submit" class="btn-login-submit" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
+                <i data-lucide="shield-check" style="width: 16px; height: 16px;"></i> Guardar Clave y Entrar
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // If user is logged out, render Login Overlay View
+  if (state.isLoggedOut) {
+    root.innerHTML = `
+      <div class="mobile-app">
+        <!-- Custom Centered App Alert Overlay -->
+        ${renderAppAlertOverlay(state, instKey)}
+
+        <div class="login-screen-overlay">
+          <div class="login-card">
+            <div class="login-logo-wrap">
+              <span class="brand-brace-open">{</span>LEVEL<span class="brand-brace-close">}</span>
+              <div class="login-subtitle">CENTRO DEPORTIVO • TACÁMBARO</div>
+            </div>
+
+            <h3 class="login-title">Iniciar Sesión</h3>
+            <p class="login-desc">Ingresa tu cuenta para reservar canchas y registrarte en torneos en Tacámbaro.</p>
+
+            <form onsubmit="handleClientLoginSubmit(event, '${instKey}')">
+              <div class="login-input-group">
+                <label><i data-lucide="user" style="width: 13px; height: 13px; color: #0284C7;"></i> Usuario</label>
+                <input type="text" id="loginUserInput_${instKey}" required placeholder="ej. cpalacios o 4591023849" value="">
+              </div>
+
+              <div class="login-input-group">
+                <label><i data-lucide="lock" style="width: 13px; height: 13px; color: #0284C7;"></i> Contraseña / PIN</label>
+                <input type="password" id="loginPassInput_${instKey}" required placeholder="••••••••" value="">
+              </div>
+
+              <button type="submit" class="btn-login-submit" style="margin-top: 14px;">
+                <i data-lucide="log-in" style="width: 16px; height: 16px;"></i> Iniciar Sesión
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  let body = '';
+  if (state.selectedCourt) {
+    body = renderCourtDetailView(state.selectedCourt, state, instKey);
+  } else {
+    if (state.activeTab === 'historia') body = renderHistoryView();
+    else if (state.activeTab === 'canchas') body = renderCourtsView(state, instKey);
+    else if (state.activeTab === 'torneos') body = renderTournamentsView(state, instKey);
+    else if (state.activeTab === 'tienda') body = renderProductsView();
+    else if (state.activeTab === 'contacto') body = renderContactView();
+  }
+
+  root.innerHTML = `
+    <div class="mobile-app">
+      <!-- Drawer Menu Overlay -->
+      ${renderDrawerOverlay(state, instKey)}
+
+      <!-- Tournament Registration Modal Overlay -->
+      ${renderTournamentModalOverlay(instKey)}
+
+      <!-- Custom Centered App Alert Overlay -->
+      ${renderAppAlertOverlay(state, instKey)}
+
+      <!-- App Header Bar with Menu Button & Centered Vector Brand Logo -->
+      <div class="mobile-top-bar">
+        <button class="btn-drawer-toggle" onclick="toggleDrawer('${instKey}')" title="Abrir Menú Lateral">
+          <i data-lucide="menu"></i>
+        </button>
+        <div class="top-logo-container">
+          <div class="header-brand-wrap">
+            <div class="header-brand-text">
+              <div class="brand-title"><span class="brand-brace-open">{</span>LEVEL<span class="brand-brace-close">}</span></div>
+              <div class="brand-subtitle">CENTRO DEPORTIVO</div>
+            </div>
+          </div>
+        </div>
+        <div style="width: 36px; height: 36px; flex-shrink: 0;"></div>
+      </div>
+
+      <div class="app-view">
+        ${body}
+      </div>
+    </div>
+  `;
+}
+
+function toggleDrawer(instKey) {
+  instanceStates[instKey].drawerOpen = !instanceStates[instKey].drawerOpen;
+  renderAllInstances();
+}
+
+function selectTabFromDrawer(tab, instKey) {
+  instanceStates[instKey].activeTab = tab;
+  instanceStates[instKey].selectedCourt = null;
+  instanceStates[instKey].drawerOpen = false;
+  renderAllInstances();
+}
+
+function triggerClientLogout(instKey) {
+  try { sessionStorage.removeItem('isLoggedIn_' + instKey); } catch (e) {}
+  instanceStates[instKey].drawerOpen = false;
+  instanceStates[instKey].isLoggedOut = true;
+  instanceStates[instKey].needsPasswordChange = false;
+  instanceStates[instKey].loggedInUser = null;
+  renderAllInstances();
+}
+
+async function handleClientLoginSubmit(e, instKey) {
+  e.preventDefault();
+  const userInput = (document.getElementById(`loginUserInput_${instKey}`)?.value || '').trim();
+  const passVal = (document.getElementById(`loginPassInput_${instKey}`)?.value || '').trim();
+
+  if (!userInput || !passVal) {
+    showAppAlert(instKey, 'Datos Incompletos', 'Por favor ingresa tu usuario y contraseña.', 'error', 'Reintentar');
+    return;
+  }
+
+  let matchedUser = null;
+  let requireChange = false;
+  let loginSuccess = false;
+
+  try {
+    const res = await fetch('/api/users/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ username: userInput, phone: userInput, password: passVal })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      matchedUser = data.user;
+      requireChange = data.requirePasswordChange;
+      loginSuccess = true;
+    } else {
+      showAppAlert(instKey, 'Acceso Denegado 🔒', data.message || 'Usuario o contraseña incorrectos. Por favor verifica tus credenciales.', 'error', 'Reintentar');
+      return;
+    }
+  } catch (err) {
+    console.error('Error enviando login:', err);
+    // Fallback local check
+    try {
+      const res = await fetch('/api/users');
+      if (res.ok) {
+        const users = await res.json();
+        const cleanInput = userInput.toLowerCase().replace(/\s+/g, '').replace(/^@/, '');
+        const cleanPhone = userInput.replace(/\D/g, '');
+        matchedUser = users.find(u => 
+          (u.username && u.username.toLowerCase().replace(/^@/, '') === cleanInput) ||
+          (cleanPhone && u.phone && u.phone.replace(/\D/g, '') === cleanPhone)
+        );
+        if (matchedUser) {
+          const userPass = matchedUser.password || '';
+          const tempPass = matchedUser.tempPassword || '';
+          if ((userPass && userPass === passVal) || (tempPass && tempPass.toLowerCase() === passVal.toLowerCase())) {
+            loginSuccess = true;
+            requireChange = [true, 'true', 'True'].includes(matchedUser.mustChangePassword) || (tempPass && tempPass.toLowerCase() === passVal.toLowerCase());
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  if (!loginSuccess || !matchedUser) {
+    showAppAlert(instKey, 'Acceso Denegado 🔒', 'Usuario o contraseña incorrectos. Por favor verifica tus datos.', 'error', 'Reintentar');
+    return;
+  }
+
+  instanceStates[instKey].loggedInUser = matchedUser;
+
+  if (requireChange) {
+    instanceStates[instKey].needsPasswordChange = true;
+    const name = matchedUser ? matchedUser.name : 'Usuario';
+    const tempKey = matchedUser.tempPassword || passVal;
+    showAppAlert(instKey, 'Contraseña Temporal Detectada 🔑', `Hola ${name}, ingresaste con clave temporal (${tempKey}). Por tu seguridad debes definir tu nueva clave permanente.`, 'warning', 'Establecer Clave');
+    renderAllInstances();
+    return;
+  }
+
+  try { sessionStorage.setItem('isLoggedIn_' + instKey, 'true'); } catch (e) {}
+  instanceStates[instKey].isLoggedOut = false;
+  instanceStates[instKey].needsPasswordChange = false;
+  instanceStates[instKey].activeTab = 'canchas';
+  const name = matchedUser ? matchedUser.name : 'Carlos Palacios';
+  showAppAlert(instKey, '¡Bienvenido!', `Has iniciado sesión correctamente como ${name} en Level Tacámbaro.`, 'success', '¡A Jugar!');
+  renderAllInstances();
+}
+
+async function handleClientChangePasswordSubmit(e, instKey) {
+  e.preventDefault();
+  const newPass = (document.getElementById(`newPasswordInput_${instKey}`)?.value || '').trim();
+  const confirmPass = (document.getElementById(`confirmPasswordInput_${instKey}`)?.value || '').trim();
+
+  if (newPass !== confirmPass) {
+    showAppAlert(instKey, 'Error de Contraseña', 'Las contraseñas ingresadas no coinciden. Por favor verifica.', 'error', 'Entendido');
+    return;
+  }
+
+  const currentUser = instanceStates[instKey].loggedInUser;
+  const userMatch = document.getElementById(`loginUserInput_${instKey}`)?.value || 'carlos.palacios@tacambaro.com';
+
+  try {
+    const res = await fetch('/api/users/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        id: currentUser ? currentUser.id : null,
+        userMatch: userMatch,
+        newPassword: newPass
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.user) {
+        instanceStates[instKey].loggedInUser = data.user;
+      }
+    }
+  } catch (err) {
+    console.error('Error updating user password:', err);
+  }
+
+  try { sessionStorage.setItem('isLoggedIn_' + instKey, 'true'); } catch (e) {}
+  instanceStates[instKey].needsPasswordChange = false;
+  instanceStates[instKey].isLoggedOut = false;
+  instanceStates[instKey].activeTab = 'canchas';
+  showAppAlert(instKey, '¡Contraseña Actualizada!', 'Tu nueva contraseña permanente ha sido guardada exitosamente en el módulo de usuarios del sistema. ¡Bienvenido a Level Tacámbaro!', 'success', '¡A Jugar!');
+  renderAllInstances();
+}
+
+function renderDrawerOverlay(state, instKey) {
+  if (!state.drawerOpen) return '';
+
+  const user = state.loggedInUser || {};
+  const userName = user.name || 'Carlos Palacios';
+  const userTag = user.username ? (user.username.startsWith('@') ? user.username : '@' + user.username) : '@cpalacios';
+  const userPhone = user.phone || '459 102 3849';
+  const subInfo = `${userTag} • ${userPhone}`;
+
+  return `
+    <div class="drawer-backdrop" onclick="toggleDrawer('${instKey}')"></div>
+    <div class="drawer-panel open luxury-brand-theme">
+      <!-- Ultra-Clean Top Bar with Brand Logo & Close Button -->
+      <div class="drawer-header-brand">
+        <div style="width: 32px; height: 32px; flex-shrink: 0;"></div>
+        <div class="drawer-brand-wrap" style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;">
+          <div><span class="brand-brace-open">{</span>LEVEL<span class="brand-brace-close">}</span></div>
+          <div class="brand-subtitle" style="font-size: 8px; font-weight: 800; color: #84CC16; letter-spacing: 1.8px; text-transform: uppercase; margin-top: 3px;">CENTRO DEPORTIVO</div>
+        </div>
+        <button class="btn-close-drawer-brand" onclick="toggleDrawer('${instKey}')" title="Cerrar Menú">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+
+      <!-- Real User Profile Card -->
+      <div class="drawer-user-card">
+        <div class="user-avatar-halo">
+          <div class="user-avatar-icon">
+            <i data-lucide="user" style="width: 20px; height: 20px;"></i>
+          </div>
+          <span class="user-status-dot"></span>
+        </div>
+        <div class="user-info">
+          <div class="user-name">${userName}</div>
+          <div class="user-subtext">
+            <i data-lucide="user-check" style="width: 12px; height: 12px; color: #34D399;"></i> ${subInfo}
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation List Cards (Matches Logo Palette) -->
+      <div class="drawer-menu-list-brand">
+        <div class="drawer-brand-card ${state.activeTab === 'historia' ? 'active' : ''}" onclick="selectTabFromDrawer('historia', '${instKey}')">
+          <div class="brand-icon-box blue"><i data-lucide="book-open" style="width: 18px; height: 18px;"></i></div>
+          <div class="brand-card-content">
+            <span class="brand-card-title">Historia</span>
+            <span class="brand-card-desc">Conoce nuestro club</span>
+          </div>
+          <i data-lucide="chevron-right" class="brand-arrow"></i>
+        </div>
+
+        <div class="drawer-brand-card ${state.activeTab === 'canchas' ? 'active' : ''}" onclick="selectTabFromDrawer('canchas', '${instKey}')">
+          <div class="brand-icon-box green"><i data-lucide="calendar" style="width: 18px; height: 18px;"></i></div>
+          <div class="brand-card-content">
+            <span class="brand-card-title">Reserva tu cancha</span>
+            <span class="brand-badge green">24/7 EN VIVO</span>
+          </div>
+          <i data-lucide="chevron-right" class="brand-arrow"></i>
+        </div>
+
+        <div class="drawer-brand-card ${state.activeTab === 'torneos' ? 'active' : ''}" onclick="selectTabFromDrawer('torneos', '${instKey}')">
+          <div class="brand-icon-box amber"><i data-lucide="trophy" style="width: 18px; height: 18px;"></i></div>
+          <div class="brand-card-content">
+            <span class="brand-card-title">Torneos</span>
+            <span class="brand-badge amber">LIGAS</span>
+          </div>
+          <i data-lucide="chevron-right" class="brand-arrow"></i>
+        </div>
+
+        <div class="drawer-brand-card ${state.activeTab === 'tienda' ? 'active' : ''}" onclick="selectTabFromDrawer('tienda', '${instKey}')">
+          <div class="brand-icon-box cyan"><i data-lucide="shopping-bag" style="width: 18px; height: 18px;"></i></div>
+          <div class="brand-card-content">
+            <span class="brand-card-title">Productos</span>
+            <span class="brand-card-desc">Pro Shop Tacámbaro</span>
+          </div>
+          <i data-lucide="chevron-right" class="brand-arrow"></i>
+        </div>
+
+        <div class="drawer-brand-card ${state.activeTab === 'contacto' ? 'active' : ''}" onclick="selectTabFromDrawer('contacto', '${instKey}')">
+          <div class="brand-icon-box lime"><i data-lucide="phone-call" style="width: 18px; height: 18px;"></i></div>
+          <div class="brand-card-content">
+            <span class="brand-card-title">Contáctanos</span>
+            <span class="brand-card-desc">Ubicación & WhatsApp</span>
+          </div>
+          <i data-lucide="chevron-right" class="brand-arrow"></i>
+        </div>
+      </div>
+
+      <!-- Bottom Logout Button ("Cerrar Sesión") -->
+      <div class="drawer-footer-logout">
+        <button class="btn-logout-brand" onclick="triggerClientLogout('${instKey}')">
+          <i data-lucide="log-out" style="width: 16px; height: 16px;"></i>
+          <span>Cerrar Sesión</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+/* 1. MÓDULO HISTORIA */
+function renderHistoryView() {
+  const logoUrl = clubHistoryData.logo || 'assets/images/logo.jpeg';
+  const coverUrl = clubHistoryData.coverImage || 'assets/images/cancha_padel_1.jpg';
+  const name = fixMojibake(clubHistoryData.name || 'Level Tacámbaro');
+  const address = fixMojibake(clubHistoryData.address || 'Tacámbaro de Codallos, Michoacán (frente a Protección Civil)');
+  const description = fixMojibake(clubHistoryData.description || 'Level Tacámbaro nació con la visión de consolidar el primer centro deportivo de pádel de alto nivel en Tacámbaro, Michoacán. Nuestro club cuenta con 2 pistas de tecnología profesional (Pádel Cristal Pro y Panorámica VIP), iluminación LED nocturna de alta definición, área de espectadores, servicio de pro shop con alquiler de palas y pelotas, y atención personalizada las 24 horas del día.');
+
+  const galleryList = (clubHistoryData.gallery && clubHistoryData.gallery.length > 0)
+    ? clubHistoryData.gallery
+    : [
+        { title: 'Pista 1: Pádel Cristal Pro (Azul)', url: 'assets/images/cancha_padel_1.jpg' },
+        { title: 'Pista 2: Pádel Panorámica VIP (Verde)', url: 'assets/images/cancha_padel_2.jpg' },
+        { title: 'Cancha Techada & Alumbrado LED', url: 'assets/images/cancha_techada.jpg' },
+        { title: 'Cancha Grama Sintética Pro', url: 'assets/images/cancha_grama_7.jpg' },
+        { title: 'Cancha de Entrenamientos', url: 'assets/images/cancha_sintetica_5.jpg' }
+      ];
+
+  return `
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      <!-- Hero Banner Card (Match Reservas Style) -->
+      <div style="background: #FFFFFF; border-radius: 20px; border: 1px solid #E2E8F0; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.06);">
+        <div style="position: relative; height: 140px; background: linear-gradient(135deg, #022C22 0%, #064E3B 100%);">
+          <img src="${coverUrl}" alt="Instalaciones Level Tacámbaro" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.75;" onerror="this.src='assets/images/cancha_padel_1.jpg'">
+          <div style="position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%); width: 170px; height: 60px; border-radius: 16px; background: #FFFFFF; padding: 6px 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); border: 2.5px solid #10B981; display: flex; align-items: center; justify-content: center;">
+            <img src="${logoUrl}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;" onerror="this.src='assets/images/logo.jpeg'">
+          </div>
+        </div>
+
+        <div style="padding: 32px 16px 18px 16px; text-align: center;">
+          <h2 style="font-family: 'Outfit', sans-serif; font-size: 21px; font-weight: 900; color: #0F172A; margin: 0 0 6px 0;">
+            ${name}
+          </h2>
+          <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #0284C7; background: #F0F9FF; padding: 6px 12px; border-radius: 20px; border: 1px solid #BAE6FD;">
+            <i data-lucide="map-pin" style="width: 13px; height: 13px;"></i> <span>${address}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reseña Histórica Card -->
+      <div style="background: #FFFFFF; border-radius: 18px; border: 1px solid #E2E8F0; padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); border-left: 4px solid #10B981;">
+        <div style="font-size: 12px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <i data-lucide="book-open" style="width: 14px; height: 14px; color: #10B981;"></i> Reseña Histórica & Filosofía
+        </div>
+        <p style="font-size: 12px; color: #475569; line-height: 1.65; margin: 0;">
+          ${description}
+        </p>
+      </div>
+
+      <!-- Galería de Instalaciones -->
+      <div style="background: #FFFFFF; border-radius: 18px; border: 1px solid #E2E8F0; padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+        <h4 style="font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: #0F172A; margin: 0 0 12px 0; display: flex; align-items: center; justify-content: space-between;">
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><i data-lucide="image" style="width: 15px; height: 15px; color: #0284C7;"></i> Galería de Instalaciones</span>
+          <span style="font-size: 10px; font-weight: 700; color: #0284C7; background: #F0F9FF; padding: 3px 8px; border-radius: 10px;">${galleryList.length} Fotos</span>
+        </h4>
+
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; box-sizing: border-box;">
+          ${galleryList.map(img => `
+            <div style="border-radius: 14px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); background: #0F172A; position: relative; height: 115px; border: 1px solid #CBD5E1;">
+              <img src="${img.url}" alt="${fixMojibake(img.title)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='assets/images/cancha_padel_1.jpg'">
+              <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(15,23,42,0.92) 0%, rgba(15,23,42,0.3) 75%, transparent 100%); color: #FFF; font-size: 9.5px; font-weight: 700; padding: 16px 8px 6px 8px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                ${fixMojibake(img.title)}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* 2. MÓDULO RESERVAS & CANCHAS (2 CANCHAS DE PÁDEL) */
+function fixMojibake(str) {
+  if (typeof str !== 'string' || !str) return str || '';
+  return str
+    .replace(/\u00C2\u00AA/g, 'ª')
+    .replace(/\u00C3\u00AA/g, 'ª')
+    .replace(/2Âª/g, '2ª')
+    .replace(/3Âª/g, '3ª')
+    .replace(/Âª/g, 'ª')
+    .replace(/2Ãª/g, '2ª')
+    .replace(/3Ãª/g, '3ª')
+    .replace(/Ãª/g, 'ª')
+    .replace(/PÃ;del/gi, 'Pádel')
+    .replace(/PÃ¡del/gi, 'Pádel')
+    .replace(/PÃdel/gi, 'Pádel')
+    .replace(/PÃ;/g, 'Pá')
+    .replace(/PÃ¡/g, 'Pá')
+    .replace(/PÃ/g, 'Pá')
+    .replace(/TacÃ;mbaro/gi, 'Tacámbaro')
+    .replace(/TacÃ¡mbaro/gi, 'Tacámbaro')
+    .replace(/TacÃmbaro/gi, 'Tacámbaro')
+    .replace(/MichoacÃ;n/gi, 'Michoacán')
+    .replace(/MichoacÃ¡n/gi, 'Michoacán')
+    .replace(/MichoacÃn/gi, 'Michoacán')
+    .replace(/PanorÃ;mica/gi, 'Panorámica')
+    .replace(/PanorÃ¡mica/gi, 'Panorámica')
+    .replace(/CategorÃ;a/gi, 'Categoría')
+    .replace(/CategorÃa/gi, 'Categoría')
+    .replace(/PrÃ;ximamente/gi, 'Próximamente')
+    .replace(/PrÃ³ximamente/gi, 'Próximamente')
+    .replace(/PrÃximamente/gi, 'Próximamente')
+    .replace(/\u00C2/g, '')
+    .replace(/Â/g, '')
+    .replace(/Ã;/g, 'á')
+    .replace(/Ã¡/g, 'á')
+    .replace(/Ã©/g, 'é')
+    .replace(/Ã­/g, 'í')
+    .replace(/Ã³/g, 'ó')
+    .replace(/Ãº/g, 'ú')
+    .replace(/Ã±/g, 'ñ')
+    .replace(/Ã/g, 'Á');
+}
+
+function renderCourtsView(state, instKey) {
+  return `
+    <div style="margin-bottom: 14px;">
+      <h2 style="font-family: 'Outfit', sans-serif; font-size: 20px; color: #0F172A; font-weight: 900; margin: 0;">Reserva tu cancha</h2>
+    </div>
+
+    <div class="courts-list">
+      ${courtsData.map(court => `
+        <div class="mobile-court-card" onclick="openCourtDetail('${court.id}', '${instKey}')">
+          <div class="card-hero">
+            <img src="${court.image}" alt="${fixMojibake(court.name)}">
+          </div>
+          <div class="card-body">
+            <h4>${fixMojibake(court.name)}</h4>
+            <div class="court-location"><i data-lucide="map-pin" style="width: 12px;"></i> ${fixMojibake(court.location)}</div>
+            <div class="card-footer">
+              <div class="price-text">$ ${court.price} <span style="font-size: 10px; color: #64748B;">MXN / h</span></div>
+              <button class="btn-reserve-mini" style="display: inline-flex; align-items: center; gap: 4px;">Reservar <i data-lucide="arrow-right" style="width: 12px; height: 12px;"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+/* 3. MÓDULO TORNEOS */
+function renderTournamentsView(state, instKey) {
+  let tournListHtml = '';
+  if (!tournamentsData || tournamentsData.length === 0) {
+    tournListHtml = `<div class="module-card" style="text-align: center; color: #94A3B8; padding: 20px;">No hay torneos activos en este momento.</div>`;
+  } else {
+    tournListHtml = tournamentsData.map(t => {
+      const registeredCount = (t.teams || []).length;
+      const isOpen = (t.status === 'Inscripciones Abiertas');
+      const isFull = (registeredCount >= t.maxTeams);
+      const cleanTitle = fixMojibake(t.title || '');
+      const cleanCat = fixMojibake(t.category || '');
+      const cleanStatus = fixMojibake(t.status || '');
+      const cleanDates = fixMojibake(t.dates || '');
+      let cleanPrize = fixMojibake(t.prize || '');
+      if (!cleanPrize || cleanPrize === ',000 MXN' || cleanPrize.startsWith(',')) {
+        cleanPrize = (t.id === 'TOURN-101') ? '$15,000 MXN' : '$8,000 MXN';
+      }
+      const tournImg = t.imageUrl || 'assets/images/cancha_padel_2.jpg';
+
+      return `
+        <div class="mobile-court-card" style="margin-bottom: 16px; border: 1px solid #E2E8F0; background: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.05);">
+          <!-- Hero Card Image for Tournament (Reservas Aesthetic) -->
+          <div style="position: relative; height: 130px; background: linear-gradient(135deg, #022C22 0%, #064E3B 100%);">
+            <img src="${tournImg}" alt="${cleanTitle}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.75;" onerror="this.src='assets/images/cancha_padel_2.jpg'">
+            
+            <span style="position: absolute; top: 12px; left: 12px; background: rgba(2, 132, 199, 0.95); color: #FFF; font-weight: 800; font-size: 10.5px; padding: 5px 12px; border-radius: 20px; backdrop-filter: blur(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); display: inline-flex; align-items: center; gap: 4px;">
+              <i data-lucide="award" style="width: 12px; height: 12px;"></i> ${cleanCat}
+            </span>
+
+            <span style="position: absolute; top: 12px; right: 12px; background: ${isOpen ? 'rgba(16, 185, 129, 0.95)' : 'rgba(100, 116, 139, 0.95)'}; color: #FFF; font-weight: 800; font-size: 10.5px; padding: 5px 12px; border-radius: 20px; backdrop-filter: blur(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); display: inline-flex; align-items: center; gap: 4px;">
+              ${isOpen ? '<i data-lucide="check-circle" style="width: 12px; height: 12px;"></i> Inscripciones Abiertas' : '<i data-lucide="lock" style="width: 12px; height: 12px;"></i> Próximamente'}
+            </span>
+          </div>
+
+          <div style="padding: 16px;">
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; color: #0F172A; margin: 0 0 6px 0;">
+              ${cleanTitle}
+            </h3>
+
+            <div style="font-size: 12px; color: #64748B; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="calendar" style="width: 13px; height: 13px; color: #0284C7;"></i> <span>${cleanDates}</span>
+            </div>
+
+            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+              <div style="font-size: 11px; color: #475569; font-weight: 600;">
+                Inscritos: <strong style="color: #0F172A; font-weight: 800;">${registeredCount} / ${t.maxTeams} Parejas</strong>
+              </div>
+              <div style="font-size: 13px; font-weight: 900; color: #10B981;">
+                Premio: ${cleanPrize}
+              </div>
+            </div>
+
+            ${isOpen ? `
+              <button style="width: 100%; background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%); color: #FFF; border: none; padding: 11px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3); display: inline-flex; align-items: center; justify-content: center; gap: 6px;" onclick="openClientRegisterModal('${t.id}')">
+                <i data-lucide="trophy" style="width: 14px; height: 14px;"></i> Registrar Mi Equipo / Pareja
+              </button>
+            ` : `
+              <button style="width: 100%; background: #F1F5F9; color: #94A3B8; border: 1px solid #E2E8F0; padding: 11px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: not-allowed;" disabled>
+                ${isFull ? 'Cupo Lleno' : 'Inscripciones Cerradas'}
+              </button>
+            `}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  return `
+    <div style="position: relative;">
+      <div style="margin-bottom: 14px;">
+        <h2 style="font-family: 'Outfit', sans-serif; font-size: 20px; color: #0F172A; font-weight: 900; margin: 0;">Torneos</h2>
+      </div>
+      ${tournListHtml}
+    </div>
+  `;
+}
+
+function openClientRegisterModal(tournId) {
+  activeRegisterTournamentId = tournId;
+  renderAllInstances();
+}
+
+function closeClientRegisterModal() {
+  activeRegisterTournamentId = null;
+  renderAllInstances();
+}
+
+async function handleClientRegisterSubmit(e, tournId, instKey = 'single') {
+  e.preventDefault();
+  const teamNameInput = document.getElementById(`clientTeamNameInput_${instKey}`) || document.getElementById('clientTeamNameInput');
+  const participantsInput = document.getElementById(`clientParticipantsInput_${instKey}`) || document.getElementById('clientParticipantsInput');
+  if (!teamNameInput || !participantsInput) return;
+
+  const teamName = teamNameInput.value.trim();
+  const participants = participantsInput.value.trim();
+  if (!teamName || !participants) return;
+
+  try {
+    const res = await fetch('/api/tournaments/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ tournamentId: tournId, teamName, participants })
+    });
+    if (res.ok) {
+      activeRegisterTournamentId = null;
+      showAppAlert(instKey, '¡Inscripción Exitosa!', `Tu equipo "${teamName}" ha sido registrado correctamente para el torneo.`, 'success', '¡Excelente!');
+      fetchTournamentsData();
+    } else {
+      showAppAlert(instKey, 'Inscripción Fallida', 'No se pudo registrar la inscripción en este momento. Intenta de nuevo.', 'warning');
+    }
+  } catch (err) {
+    console.error('Error registrando equipo:', err);
+    showAppAlert(instKey, 'Error de Conexión', 'No se pudo conectar con el servidor de Tacámbaro.', 'error');
+  }
+}
+
+/* 4. MÓDULO TIENDA & ALQUILER */
+function renderProductsView() {
+  let productsHtml = '';
+  if (productsData.length === 0) {
+    productsHtml = `
+      <div class="module-card" style="padding: 12px; grid-column: 1 / -1; text-align: center; color: #94A3B8;">
+        No hay productos en catálogo.
+      </div>
+    `;
+  } else {
+    productsHtml = productsData.map(p => {
+      const isOut = (p.stock <= 0);
+      const imgUrl = p.imageUrl || 'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=400&auto=format&fit=crop';
+      return `
+        <div class="module-card" style="padding: 10px 8px; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; box-sizing: border-box;">
+          <div>
+            <div style="position: relative; width: 100%; height: 80px; border-radius: 10px; overflow: hidden; margin-bottom: 6px; background: #F1F5F9;">
+              <img src="${imgUrl}" alt="${p.name}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=400&auto=format&fit=crop';">
+              <span style="position: absolute; top: 4px; left: 4px; font-size: 8.5px; font-weight: 700; color: #0284C7; background: rgba(255,255,255,0.92); padding: 2px 5px; border-radius: 4px; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${p.category || 'Tienda'}
+              </span>
+            </div>
+            <h4 style="font-size: 11.5px; font-weight: 700; margin: 2px 0 4px 0; color: #0F172A; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" title="${p.name}">${p.name}</h4>
+          </div>
+          <div>
+            <div style="font-size: 13px; font-weight: 800; color: #10B981; margin-bottom: 2px;">$ ${p.price} MXN</div>
+            <div style="font-size: 9.5px; color: ${isOut ? '#DC2626' : '#64748B'}; font-weight: 700; display: inline-flex; align-items: center; gap: 3px;">
+              ${isOut ? '<i data-lucide="x-circle" style="width: 11px; height: 11px; color: #DC2626;"></i> Agotado' : `<i data-lucide="box" style="width: 11px; height: 11px; color: #10B981;"></i> Stock: ${p.stock} uds`}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  return `
+    <div style="margin-bottom: 14px;">
+      <h2 style="font-family: 'Outfit', sans-serif; font-size: 20px; color: #0F172A; font-weight: 900; margin: 0;">Productos</h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%; box-sizing: border-box;">
+      ${productsHtml}
+    </div>
+  `;
+}
+
+/* 5. MÓDULO CONTACTO & UBICACIÓN */
+function renderContactView() {
+  const name = clubHistoryData.name || 'Level Tacámbaro';
+  const address = clubHistoryData.address || 'Tacámbaro de Codallos, Michoacán';
+  const phone = clubHistoryData.phone || '459 102 3849';
+  const cleanPhone = (phone || '').replace(/\D/g, '');
+
+  return `
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      <!-- Header Title -->
+      <div style="margin-bottom: 2px;">
+        <h2 style="font-family: 'Outfit', sans-serif; font-size: 20px; color: #0F172A; font-weight: 900; margin: 0;">Contáctanos</h2>
+      </div>
+
+      <!-- Hero Header Card with Cover Image & Status Pill -->
+      <div style="background: #FFFFFF; border-radius: 20px; border: 1px solid #E2E8F0; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.06);">
+        <div style="position: relative; height: 125px; background: linear-gradient(135deg, #022C22 0%, #064E3B 100%);">
+          <img src="assets/images/cancha_techada.jpg" alt="Instalaciones Level Tacámbaro" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.75;" onerror="this.src='assets/images/cancha_padel_1.jpg'">
+          <div style="position: absolute; top: 12px; right: 12px; background: rgba(16, 185, 129, 0.95); color: #FFF; font-weight: 800; font-size: 10px; padding: 4px 10px; border-radius: 20px; backdrop-filter: blur(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); display: inline-flex; align-items: center; gap: 4px;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #FFF; display: inline-block;"></span> PISTAS ABIERTAS 24H
+          </div>
+          <div style="position: absolute; bottom: 12px; left: 14px; right: 14px; color: #FFF;">
+            <span style="font-size: 10px; font-weight: 700; color: #34D399; text-transform: uppercase; letter-spacing: 0.5px;">Centro Deportivo Pro</span>
+            <h3 style="font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 900; color: #FFFFFF; margin: 2px 0 0 0; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+              ${name}
+            </h3>
+          </div>
+        </div>
+
+        <!-- Contact Quick Action Grid -->
+        <div style="padding: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <!-- WhatsApp Direct Button -->
+          <button onclick="window.open('https://wa.me/52${cleanPhone}', '_blank')" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: #FFF; border: none; padding: 12px 10px; border-radius: 14px; font-weight: 800; font-size: 12px; cursor: pointer; box-shadow: 0 4px 14px rgba(37,211,102,0.3); display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s ease;">
+            <i data-lucide="message-square" style="width: 20px; height: 20px;"></i>
+            <span>WhatsApp Directo</span>
+            <span style="font-size: 9.5px; opacity: 0.9; font-weight: 600;">Respuesta Inmediata</span>
+          </button>
+
+          <!-- Call Button -->
+          <button onclick="window.open('tel:${cleanPhone}', '_self')" style="background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%); color: #FFF; border: none; padding: 12px 10px; border-radius: 14px; font-weight: 800; font-size: 12px; cursor: pointer; box-shadow: 0 4px 14px rgba(2,132,199,0.3); display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s ease;">
+            <i data-lucide="phone-call" style="width: 20px; height: 20px;"></i>
+            <span>Llamar al Club</span>
+            <span style="font-size: 9.5px; opacity: 0.9; font-weight: 600;">${phone}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Location & Reference Card -->
+      <div style="background: #FFFFFF; border-radius: 18px; border: 1px solid #E2E8F0; padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); border-left: 4px solid #0284C7;">
+        <div style="font-size: 12px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <i data-lucide="map-pin" style="width: 15px; height: 15px; color: #0284C7;"></i> Ubicación Exacta & Referencia
+        </div>
+        
+        <p style="font-size: 12px; color: #334155; line-height: 1.5; margin: 0 0 8px 0; font-weight: 600;">
+          ${address}
+        </p>
+
+        <div style="background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 10px; padding: 8px 10px; font-size: 11px; color: #0369A1; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
+          <i data-lucide="navigation" style="width: 14px; height: 14px; color: #0284C7;"></i> Referencia: Frente a Protección Civil Tacámbaro
+        </div>
+
+        <!-- Navigation Apps Buttons -->
+        <div style="display: flex; gap: 8px;">
+          <button onclick="window.open('https://maps.google.com/?q=Valent%C3%ADn+G%C3%B3mez+Far%C3%ADas+3+Tac%C3%A1mbaro+Michoac%C3%A1n', '_blank')" style="flex: 1; background: #F8FAFC; color: #0F172A; border: 1px solid #CBD5E1; padding: 9px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+            <i data-lucide="map" style="width: 13px; height: 13px; color: #10B981;"></i> Google Maps
+          </button>
+          <button onclick="window.open('https://waze.com/ul?q=Tacambaro+Michoacan', '_blank')" style="flex: 1; background: #F8FAFC; color: #0F172A; border: 1px solid #CBD5E1; padding: 9px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+            <i data-lucide="navigation-2" style="width: 13px; height: 13px; color: #0284C7;"></i> Waze
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function handleClientContactSubmit(e) {
+  e.preventDefault();
+  const name = (document.getElementById('contactNameInput')?.value || '').trim();
+  if (name) {
+    showAppAlert('single', '¡Mensaje Enviado!', `Gracias ${name}, hemos recibido tu mensaje en Level Tacámbaro. Te responderemos a la brevedad.`, 'success', '¡Excelente!');
+    document.getElementById('contactNameInput').value = '';
+    document.getElementById('contactPhoneInput').value = '';
+    document.getElementById('contactMessageInput').value = '';
+  }
+}
+
+function formatSelectedDateText(dateStr) {
+  if (!dateStr) return 'Sábado, 5 de Septiembre 2026';
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  const yr = parseInt(parts[0]);
+  const mo = parseInt(parts[1]) - 1;
+  const da = parseInt(parts[2]);
+  
+  const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  
+  const dObj = new Date(yr, mo, da);
+  const dayName = daysOfWeek[dObj.getDay()];
+  const monthName = months[mo];
+  
+  return `${dayName}, ${da} de ${monthName} ${yr}`;
+}
+
+function renderCourtDetailView(court, state, instKey) {
+  const liveCourt = courtsData.find(c => c.id === court.id) || court;
+  const bookingStep = state.bookingStep || 'calendar';
+
+  if (bookingStep === 'calendar') {
+    return renderCalendarStepView(liveCourt, state, instKey);
+  } else {
+    return renderTimeSlotsStepView(liveCourt, state, instKey);
+  }
+}
+
+function changeCalendarMonth(instKey, delta) {
+  const state = instanceStates[instKey];
+  if (state.calendarMonth === undefined) state.calendarMonth = 8;
+  if (state.calendarYear === undefined) state.calendarYear = 2026;
+
+  state.calendarMonth += delta;
+  if (state.calendarMonth > 11) {
+    state.calendarMonth = 0;
+    state.calendarYear += 1;
+  } else if (state.calendarMonth < 0) {
+    state.calendarMonth = 11;
+    state.calendarYear -= 1;
+  }
+  renderAllInstances();
+}
+
+function getSlotBookingForDate(courtId, slot, dateStr) {
+  if (!courtId || !slot) return null;
+  const targetHour = parseInt(slot.split(':')[0], 10);
+  const bookingsList = [...(allBookingsData || []), ...(userBookings || [])];
+
+  return bookingsList.find(b => {
+    if (b.courtId !== courtId || !b.timeSlot) return false;
+
+    const bDate = b.date || b.selectedDate;
+    if (dateStr) {
+      if (!bDate) return false;
+      const bISO = String(bDate).trim().substring(0, 10);
+      if (bISO !== dateStr) return false;
+    }
+
+    const startMatch = b.timeSlot.match(/(\d{1,2}):00/);
+    if (!startMatch) return false;
+    const startHour = parseInt(startMatch[1], 10);
+    const durMatch = b.timeSlot.match(/(\d+)\s*(?:hrs?|horas?)/);
+    const duration = durMatch ? parseInt(durMatch[1], 10) : 1;
+    const endHour = startHour + duration;
+
+    return targetHour >= startHour && targetHour < endHour;
+  });
+}
+
+function getCourtDateOccupancy(court, dateStr) {
+  if (!court || !court.slots) return 0;
+  const totalSlots = court.slots.length || 24;
+  let bookedCount = 0;
+
+  court.slots.forEach(slot => {
+    if (getSlotBookingForDate(court.id, slot, dateStr)) {
+      bookedCount++;
+    }
+  });
+
+  return Math.min(100, Math.round((bookedCount / totalSlots) * 100));
+}
+
+function renderCalendarStepView(liveCourt, state, instKey) {
+  const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  const yr = state.calendarYear !== undefined ? state.calendarYear : 2026;
+  const moIdx = state.calendarMonth !== undefined ? state.calendarMonth : 8;
+
+  const monthName = monthNames[moIdx];
+  const daysInMonth = new Date(yr, moIdx + 1, 0).getDate();
+  const offset = new Date(yr, moIdx, 1).getDay();
+
+  let calendarGridHtml = '';
+
+  for (let i = 0; i < offset; i++) {
+    calendarGridHtml += `<div style="background: transparent; border: none; height: 50px;"></div>`;
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const isToday = (yr === 2026 && moIdx === 8 && day === 5);
+    const isPast = (yr < 2026 || (yr === 2026 && moIdx < 8) || (yr === 2026 && moIdx === 8 && day < 5));
+    const dateStr = `${yr}-${String(moIdx + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const isSelected = (state.selectedDate === dateStr);
+
+    let borderStyle = isSelected ? '2px solid #10B981' : (isToday ? '2px solid #0284C7' : '1px solid #E2E8F0');
+    let bgStyle = isSelected ? 'rgba(16, 185, 129, 0.12)' : (isToday ? 'rgba(2, 132, 199, 0.06)' : (isPast ? '#F8FAFC' : '#FFFFFF'));
+    let textColor = isPast ? '#94A3B8' : '#0F172A';
+    let cursorStyle = isPast ? 'not-allowed' : 'pointer';
+    let opacityStyle = isPast ? '0.5' : '1';
+
+    const occupancyPct = isPast ? 0 : getCourtDateOccupancy(liveCourt, dateStr);
+
+    let statusTextHtml = '';
+    if (isPast) {
+      statusTextHtml = `<span style="font-size: 8px; font-weight: 600; color: #94A3B8;">—</span>`;
+    } else if (occupancyPct >= 80) {
+      statusTextHtml = `<span style="font-size: 8px; font-weight: 800; color: #DC2626; display: inline-flex; align-items: center; gap: 2px;"><i data-lucide="flame" style="width: 9px; height: 9px;"></i> ${occupancyPct}%</span>`;
+    } else if (occupancyPct > 0) {
+      statusTextHtml = `<span style="font-size: 8px; font-weight: 700; color: #D97706; display: inline-flex; align-items: center; gap: 2px;"><i data-lucide="zap" style="width: 9px; height: 9px;"></i> ${occupancyPct}%</span>`;
+    } else {
+      statusTextHtml = `<span style="font-size: 8px; font-weight: 700; color: #059669; display: inline-flex; align-items: center; gap: 2px;"><i data-lucide="check" style="width: 9px; height: 9px;"></i> Libre</span>`;
+    }
+
+    const hoyBadge = isToday ? `<span style="font-size: 8px; font-weight: 800; background: #0284C7; color: #FFF; padding: 1px 4px; border-radius: 4px;">HOY</span>` : '';
+
+    const clickAction = isPast ? '' : `onclick="instanceStates['${instKey}'].selectedDate='${dateStr}'; instanceStates['${instKey}'].bookingStep='slots'; renderAllInstances();"`;
+
+    calendarGridHtml += `
+      <div ${clickAction} style="background: ${bgStyle}; border: ${borderStyle}; border-radius: 10px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 52px; cursor: ${cursorStyle}; opacity: ${opacityStyle}; transition: all 0.2s ease; box-shadow: ${isSelected ? '0 4px 12px rgba(16,185,129,0.2)' : 'none'};">
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 2px;">
+          <span style="font-size: 13px; font-weight: 800; color: ${textColor}; font-family: 'Outfit', sans-serif;">${day}</span>
+          ${hoyBadge}
+        </div>
+        ${statusTextHtml}
+      </div>
+    `;
+  }
+
+  return `
+    <div style="position: relative; background: #F8FAFC; min-height: 100%; padding-bottom: 70px;">
+      <div style="position: relative; height: 130px;">
+        <img src="${liveCourt.image}" style="width: 100%; height: 100%; object-fit: cover;">
+        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.75) 100%);"></div>
+        <button onclick="instanceStates['${instKey}'].selectedCourt=null; renderAllInstances();" style="position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.9); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+          <i data-lucide="arrow-left" style="width: 18px; color: #0F172A;"></i>
+        </button>
+        <div style="position: absolute; bottom: 10px; left: 14px; right: 14px; color: #FFF;">
+          <div style="font-size: 10px; font-weight: 700; color: #34D399; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Paso 1 de 2: Fecha de Reserva</div>
+          <h3 style="font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 800; color: #FFF; margin: 0;">${liveCourt.name}</h3>
+        </div>
+      </div>
+
+      <div style="padding: 12px 14px 4px 14px;">
+        <div style="background: #FFF; border-radius: 12px; padding: 10px 12px; border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+          <div>
+            <div style="font-size: 11px; color: #64748B; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="map-pin" style="width: 12px; height: 12px; color: #0284C7;"></i> ${liveCourt.location}</div>
+            <div style="font-size: 14px; font-weight: 800; color: #10B981; margin-top: 2px;">$ ${liveCourt.price} MXN / hora</div>
+          </div>
+          <span style="background: rgba(16, 185, 129, 0.1); color: #059669; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2); display: inline-flex; align-items: center; gap: 4px;">
+            <i data-lucide="calendar" style="width: 12px; height: 12px;"></i> Calendario
+          </span>
+        </div>
+
+        <div style="background: #FFF; border-radius: 14px; padding: 12px; border: 1px solid #E2E8F0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding: 0 4px;">
+            <button onclick="changeCalendarMonth('${instKey}', -1)" style="background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 8px; padding: 5px 12px; cursor: pointer; color: #0F172A; font-size: 12px; font-weight: 800; transition: all 0.2s;">‹ Prev</button>
+            <h4 style="font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: #0F172A; margin: 0; display: flex; align-items: center; gap: 6px;">
+              <i data-lucide="calendar" style="width: 14px; height: 14px; color: #10B981;"></i> ${monthName} ${yr}
+            </h4>
+            <button onclick="changeCalendarMonth('${instKey}', 1)" style="background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 8px; padding: 5px 12px; cursor: pointer; color: #0F172A; font-size: 12px; font-weight: 800; transition: all 0.2s;">Sig ›</button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-bottom: 6px;">
+            <span style="font-size: 10px; font-weight: 700; color: #94A3B8;">Dom</span>
+            <span style="font-size: 10px; font-weight: 700; color: #94A3B8;">Lun</span>
+            <span style="font-size: 10px; font-weight: 700; color: #94A3B8;">Mar</span>
+            <span style="font-size: 10px; font-weight: 700; color: #94A3B8;">Mié</span>
+            <span style="font-size: 10px; font-weight: 700; color: #94A3B8;">Jue</span>
+            <span style="font-size: 10px; font-weight: 700; color: #94A3B8;">Vie</span>
+            <span style="font-size: 10px; font-weight: 700; color: #94A3B8;">Sáb</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;">
+            ${calendarGridHtml}
+          </div>
+        </div>
+
+        <div style="margin-top: 12px; background: rgba(2, 132, 199, 0.06); border: 1px solid rgba(2, 132, 199, 0.2); border-radius: 10px; padding: 10px 12px; text-align: center; font-size: 11px; color: #0369A1; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <i data-lucide="info" style="width: 13px; height: 13px; color: #0369A1;"></i> Toca cualquier día del calendario para ver sus horarios disponibles.
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTimeSlotsStepView(liveCourt, state, instKey) {
+  const selectedDate = state.selectedDate || '2026-09-05';
+  const formattedDate = formatSelectedDateText(selectedDate);
+  const durationHours = state.durationHours || 1;
+
+  state.paymentMethod = 'Efectivo en Mostrador';
+
+  return `
+    <div style="position: relative; background: #FFF; min-height: 100%;">
+      <div style="position: relative; height: 120px;">
+        <img src="${liveCourt.image}" style="width: 100%; height: 100%; object-fit: cover;">
+        <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,23,42,0.5) 0%, rgba(15,23,42,0.85) 100%);"></div>
+        <button onclick="instanceStates['${instKey}'].bookingStep='calendar'; renderAllInstances();" style="position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.9); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; backdrop-filter: blur(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+          <i data-lucide="arrow-left" style="width: 18px; color: #0F172A;"></i>
+        </button>
+        <div style="position: absolute; bottom: 10px; left: 14px; right: 14px; color: #FFF;">
+          <div style="font-size: 10px; font-weight: 700; color: #34D399; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Paso 2 de 2: Horarios Disponibles</div>
+          <h3 style="font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 800; color: #FFF; margin: 0;">${liveCourt.name}</h3>
+        </div>
+      </div>
+
+      <div style="padding: 12px 14px 130px 14px;">
+        <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(2, 132, 199, 0.08) 100%); border: 1.5px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <div>
+            <div style="font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase;">Día Seleccionado:</div>
+            <div style="font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800; color: #0F172A; margin-top: 1px; display: flex; align-items: center; gap: 4px;">
+              <i data-lucide="calendar" style="width: 13px; height: 13px; color: #10B981;"></i> ${formattedDate}
+            </div>
+          </div>
+          <button onclick="instanceStates['${instKey}'].bookingStep='calendar'; renderAllInstances();" style="background: #FFF; color: #0284C7; border: 1px solid #BAE6FD; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.03); display: inline-flex; align-items: center; gap: 4px;">
+            <i data-lucide="edit-3" style="width: 11px; height: 11px;"></i> Cambiar Día
+          </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Duración:</label>
+            <div style="display: flex; gap: 4px;">
+              <button onclick="instanceStates['${instKey}'].durationHours=1; renderAllInstances();" style="flex: 1; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 800; border: 1.5px solid ${durationHours === 1 ? '#10B981' : '#CBD5E1'}; background: ${durationHours === 1 ? '#10B981' : '#FFF'}; color: ${durationHours === 1 ? '#FFF' : '#334155'}; cursor: pointer;">1 Hora</button>
+              <button onclick="instanceStates['${instKey}'].durationHours=2; renderAllInstances();" style="flex: 1; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 800; border: 1.5px solid ${durationHours === 2 ? '#10B981' : '#CBD5E1'}; background: ${durationHours === 2 ? '#10B981' : '#FFF'}; color: ${durationHours === 2 ? '#FFF' : '#334155'}; cursor: pointer;">2 Horas</button>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Método de Pago:</label>
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1.5px solid rgba(16, 185, 129, 0.3); padding: 8px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; color: #059669; display: flex; align-items: center; justify-content: center; gap: 4px; text-align: center;">
+              <i data-lucide="banknote" style="width: 13px; height: 13px;"></i> Efectivo en Mostrador
+            </div>
+          </div>
+        </div>
+
+        <h5 style="font-size: 12px; font-weight: 700; color: #0F172A; margin-bottom: 8px;">Horarios Disponibles para ${formattedDate}:</h5>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px;">
+          ${liveCourt.slots.map(slot => {
+            const booking = getSlotBookingForDate(liveCourt.id, slot, selectedDate);
+            const isBlocked = liveCourt.slotStatuses && liveCourt.slotStatuses[slot] === 'blocked';
+            const isSelected = state.selectedSlot === slot;
+
+            if (booking) {
+              const clientName = booking.clientName ? fixMojibake(booking.clientName) : 'OCUPADO';
+              return `
+                <div style="background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid #FCA5A5; padding: 6px 8px; border-radius: 8px; text-align: center; font-size: 11px; font-weight: 700; cursor: not-allowed; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;">
+                  <div><i data-lucide="slash" style="width: 11px; height: 11px;"></i> ${slot} (OCUPADO)</div>
+                  <small style="font-size: 9px; opacity: 0.85; font-weight: 600;">${clientName}</small>
+                </div>
+              `;
+            } else if (isBlocked) {
+              return `
+                <div style="background: #F1F5F9; color: #94A3B8; border: 1px solid #E2E8F0; padding: 8px; border-radius: 8px; text-align: center; font-size: 11px; cursor: not-allowed; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <i data-lucide="lock" style="width: 11px; height: 11px;"></i> ${slot} (Bloqueado)
+                </div>
+              `;
+            } else {
+              return `
+                <div onclick="instanceStates['${instKey}'].selectedSlot='${slot}'; renderAllInstances();" style="background: ${isSelected ? '#10B981' : '#F8FAFC'}; color: ${isSelected ? '#FFF' : '#0F172A'}; border: 1.5px solid ${isSelected ? '#10B981' : '#E2E8F0'}; padding: 8px; border-radius: 8px; text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                  <i data-lucide="clock" style="width: 11px; height: 11px;"></i> ${slot} ${isSelected ? '✓' : ''}
+                </div>
+              `;
+            }
+          }).join('')}
+        </div>
+      </div>
+
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: #FFF; border-top: 1px solid #E2E8F0; padding: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); z-index: 20;">
+        <div>
+          <div style="font-size: 10px; color: #64748B; font-weight: 700; text-transform: uppercase;">Total a Pagar:</div>
+          <div style="font-size: 18px; font-weight: 800; color: #10B981;">$ ${liveCourt.price * durationHours} MXN</div>
+        </div>
+        <button onclick="processReserveApi('${liveCourt.id}', '${instKey}')" style="background: ${state.selectedSlot ? '#10B981' : '#94A3B8'}; color: #FFF; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s ease; box-shadow: ${state.selectedSlot ? '0 4px 12px rgba(16,185,129,0.3)' : 'none'}; display: inline-flex; align-items: center; gap: 4px;">
+          <span>${state.selectedSlot ? 'Confirmar Reserva' : 'Elige Horario'}</span>
+          ${state.selectedSlot ? '<i data-lucide="check-circle" style="width: 14px; height: 14px;"></i>' : ''}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function openCourtDetail(id, instKey) {
+  const state = instanceStates[instKey];
+  state.selectedCourt = courtsData.find(c => c.id === id);
+  state.bookingStep = 'calendar';
+  state.selectedDate = state.selectedDate || '2026-09-05';
+  state.selectedSlot = null;
+  state.durationHours = 1;
+  renderAllInstances();
+}
+
+async function processReserveApi(courtId, instKey) {
+  const state = instanceStates[instKey];
+  if (!state.selectedSlot) return;
+
+  const clientName = instKey === 'phoneA' ? 'Juan (Celular 1)' : (instKey === 'phoneB' ? 'Carlos (Celular 2)' : 'Carlos');
+
+  try {
+    const res = await fetch('/api/reserve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        courtId: courtId,
+        timeSlot: state.selectedSlot,
+        clientName: clientName,
+        paymentMethod: state.paymentMethod || 'Tarjeta / Efectivo',
+        selectedDate: state.selectedDate || '2026-09-05',
+        durationHours: state.durationHours || 1
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      userBookings.unshift(data.booking);
+      state.selectedSlot = null;
+      state.selectedCourt = null;
+      state.bookingStep = 'calendar';
+      state.activeTab = 'canchas';
+
+      const dateTxt = formatSelectedDateText(state.selectedDate || '2026-09-05');
+      showAppAlert(instKey, '¡Reserva Exitosa!', `Se confirmó tu reserva en Pádel Club Tacámbaro para el ${dateTxt} a las ${data.booking.timeSlot}.`, 'success', '¡A Jugar!');
+      fetchCourtsData();
+    } else {
+      if (data.blocked) {
+        showAppAlert(instKey, 'Reserva Bloqueada', data.message || 'Tienes un saldo pendiente por inasistencia previa. Favor de acudir a recepción o liquidar tu cuenta para poder reservar.', 'error', 'Entendido');
+      } else {
+        showAppAlert(instKey, 'Horario No Disponible', data.message || 'Este horario acaba de ser ocupado por otro jugador.', 'warning', 'Entendido');
+      }
+      fetchCourtsData();
+    }
+  } catch (err) {
+    console.error('Error reserving:', err);
+    showAppAlert(instKey, 'Error de Conexión', 'Ocurrió un error al procesar tu reserva.', 'error');
+  }
+}
+
+function switchPanelTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  if (tab === 'structure') {
+    document.querySelector('.tab-buttons button:nth-child(1)').classList.add('active');
+    document.getElementById('tab-structure').classList.add('active');
+  } else {
+    document.querySelector('.tab-buttons button:nth-child(2)').classList.add('active');
+    document.getElementById('tab-code').classList.add('active');
+  }
+}
+
+function loadCodeSnippet(key) {
+  switchPanelTab('code');
+  document.getElementById('codeViewerContent').textContent = codeSnippets[key] || '// Código';
+}
+
+function hotReloadApp() {
+  fetchCourtsData();
+}

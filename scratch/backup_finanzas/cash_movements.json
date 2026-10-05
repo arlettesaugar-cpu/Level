@@ -1,0 +1,32 @@
+﻿[
+    {
+        "id":  "MOV-1461",
+        "timestamp":  "2026-09-07 15:50",
+        "shiftId":  "CSH-1056",
+        "category":  "Insumos",
+        "type":  "salida",
+        "amount":  150,
+        "concept":  "nada",
+        "responsible":  "Administrador Level Tacambaro"
+    },
+    {
+        "id":  "MOV-9857",
+        "timestamp":  "2026-09-07 15:38",
+        "shiftId":  "CSH-6059",
+        "category":  "Insumos",
+        "type":  "salida",
+        "amount":  150,
+        "concept":  "nada",
+        "responsible":  "Administrador Level Tacambaro"
+    },
+    {
+        "id":  "MOV-4944",
+        "timestamp":  "2026-09-07 15:36",
+        "shiftId":  "CSH-6059",
+        "category":  "Insumos",
+        "type":  "salida",
+        "amount":  150,
+        "concept":  "Compra de insumos",
+        "responsible":  "Administrador Level Tacambaro"
+    }
+]

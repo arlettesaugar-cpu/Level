@@ -1,0 +1,34 @@
+﻿[
+    {
+        "manualSalidas":  0,
+        "id":  "CSH-1056",
+        "initialAmount":  1000,
+        "difference":  0,
+        "expectedCash":  0,
+        "responsible":  "Administrador Level Tacambaro",
+        "cardIncomes":  0,
+        "status":  "abierta",
+        "openTime":  "2026-09-07 15:49",
+        "closeTime":  "",
+        "notes":  "nada",
+        "manualEntradas":  0,
+        "physicalCash":  0,
+        "cashIncomes":  0
+    },
+    {
+        "manualSalidas":  300,
+        "id":  "CSH-6059",
+        "initialAmount":  1000,
+        "difference":  150,
+        "expectedCash":  700,
+        "responsible":  "Administrador Level Tacambaro",
+        "cardIncomes":  0,
+        "status":  "cerrada",
+        "openTime":  "2026-09-07 15:34",
+        "closeTime":  "2026-09-07 15:39",
+        "notes":  "Corte de Caja Administrador",
+        "manualEntradas":  0,
+        "physicalCash":  850,
+        "cashIncomes":  0
+    }
+]
