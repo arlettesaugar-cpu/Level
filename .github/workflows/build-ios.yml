@@ -38,15 +38,22 @@ jobs:
 
       - name: 📱 Asegurar plataforma iOS y dependencias de Flutter
         run: |
-          flutter create . --platforms=ios
+          flutter create --platforms=ios .
           flutter pub get
+          # Asegurar que la carpeta ios y el Podfile existan para CocoaPods
+          if [ ! -f "ios/Podfile" ]; then
+            echo "El Podfile no existe, recreando plataforma iOS..."
+            rm -rf ios
+            flutter create --platforms=ios .
+          fi
 
       - name: 🍏 Instalar CocoaPods
         run: |
           cd ios
+          pod repo-update || true
           pod install
           cd ..
-
+          
       - name: 🔨 Compilar iOS IPA (Sin firma)
         run: flutter build ipa --no-codesign
 
