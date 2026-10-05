@@ -14,7 +14,7 @@ concurrency:
 jobs:
   build-ios:
     name: 🍏 Compilar iOS (IPA sin firma)
-    runs-on: macos-latest
+    runs-on: macos-13
 
     steps:
       - name: 📥 Clonar repositorio
