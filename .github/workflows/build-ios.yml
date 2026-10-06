@@ -15,17 +15,11 @@ jobs:
   build-ios:
     name: 🍏 Compilar iOS (IPA sin firma)
     runs-on: macos-14
-    timeout-minutes: 20
+    timeout-minutes: 15
 
     steps:
       - name: 📥 Clonar repositorio
         uses: actions/checkout@v4
-
-      - name: 🛠️ Configurar Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
 
       - name: 🐦 Configurar Flutter SDK
         uses: subosito/flutter-action@v2
@@ -33,33 +27,61 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: 📱 Generar scaffolding iOS si no existe
+      - name: 📱 Generar y preparar entorno iOS
         run: |
-          if [ ! -d "ios" ]; then
-            echo "Generando plataforma iOS..."
-            flutter create . --platforms=ios
-          fi
+          flutter create . --platforms=ios
+          flutter pub get
 
-      - name: 📦 Instalar dependencias de Flutter
-        run: flutter pub get
+      - name: 🛡️ Desactivar requerimientos de firma en Xcode
+        run: |
+          # Inyectar banderas de no-firma en los archivos xcconfig
+          echo "CODE_SIGNING_ALLOWED=NO" >> ios/Flutter/Generated.xcconfig
+          echo "CODE_SIGNING_REQUIRED=NO" >> ios/Flutter/Generated.xcconfig
+          echo "CODE_SIGN_IDENTITY=" >> ios/Flutter/Generated.xcconfig
+          echo "EXPANDED_CODE_SIGN_IDENTITY=" >> ios/Flutter/Generated.xcconfig
 
-      - name: 🍏 Instalar CocoaPods
+          echo "CODE_SIGNING_ALLOWED=NO" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGNING_REQUIRED=NO" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGN_IDENTITY=" >> ios/Flutter/Release.xcconfig
+
+          # Desactivar firma en project.pbxproj
+          sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer";/CODE_SIGN_IDENTITY = ""; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
+          sed -i '' 's/CODE_SIGN_IDENTITY = "Apple Development";/CODE_SIGN_IDENTITY = ""; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
+          sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
+
+      - name: 🔨 Compilar binario nativo con xcodebuild
         run: |
           cd ios
-          pod install || true
+          if [ -d "Runner.xcworkspace" ]; then
+            BUILD_TARGET="-workspace Runner.xcworkspace"
+          else
+            BUILD_TARGET="-project Runner.xcodeproj"
+          fi
+          
+          xcodebuild $BUILD_TARGET \
+                     -scheme Runner \
+                     -configuration Release \
+                     -sdk iphoneos \
+                     -destination 'generic/platform=iOS' \
+                     -derivedDataPath ../build/ios_derived \
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGNING_REQUIRED=NO \
+                     CODE_SIGN_IDENTITY="" \
+                     PROVISIONING_PROFILE_SPECIFIER="" \
+                     DEVELOPMENT_TEAM="" \
+                     build
           cd ..
 
-      - name: 🔨 Compilar binario iOS (Release sin firma)
-        run: flutter build ios --release --no-codesign
-
-      - name: 📦 Empaquetar archivo IPA instalador
+      - name: 📦 Empaquetar instalador IPA
         run: |
           mkdir -p build/ios/ipa/Payload
-          cp -r build/ios/iphoneos/Runner.app build/ios/ipa/Payload/
+          APP_PATH=$(find build -name "Runner.app" -type d | head -n 1)
+          echo "App compilada encontrada en: $APP_PATH"
+          cp -r "$APP_PATH" build/ios/ipa/Payload/
           cd build/ios/ipa
           zip -r -q LevelPadel_iOS_Unsigned.ipa Payload
           rm -rf Payload
-          cd ../../..
+          cd ../..
 
       - name: 📤 Subir archivo IPA como Artifact descargable
         uses: actions/upload-artifact@v4
@@ -67,3 +89,4 @@ jobs:
           name: iOS-IPA-Build
           path: build/ios/ipa/LevelPadel_iOS_Unsigned.ipa
           retention-days: 14
+
