@@ -13,76 +13,57 @@ concurrency:
 
 jobs:
   build-ios:
-    name: 🍏 Compilar iOS (IPA sin firma)
+    name: "🍏 Compilar iOS (IPA sin firma)"
     runs-on: macos-14
     timeout-minutes: 20
 
     steps:
-      - name: 📥 Clonar repositorio
+      - name: "📥 Clonar repositorio"
         uses: actions/checkout@v4
 
-      - name: 🐦 Configurar Flutter SDK
+      - name: "🐦 Configurar Flutter SDK"
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
 
-      - name: 📱 Generar plataforma iOS y descargar paquetes
+      - name: "📱 Generar plataforma iOS y descargar paquetes"
         run: |
           flutter create . --platforms=ios
           flutter pub get
 
-      - name: 🍏 Instalar CocoaPods
+      - name: "🍏 Instalar CocoaPods"
         run: |
           cd ios
           pod install || true
           cd ..
 
-      - name: ⚙️ Compilar assets Dart (sin firmar)
+      - name: "⚙️ Compilar assets Dart sin firma"
         run: flutter build bundle --release
 
-      - name: 🛡️ Parchear proyecto Xcode: desactivar firma y asignar Team ficticio
+      - name: "🛡️ Parchear Xcode sin cuenta Apple"
         run: |
           PBXPROJ="ios/Runner.xcodeproj/project.pbxproj"
+          RELEASE_CFG="ios/Flutter/Release.xcconfig"
 
-          # Agregar Team ficticio + desactivar firma en CADA bloque buildSettings del proyecto
-          python3 - <<'PYEOF'
-import re, sys
+          # Inyectar en Release.xcconfig
+          printf '\nDEVELOPMENT_TEAM = AAAAAAAAAA\nCODE_SIGNING_ALLOWED = NO\nCODE_SIGNING_REQUIRED = NO\nCODE_SIGN_IDENTITY =\nPROVISIONING_PROFILE_SPECIFIER =\n' >> "$RELEASE_CFG"
+          cat "$RELEASE_CFG"
 
-path = "ios/Runner.xcodeproj/project.pbxproj"
-with open(path, "r") as f:
-    content = f.read()
+          # Parchear project.pbxproj con Python inline (sin heredoc)
+          python3 -c "
+import sys
+path = 'ios/Runner.xcodeproj/project.pbxproj'
+with open(path, 'r') as f:
+    c = f.read()
+inject = 'buildSettings = {\n\t\t\t\tDEVELOPMENT_TEAM = AAAAAAAAAA;\n\t\t\t\tCODE_SIGNING_ALLOWED = NO;\n\t\t\t\tCODE_SIGNING_REQUIRED = NO;\n\t\t\t\tCODE_SIGN_IDENTITY = \"\";\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"\";\n'
+c = c.replace('buildSettings = {', inject)
+with open(path, 'w') as f:
+    f.write(c)
+print('project.pbxproj parcheado OK')
+"
 
-# Reemplazar todas las apariciones de "buildSettings = {" con los ajustes necesarios
-inject = (
-    "buildSettings = {\n"
-    "\t\t\t\tDEVELOPMENT_TEAM = AAAAAAAAAA;\n"
-    "\t\t\t\tCODE_SIGNING_ALLOWED = NO;\n"
-    "\t\t\t\tCODE_SIGNING_REQUIRED = NO;\n"
-    "\t\t\t\tCODE_SIGN_IDENTITY = \"\";\n"
-    "\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"\";\n"
-)
-content = content.replace("buildSettings = {", inject)
-
-with open(path, "w") as f:
-    f.write(content)
-
-print("project.pbxproj parcheado correctamente.")
-PYEOF
-
-          # Parchear Release.xcconfig también
-          {
-            echo ""
-            echo "DEVELOPMENT_TEAM = AAAAAAAAAA"
-            echo "CODE_SIGNING_ALLOWED = NO"
-            echo "CODE_SIGNING_REQUIRED = NO"
-            echo "CODE_SIGN_IDENTITY ="
-            echo "PROVISIONING_PROFILE_SPECIFIER ="
-          } >> ios/Flutter/Release.xcconfig
-
-          cat ios/Flutter/Release.xcconfig
-
-      - name: 🔨 Compilar binario iOS nativo con Xcode (sin firma)
+      - name: "🔨 Compilar binario iOS nativo con Xcode"
         run: |
           cd ios
           if [ -d "Runner.xcworkspace" ]; then
@@ -90,7 +71,6 @@ PYEOF
           else
             WORKSPACE_ARG="-project Runner.xcodeproj"
           fi
-
           xcodebuild $WORKSPACE_ARG \
             -scheme Runner \
             -configuration Release \
@@ -102,22 +82,22 @@ PYEOF
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             PROVISIONING_PROFILE_SPECIFIER="" \
-            build 2>&1 | tail -40
+            build 2>&1 | tail -50
           cd ..
 
-      - name: 📦 Empaquetar instalador IPA
+      - name: "📦 Empaquetar IPA"
         run: |
           mkdir -p build/ios/ipa/Payload
           APP_PATH=$(find build -name "Runner.app" -type d | head -n 1)
-          echo "Runner.app encontrado en: $APP_PATH"
+          echo "Runner.app en: $APP_PATH"
           cp -r "$APP_PATH" build/ios/ipa/Payload/
           cd build/ios/ipa
           zip -r -q LevelPadel_iOS_Unsigned.ipa Payload
           rm -rf Payload
           cd ../..
-          echo "IPA generado correctamente."
+          echo "IPA listo."
 
-      - name: 📤 Subir IPA como Artifact descargable
+      - name: "📤 Subir IPA como Artifact"
         uses: actions/upload-artifact@v4
         with:
           name: iOS-IPA-Build
