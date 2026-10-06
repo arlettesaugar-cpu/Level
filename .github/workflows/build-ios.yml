@@ -15,7 +15,7 @@ jobs:
   build-ios:
     name: Compilar iOS IPA sin firma
     runs-on: macos-14
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Clonar repositorio
@@ -27,26 +27,39 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Generar plataforma iOS y dependencias
+      - name: Instalar dependencias Flutter
+        run: flutter pub get
+
+      - name: Generar carpeta ios si no existe en el repositorio
         run: |
-          flutter create . --platforms=ios
-          flutter pub get
+          if [ ! -d "ios" ]; then
+            echo "Carpeta ios/ no encontrada, generando con flutter create..."
+            flutter create . --platforms=ios
+            flutter pub get
+          else
+            echo "Carpeta ios/ existe, continuando..."
+          fi
+
+      - name: Verificar estructura del proyecto iOS
+        run: |
+          ls -la ios/
+          ls -la ios/Runner.xcodeproj/ || echo "xcodeproj no encontrado"
+          ls -la ios/Flutter/ || echo "Flutter folder no encontrada"
 
       - name: Instalar CocoaPods
         run: |
           cd ios
-          pod install || true
+          pod install --repo-update
           cd ..
 
-      - name: Compilar assets Dart
-        run: flutter build bundle --release
-
-      - name: Parchear Xcode para compilar sin cuenta Apple
+      - name: Parchear proyecto Xcode para compilar sin cuenta Apple
         run: |
-          printf '\nDEVELOPMENT_TEAM = AAAAAAAAAA\nCODE_SIGNING_ALLOWED = NO\nCODE_SIGNING_REQUIRED = NO\nCODE_SIGN_IDENTITY =\nPROVISIONING_PROFILE_SPECIFIER =\n' >> ios/Flutter/Release.xcconfig
+          if [ -f "ios/Flutter/Release.xcconfig" ]; then
+            printf '\nDEVELOPMENT_TEAM = AAAAAAAAAA\nCODE_SIGNING_ALLOWED = NO\nCODE_SIGNING_REQUIRED = NO\nCODE_SIGN_IDENTITY =\nPROVISIONING_PROFILE_SPECIFIER =\n' >> ios/Flutter/Release.xcconfig
+          fi
           python3 .github/scripts/patch_xcode.py
 
-      - name: Compilar binario iOS con xcodebuild
+      - name: Compilar iOS con xcodebuild
         run: |
           cd ios
           if [ -d "Runner.xcworkspace" ]; then
@@ -65,21 +78,22 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             PROVISIONING_PROFILE_SPECIFIER="" \
-            build 2>&1 | tail -60
+            build 2>&1 | tail -100
           cd ..
 
       - name: Empaquetar IPA
         run: |
           mkdir -p build/ios/ipa/Payload
           APP_PATH=$(find build -name "Runner.app" -type d | head -n 1)
-          echo "Runner.app encontrado: $APP_PATH"
+          echo "Runner.app encontrado en: $APP_PATH"
           cp -r "$APP_PATH" build/ios/ipa/Payload/
           cd build/ios/ipa
           zip -r -q LevelPadel_iOS_Unsigned.ipa Payload
           rm -rf Payload
           cd ../..
+          ls -lh build/ios/ipa/
 
-      - name: Subir IPA como Artifact
+      - name: Subir IPA como Artifact descargable
         uses: actions/upload-artifact@v4
         with:
           name: iOS-IPA-Build
