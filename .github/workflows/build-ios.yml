@@ -8,19 +8,20 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: \({{ github.workflow }}-\){{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build-ios:
     name: 🍏 Compilar iOS (IPA sin firma)
-    runs-on: macos-13
+    runs-on: macos-14
+    timeout-minutes: 20
 
     steps:
       - name: 📥 Clonar repositorio
         uses: actions/checkout@v4
 
-      - name: 🛠️ Configurar Java (requerido para utilidades complementarias)
+      - name: 🛠️ Configurar Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
@@ -31,29 +32,19 @@ jobs:
         with:
           channel: 'stable'
           cache: true
-          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
 
       - name: 🔍 Diagnóstico de entorno (Flutter Doctor)
         run: flutter doctor -v
 
-      - name: 📱 Asegurar plataforma iOS y dependencias de Flutter
+      - name: 📱 Generar plataforma iOS si no existe
         run: |
-          flutter create --platforms=ios .
-          flutter pub get
-          # Asegurar que la carpeta ios y el Podfile existan para CocoaPods
-          if [ ! -f "ios/Podfile" ]; then
-            echo "El Podfile no existe, recreando plataforma iOS..."
-            rm -rf ios
-            flutter create --platforms=ios .
+          if [ ! -d "ios" ]; then
+            flutter create . --platforms=ios
           fi
 
-      - name: 🍏 Instalar CocoaPods
-        run: |
-          cd ios
-          pod repo-update || true
-          pod install
-          cd ..
-          
+      - name: 📦 Instalar dependencias de Flutter
+        run: flutter pub get
+
       - name: 🔨 Compilar iOS IPA (Sin firma)
         run: flutter build ipa --no-codesign
 
@@ -61,19 +52,11 @@ jobs:
         run: |
           mkdir -p build/ios/ipa
           if compgen -G "build/ios/ipa/*.ipa" > /dev/null; then
-            echo "Archivo IPA ya generado por Flutter."
+            echo "Archivo IPA generado correctamente por Flutter."
           elif [ -d "build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app" ]; then
             echo "Creando paquete IPA desde Runner.xcarchive..."
             mkdir -p build/ios/ipa/Payload
             cp -r "build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app" build/ios/ipa/Payload/
-            cd build/ios/ipa
-            zip -r canchas_ya_unsigned.ipa Payload
-            rm -rf Payload
-            cd ../../..
-          elif [ -d "build/ios/iphoneos/Runner.app" ]; then
-            echo "Creando paquete IPA desde iphoneos build..."
-            mkdir -p build/ios/ipa/Payload
-            cp -r "build/ios/iphoneos/Runner.app" build/ios/ipa/Payload/
             cd build/ios/ipa
             zip -r canchas_ya_unsigned.ipa Payload
             rm -rf Payload
@@ -86,4 +69,6 @@ jobs:
           name: iOS-IPA-Build
           path: |
             build/ios/ipa/*.ipa
-            build/ios/archive
+            build/ios/archive/*.xcarchive
+          retention-days: 14
+
