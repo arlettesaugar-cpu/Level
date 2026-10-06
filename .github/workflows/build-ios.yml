@@ -94,10 +94,8 @@ jobs:
           fi
           echo "Runner.app en: $APP_PATH"
           cp -r "$APP_PATH" build/ios/ipa/Payload/
-          cd build/ios/ipa
-          zip -r -q LevelPadel_iOS_Unsigned.ipa Payload
-          rm -rf Payload
-          cd ../..
+          (cd build/ios/ipa && zip -r -q LevelPadel_iOS_Unsigned.ipa Payload && rm -rf Payload)
+          echo "IPA generado:"
           ls -lh build/ios/ipa/
 
       - name: Subir IPA como Artifact descargable
