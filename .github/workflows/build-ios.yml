@@ -27,7 +27,7 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: 📱 Generar plataforma iOS y descargar paquetes
+      - name: 📱 Generar plataforma iOS y dependencias
         run: |
           flutter create . --platforms=ios
           flutter pub get
@@ -38,19 +38,25 @@ jobs:
           pod install || true
           cd ..
 
-      - name: 🛡️ Desactivar restricciones de firma en Xcode
+      - name: 🛡️ Inyectar configuración de firma sin cuenta de Apple (Bypass Total)
         run: |
-          # Desactivar firma en project.pbxproj antes de compilar
-          sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer";/CODE_SIGN_IDENTITY = ""; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
-          sed -i '' 's/CODE_SIGN_IDENTITY = "Apple Development";/CODE_SIGN_IDENTITY = ""; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
-          sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
+          # 1. Inyectar en todos los archivos xcconfig
+          for f in ios/Flutter/*.xcconfig; do
+            [ -e "$f" ] || continue
+            echo "" >> "$f"
+            echo "DEVELOPMENT_TEAM = A1B2C3D4E5" >> "$f"
+            echo "CODE_SIGNING_ALLOWED = NO" >> "$f"
+            echo "CODE_SIGNING_REQUIRED = NO" >> "$f"
+            echo "CODE_SIGN_IDENTITY = " >> "$f"
+            echo "EXPANDED_CODE_SIGN_IDENTITY = " >> "$f"
+          done
 
-          # Inyectar banderas en Release.xcconfig
-          echo "" >> ios/Flutter/Release.xcconfig
-          echo "CODE_SIGNING_ALLOWED = NO" >> ios/Flutter/Release.xcconfig
-          echo "CODE_SIGNING_REQUIRED = NO" >> ios/Flutter/Release.xcconfig
-          echo "CODE_SIGN_IDENTITY = " >> ios/Flutter/Release.xcconfig
-          echo "DEVELOPMENT_TEAM = " >> ios/Flutter/Release.xcconfig
+          # 2. Inyectar en project.pbxproj para engañar al check de Flutter y desactivar la firma en Xcode
+          sed -i '' 's/buildSettings = {/buildSettings = {\
+  				DEVELOPMENT_TEAM = A1B2C3D4E5;\
+  				CODE_SIGNING_ALLOWED = NO;\
+  				CODE_SIGNING_REQUIRED = NO;\
+  				CODE_SIGN_IDENTITY = "";/g' ios/Runner.xcodeproj/project.pbxproj || true
 
       - name: 🔨 Compilar Release iOS (Sin firma)
         run: flutter build ios --release --no-codesign
