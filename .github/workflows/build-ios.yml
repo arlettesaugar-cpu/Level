@@ -27,24 +27,35 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: 📱 Generar y preparar entorno iOS
+      - name: 📱 Generar plataforma iOS si no existe
         run: |
-          flutter create . --platforms=ios
+          if [ ! -d "ios" ]; then
+            echo "Generando plataforma iOS..."
+            flutter create . --platforms=ios
+          fi
+
+      - name: 📦 Instalar dependencias y compilar bundle Flutter
+        run: |
           flutter pub get
+          flutter build bundle --release
 
-      - name: 🛡️ Desactivar requerimientos de firma en Xcode
+      - name: 🍏 Instalar CocoaPods
         run: |
-          # Inyectar banderas de no-firma en los archivos xcconfig
-          echo "CODE_SIGNING_ALLOWED=NO" >> ios/Flutter/Generated.xcconfig
-          echo "CODE_SIGNING_REQUIRED=NO" >> ios/Flutter/Generated.xcconfig
-          echo "CODE_SIGN_IDENTITY=" >> ios/Flutter/Generated.xcconfig
-          echo "EXPANDED_CODE_SIGN_IDENTITY=" >> ios/Flutter/Generated.xcconfig
+          cd ios
+          pod install || true
+          cd ..
 
-          echo "CODE_SIGNING_ALLOWED=NO" >> ios/Flutter/Release.xcconfig
-          echo "CODE_SIGNING_REQUIRED=NO" >> ios/Flutter/Release.xcconfig
-          echo "CODE_SIGN_IDENTITY=" >> ios/Flutter/Release.xcconfig
+      - name: 🛡️ Configurar Xcode para compilación sin firma
+        run: |
+          # Inyectar banderas de no-firma en Release.xcconfig respetando Generated.xcconfig
+          echo "" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGNING_ALLOWED = NO" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGNING_REQUIRED = NO" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGN_IDENTITY = " >> ios/Flutter/Release.xcconfig
+          echo "EXPANDED_CODE_SIGN_IDENTITY = " >> ios/Flutter/Release.xcconfig
+          echo "DEVELOPMENT_TEAM = " >> ios/Flutter/Release.xcconfig
 
-          # Desactivar firma en project.pbxproj
+          # Desactivar firma en el proyecto pbxproj
           sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer";/CODE_SIGN_IDENTITY = ""; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
           sed -i '' 's/CODE_SIGN_IDENTITY = "Apple Development";/CODE_SIGN_IDENTITY = ""; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
           sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
@@ -89,4 +100,3 @@ jobs:
           name: iOS-IPA-Build
           path: build/ios/ipa/LevelPadel_iOS_Unsigned.ipa
           retention-days: 14
-
