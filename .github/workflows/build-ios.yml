@@ -33,42 +33,39 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: 🔍 Diagnóstico de entorno (Flutter Doctor)
-        run: flutter doctor -v
-
-      - name: 📱 Generar plataforma iOS si no existe
+      - name: 📱 Generar scaffolding iOS si no existe
         run: |
           if [ ! -d "ios" ]; then
+            echo "Generando plataforma iOS..."
             flutter create . --platforms=ios
           fi
 
       - name: 📦 Instalar dependencias de Flutter
         run: flutter pub get
 
-      - name: 🔨 Compilar iOS IPA (Sin firma)
-        run: flutter build ipa --no-codesign
-
-      - name: 📦 Empaquetar archivo IPA
+      - name: 🍏 Instalar CocoaPods
         run: |
-          mkdir -p build/ios/ipa
-          if compgen -G "build/ios/ipa/*.ipa" > /dev/null; then
-            echo "Archivo IPA generado correctamente por Flutter."
-          elif [ -d "build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app" ]; then
-            echo "Creando paquete IPA desde Runner.xcarchive..."
-            mkdir -p build/ios/ipa/Payload
-            cp -r "build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app" build/ios/ipa/Payload/
-            cd build/ios/ipa
-            zip -r canchas_ya_unsigned.ipa Payload
-            rm -rf Payload
-            cd ../../..
-          fi
+          cd ios
+          pod install || true
+          cd ..
+
+      - name: 🔨 Compilar binario iOS (Release sin firma)
+        run: flutter build ios --release --no-codesign
+
+      - name: 📦 Empaquetar archivo IPA instalador
+        run: |
+          mkdir -p build/ios/ipa/Payload
+          cp -r build/ios/iphoneos/Runner.app build/ios/ipa/Payload/
+          cd build/ios/ipa
+          zip -r -q LevelPadel_iOS_Unsigned.ipa Payload
+          rm -rf Payload
+          cd ../../..
 
       - name: 📤 Subir archivo IPA como Artifact descargable
         uses: actions/upload-artifact@v4
         with:
           name: iOS-IPA-Build
-          path: |
-            build/ios/ipa/*.ipa
-            build/ios/archive/*.xcarchive
+          path: build/ios/ipa/LevelPadel_iOS_Unsigned.ipa
           retention-days: 14
+
 
