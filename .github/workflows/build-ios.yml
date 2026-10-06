@@ -30,43 +30,45 @@ jobs:
       - name: Instalar dependencias Flutter
         run: flutter pub get
 
-      - name: Generar carpeta ios si no existe en el repositorio
+      - name: Generar plataforma iOS
         run: |
-          if [ ! -d "ios" ]; then
-            echo "Carpeta ios/ no encontrada, generando con flutter create..."
-            flutter create . --platforms=ios
-            flutter pub get
+          flutter create . --platforms=ios
+          flutter pub get
+
+      - name: Verificar estructura iOS generada
+        run: ls -la ios/ && ls -la ios/Runner.xcodeproj/ 2>/dev/null || echo "sin xcodeproj"
+
+      - name: Instalar CocoaPods si hay Podfile
+        run: |
+          if [ -f "ios/Podfile" ]; then
+            echo "Podfile encontrado, ejecutando pod install..."
+            cd ios && pod install --repo-update && cd ..
           else
-            echo "Carpeta ios/ existe, continuando..."
+            echo "Sin Podfile - todos los paquetes son Dart puro, CocoaPods no requerido."
           fi
 
-      - name: Verificar estructura del proyecto iOS
-        run: |
-          ls -la ios/
-          ls -la ios/Runner.xcodeproj/ || echo "xcodeproj no encontrado"
-          ls -la ios/Flutter/ || echo "Flutter folder no encontrada"
-
-      - name: Instalar CocoaPods
-        run: |
-          cd ios
-          pod install --repo-update
-          cd ..
-
-      - name: Parchear proyecto Xcode para compilar sin cuenta Apple
+      - name: Parchear Xcode para compilar sin cuenta Apple
         run: |
           if [ -f "ios/Flutter/Release.xcconfig" ]; then
             printf '\nDEVELOPMENT_TEAM = AAAAAAAAAA\nCODE_SIGNING_ALLOWED = NO\nCODE_SIGNING_REQUIRED = NO\nCODE_SIGN_IDENTITY =\nPROVISIONING_PROFILE_SPECIFIER =\n' >> ios/Flutter/Release.xcconfig
           fi
-          python3 .github/scripts/patch_xcode.py
+          if [ -f "ios/Runner.xcodeproj/project.pbxproj" ]; then
+            python3 .github/scripts/patch_xcode.py
+          fi
 
       - name: Compilar iOS con xcodebuild
         run: |
           cd ios
           if [ -d "Runner.xcworkspace" ]; then
             BUILD_TARGET="-workspace Runner.xcworkspace"
-          else
+          elif [ -f "Runner.xcodeproj/project.pbxproj" ]; then
             BUILD_TARGET="-project Runner.xcodeproj"
+          else
+            echo "ERROR: No se encontro Runner.xcodeproj ni Runner.xcworkspace"
+            ls -la
+            exit 1
           fi
+          echo "Usando: $BUILD_TARGET"
           xcodebuild $BUILD_TARGET \
             -scheme Runner \
             -configuration Release \
@@ -85,7 +87,12 @@ jobs:
         run: |
           mkdir -p build/ios/ipa/Payload
           APP_PATH=$(find build -name "Runner.app" -type d | head -n 1)
-          echo "Runner.app encontrado en: $APP_PATH"
+          if [ -z "$APP_PATH" ]; then
+            echo "ERROR: Runner.app no encontrado"
+            find build -type d | head -20
+            exit 1
+          fi
+          echo "Runner.app en: $APP_PATH"
           cp -r "$APP_PATH" build/ios/ipa/Payload/
           cd build/ios/ipa
           zip -r -q LevelPadel_iOS_Unsigned.ipa Payload
