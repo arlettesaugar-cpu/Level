@@ -27,17 +27,10 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: 📱 Generar plataforma iOS si no existe
+      - name: 📱 Generar plataforma iOS y descargar paquetes
         run: |
-          if [ ! -d "ios" ]; then
-            echo "Generando plataforma iOS..."
-            flutter create . --platforms=ios
-          fi
-
-      - name: 📦 Instalar dependencias y compilar bundle Flutter
-        run: |
+          flutter create . --platforms=ios
           flutter pub get
-          flutter build bundle --release
 
       - name: 🍏 Instalar CocoaPods
         run: |
@@ -45,45 +38,24 @@ jobs:
           pod install || true
           cd ..
 
-      - name: 🛡️ Configurar Xcode para compilación sin firma
+      - name: 🛡️ Desactivar restricciones de firma en Xcode
         run: |
-          # Inyectar banderas de no-firma en Release.xcconfig respetando Generated.xcconfig
-          echo "" >> ios/Flutter/Release.xcconfig
-          echo "CODE_SIGNING_ALLOWED = NO" >> ios/Flutter/Release.xcconfig
-          echo "CODE_SIGNING_REQUIRED = NO" >> ios/Flutter/Release.xcconfig
-          echo "CODE_SIGN_IDENTITY = " >> ios/Flutter/Release.xcconfig
-          echo "EXPANDED_CODE_SIGN_IDENTITY = " >> ios/Flutter/Release.xcconfig
-          echo "DEVELOPMENT_TEAM = " >> ios/Flutter/Release.xcconfig
-
-          # Desactivar firma en el proyecto pbxproj
+          # Desactivar firma en project.pbxproj antes de compilar
           sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer";/CODE_SIGN_IDENTITY = ""; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
           sed -i '' 's/CODE_SIGN_IDENTITY = "Apple Development";/CODE_SIGN_IDENTITY = ""; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
           sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual; CODE_SIGNING_REQUIRED = NO; CODE_SIGNING_ALLOWED = NO;/g' ios/Runner.xcodeproj/project.pbxproj || true
 
-      - name: 🔨 Compilar binario nativo con xcodebuild
-        run: |
-          cd ios
-          if [ -d "Runner.xcworkspace" ]; then
-            BUILD_TARGET="-workspace Runner.xcworkspace"
-          else
-            BUILD_TARGET="-project Runner.xcodeproj"
-          fi
-          
-          xcodebuild $BUILD_TARGET \
-                     -scheme Runner \
-                     -configuration Release \
-                     -sdk iphoneos \
-                     -destination 'generic/platform=iOS' \
-                     -derivedDataPath ../build/ios_derived \
-                     CODE_SIGNING_ALLOWED=NO \
-                     CODE_SIGNING_REQUIRED=NO \
-                     CODE_SIGN_IDENTITY="" \
-                     PROVISIONING_PROFILE_SPECIFIER="" \
-                     DEVELOPMENT_TEAM="" \
-                     build
-          cd ..
+          # Inyectar banderas en Release.xcconfig
+          echo "" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGNING_ALLOWED = NO" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGNING_REQUIRED = NO" >> ios/Flutter/Release.xcconfig
+          echo "CODE_SIGN_IDENTITY = " >> ios/Flutter/Release.xcconfig
+          echo "DEVELOPMENT_TEAM = " >> ios/Flutter/Release.xcconfig
 
-      - name: 📦 Empaquetar instalador IPA
+      - name: 🔨 Compilar Release iOS (Sin firma)
+        run: flutter build ios --release --no-codesign
+
+      - name: 📦 Empaquetar archivo IPA instalador
         run: |
           mkdir -p build/ios/ipa/Payload
           APP_PATH=$(find build -name "Runner.app" -type d | head -n 1)

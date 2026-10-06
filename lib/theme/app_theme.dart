@@ -29,7 +29,6 @@ class AppTheme {
         secondary: primaryGreen,
         error: accentRed,
         surface: cardWhite,
-        background: backgroundWhite,
       ),
       textTheme: GoogleFonts.interTextTheme().copyWith(
         headlineMedium: GoogleFonts.outfit(
