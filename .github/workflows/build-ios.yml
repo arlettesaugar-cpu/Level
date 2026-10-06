@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: \({{ github.workflow }}-\){{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: 📱 Generar estructura iOS si no existe
+      - name: 📱 Generar scaffolding iOS si no existe
         run: |
           if [ ! -d "ios" ]; then
             echo "Generando plataforma iOS..."
@@ -49,13 +49,21 @@ jobs:
           pod install || true
           cd ..
 
-      - name: 🔨 Compilar IPA sin firma con Flutter
+      - name: 🔨 Compilar binario iOS (Release sin firma)
+        run: flutter build ios --release --no-codesign
+
+      - name: 📦 Empaquetar archivo IPA instalador
         run: |
-          flutter build ipa --release --no-codesign
+          mkdir -p build/ios/ipa/Payload
+          cp -r build/ios/iphoneos/Runner.app build/ios/ipa/Payload/
+          cd build/ios/ipa
+          zip -r -q LevelPadel_iOS_Unsigned.ipa Payload
+          rm -rf Payload
+          cd ../../..
 
       - name: 📤 Subir archivo IPA como Artifact descargable
         uses: actions/upload-artifact@v4
         with:
           name: iOS-IPA-Build
-          path: build/ios/ipa/*.ipa
+          path: build/ios/ipa/LevelPadel_iOS_Unsigned.ipa
           retention-days: 14
