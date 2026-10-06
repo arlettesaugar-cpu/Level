@@ -33,7 +33,7 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: 📱 Generar scaffolding iOS si no existe
+      - name: 📱 Generar estructura iOS si no existe
         run: |
           if [ ! -d "ios" ]; then
             echo "Generando plataforma iOS..."
@@ -49,17 +49,42 @@ jobs:
           pod install || true
           cd ..
 
-      - name: 🔨 Compilar binario iOS (Release sin firma)
-        run: flutter build ios --release --no-codesign
+      - name: ⚙️ Configurar proyecto para compilación sin firma (Bypass CodeSign)
+        run: |
+          # 1. Precompilar frameworks y dependencias Dart AOT
+          flutter build ios --release --config-only
+          
+          # 2. Inyectar banderas para desactivar la firma obligatoria en Xcode
+          echo "CODE_SIGNING_ALLOWED=NO" >> ios/Flutter/Generated.xcconfig
+          echo "CODE_SIGNING_REQUIRED=NO" >> ios/Flutter/Generated.xcconfig
+          echo "CODE_SIGN_IDENTITY=" >> ios/Flutter/Generated.xcconfig
+          echo "DEVELOPMENT_TEAM=0000000000" >> ios/Flutter/Generated.xcconfig
+
+      - name: 🔨 Compilar binario nativo iOS con Xcode
+        run: |
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace \
+                     -scheme Runner \
+                     -configuration Release \
+                     -sdk iphoneos \
+                     -destination 'generic/platform=iOS' \
+                     -derivedDataPath ../build/ios_derived \
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGNING_REQUIRED=NO \
+                     CODE_SIGN_IDENTITY="" \
+                     build
+          cd ..
 
       - name: 📦 Empaquetar archivo IPA instalador
         run: |
           mkdir -p build/ios/ipa/Payload
-          cp -r build/ios/iphoneos/Runner.app build/ios/ipa/Payload/
+          APP_PATH=$(find build -name "Runner.app" -type d | head -n 1)
+          echo "Runner.app encontrado en: $APP_PATH"
+          cp -r "$APP_PATH" build/ios/ipa/Payload/
           cd build/ios/ipa
           zip -r -q LevelPadel_iOS_Unsigned.ipa Payload
           rm -rf Payload
-          cd ../../..
+          cd ../..
 
       - name: 📤 Subir archivo IPA como Artifact descargable
         uses: actions/upload-artifact@v4
@@ -67,5 +92,3 @@ jobs:
           name: iOS-IPA-Build
           path: build/ios/ipa/LevelPadel_iOS_Unsigned.ipa
           retention-days: 14
-
-
