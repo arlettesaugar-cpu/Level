@@ -1,5 +1,39 @@
-﻿// Application Data & Real-Time Sync Logic for Pádel Club Tacámbaro
-let courtsData = [];
+// Application Data & Real-Time Sync Logic for Pádel Club Tacámbaro
+let courtsData = [
+  {
+    id: "c1",
+    name: "Cancha 2: Azul",
+    category: "Padel Cristal Pro",
+    location: "Tacambaro, Michoacan",
+    price: 300,
+    rating: 4.9,
+    image: "assets/images/cancha_padel_1.jpg",
+    slots: ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"],
+    slotStatuses: {}
+  },
+  {
+    id: "c2",
+    name: "Cancha 1: Negra",
+    category: "Padel Panoramica VIP",
+    location: "Tacambaro, Michoacan",
+    price: 300,
+    rating: 4.8,
+    image: "assets/images/cancha_padel_2.jpg",
+    slots: ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"],
+    slotStatuses: {}
+  },
+  {
+    id: "c3",
+    name: "Cancha futbol",
+    category: "Futbol 7 Profesional",
+    location: "Tacambaro, Michoacan",
+    price: 450,
+    rating: 4.9,
+    image: "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=600",
+    slots: ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"],
+    slotStatuses: {}
+  }
+];
 let userBookings = [];
 let allBookingsData = [];
 let tournamentsData = [];
@@ -66,6 +100,7 @@ let _lastHistoryJson = '';
 let _lastBankInfoJson = '';
 
 document.addEventListener('DOMContentLoaded', () => {
+  renderAllInstances();
   fetchCourtsData();
   fetchBookingsData();
   fetchTournamentsData();
@@ -717,30 +752,40 @@ async function handleClientLoginSubmit(e, instKey) {
       return;
     }
   } catch (err) {
-    /* silent error */
-    // Fallback local check
+    /* fallback when server is unreachable or in static file:// mode */
+    let users = [
+      { id: "USR-6229", username: "arlette", name: "Arlette Saucedo", phone: "4591161880", role: "Administrador", password: "1234", tempPassword: "", mustChangePassword: false, status: "Activo (Password Personalizada)" },
+      { id: "USR-1001", username: "cpalacios", name: "Carlos Palacios", phone: "45911161880", role: "Cliente", password: "123456", tempPassword: "", mustChangePassword: false, status: "Activo" },
+      { id: "USR-1335", username: "christian", name: "CHRISTIAN ABURTO", phone: "4432011889", role: "Cliente", password: "123456", tempPassword: "TAC-8550", mustChangePassword: false, status: "Activo" },
+      { id: "USR-3511", username: "admin2", name: "Administrador 2", phone: "4591161880", role: "Cliente", password: "123456", tempPassword: "", mustChangePassword: false, status: "Activo" },
+      { id: "USR-1007", username: "admin", name: "Administrador Level Tacambaro", phone: "4590001122", role: "Administrador", password: "ADMIN-TAC", tempPassword: "ADMIN-TAC", mustChangePassword: false, status: "Activo" }
+    ];
     try {
       const res = await fetch('api/users');
-      if (res.ok) {
-        const users = await res.json();
-        const cleanInput = userInput.toLowerCase().replace(/\s+/g, '').replace(/^@/, '');
-        const cleanPhone = userInput.replace(/\D/g, '');
-        matchedUser = users.find(u =>
-          (u.username && u.username.toLowerCase().replace(/^@/, '') === cleanInput) ||
-          (cleanPhone && u.phone && u.phone.replace(/\D/g, '') === cleanPhone)
-        );
-        if (matchedUser) {
-          const userPass = matchedUser.password || '';
-          const tempPass = matchedUser.tempPassword || '';
-                    const tempDigits = tempPass.replace(/\D/g, '');
-          const inputDigits = passVal.replace(/\D/g, '');
-          if ((userPass && userPass === passVal) || (tempPass && tempPass.toLowerCase() === passVal.toLowerCase()) || (tempDigits && inputDigits && tempDigits === inputDigits)) {
-            loginSuccess = true;
-            requireChange = [true, 'true', 'True'].includes(matchedUser.mustChangePassword) || (tempPass && tempPass.toLowerCase() === passVal.toLowerCase());
-          }
+      if (res && res.ok) {
+        const remoteUsers = await res.json();
+        if (Array.isArray(remoteUsers) && remoteUsers.length > 0) {
+          users = remoteUsers;
         }
       }
     } catch (e) { }
+
+    const cleanInput = userInput.toLowerCase().replace(/\s+/g, '').replace(/^@/, '');
+    const cleanPhone = userInput.replace(/\D/g, '');
+    matchedUser = users.find(u =>
+      (u.username && u.username.toLowerCase().replace(/^@/, '') === cleanInput) ||
+      (cleanPhone && u.phone && u.phone.replace(/\D/g, '') === cleanPhone)
+    );
+    if (matchedUser) {
+      const userPass = matchedUser.password || '';
+      const tempPass = matchedUser.tempPassword || '';
+      const tempDigits = tempPass.replace(/\D/g, '');
+      const inputDigits = passVal.replace(/\D/g, '');
+      if ((userPass && userPass === passVal) || (tempPass && tempPass.toLowerCase() === passVal.toLowerCase()) || (tempDigits && inputDigits && tempDigits === inputDigits)) {
+        loginSuccess = true;
+        requireChange = [true, 'true', 'True'].includes(matchedUser.mustChangePassword);
+      }
+    }
   }
 
   if (!loginSuccess || !matchedUser) {

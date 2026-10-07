@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'theme/app_theme.dart';
 import 'models/court.dart';
-import 'models/booking.dart';
+import 'services/app_state.dart';
 import 'widgets/app_drawer.dart';
+import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/court_detail_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/tournaments_screen.dart';
 import 'screens/products_screen.dart';
 import 'screens/contact_screen.dart';
-
 import 'screens/my_bookings_screen.dart';
 import 'screens/profile_screen.dart';
 
 void main() {
-  runApp(const CanchasYaApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AppState(),
+      child: const CanchasYaApp(),
+    ),
+  );
 }
 
 class CanchasYaApp extends StatelessWidget {
@@ -23,10 +29,17 @@ class CanchasYaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Pádel Club Tacámbaro',
+      title: 'Level Pádel Tacámbaro',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const MainNavigationWrapper(),
+      home: Consumer<AppState>(
+        builder: (context, appState, _) {
+          if (!appState.isLoggedIn) {
+            return const LoginScreen();
+          }
+          return const MainNavigationWrapper();
+        },
+      ),
     );
   }
 }
@@ -41,27 +54,15 @@ class MainNavigationWrapper extends StatefulWidget {
 class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   int _currentIndex = 1; // Default to Courts / Reservations
   Court? _selectedCourt;
-  final List<Booking> _myBookings = List.from(Booking.mockBookings);
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
+
     if (_selectedCourt != null) {
       return CourtDetailScreen(
         court: _selectedCourt!,
         onBack: () => setState(() => _selectedCourt = null),
-        onConfirmBooking: (newBooking) {
-          setState(() {
-            _myBookings.insert(0, newBooking);
-            _selectedCourt = null;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('¡Reserva confirmada en Pádel Club Tacámbaro! 🎾'),
-              backgroundColor: AppTheme.primaryGreen,
-              duration: Duration(seconds: 4),
-            ),
-          );
-        },
       );
     }
 
@@ -95,7 +96,18 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.asset('assets/images/logo.jpeg', width: 32, height: 32, fit: BoxFit.cover),
+              child: Image.asset(
+                'assets/images/logo.jpeg',
+                width: 32,
+                height: 32,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: 32,
+                  height: 32,
+                  color: const Color(0xFF10B981),
+                  child: const Icon(Icons.sports_tennis, color: Colors.white, size: 18),
+                ),
+              ),
             ),
             const SizedBox(width: 10),
             const Expanded(
@@ -113,7 +125,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
             icon: Stack(
               children: [
                 const Icon(Icons.confirmation_number_outlined, color: AppTheme.primaryBlue, size: 24),
-                if (_myBookings.isNotEmpty)
+                if (appState.bookings.isNotEmpty)
                   Positioned(
                     right: 0,
                     top: 0,
@@ -124,7 +136,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                         shape: BoxShape.circle,
                       ),
                       child: Text(
-                        '${_myBookings.length}',
+                        '${appState.bookings.length}',
                         style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -134,7 +146,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MyBookingsScreen(bookings: _myBookings)),
+                MaterialPageRoute(builder: (context) => const MyBookingsScreen()),
               );
             },
           ),
@@ -156,7 +168,6 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
         onSelectTab: (index) => setState(() => _currentIndex = index),
       ),
       body: pages[_currentIndex],
-      // NO BottomNavigationBar! Navigation is 100% via Drawer.
     );
   }
 }
