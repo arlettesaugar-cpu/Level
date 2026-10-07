@@ -54,6 +54,8 @@ class MainNavigationWrapper extends StatefulWidget {
 class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   int _currentIndex = 1; // Default to Courts / Reservations
   Court? _selectedCourt;
+  String? _selectedCategory;
+  String? _selectedSport = 'padel';
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +70,19 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
 
     final List<Widget> pages = [
       const HistoryScreen(),
-      HomeScreen(onSelectCourt: (court) => setState(() => _selectedCourt = court)),
-      const TournamentsScreen(),
-      const ProductsScreen(),
+      HomeScreen(
+        key: ValueKey('home_$_selectedSport'),
+        onSelectCourt: (court) => setState(() => _selectedCourt = court),
+        initialCategory: _selectedSport == 'futbol' ? 'Fútbol 7 Profesional' : 'Todas',
+      ),
+      TournamentsScreen(
+        key: ValueKey('tourn_$_selectedSport'),
+        initialSport: _selectedSport ?? 'padel',
+      ),
+      ProductsScreen(
+        key: ValueKey('prod_$_selectedCategory'),
+        initialCategory: _selectedCategory ?? 'Todos',
+      ),
       const ContactScreen(),
     ];
 
@@ -80,51 +92,62 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
       key: scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0,
+        elevation: 0.5,
+        centerTitle: true,
         leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryBlue.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.menu_rounded, color: AppTheme.primaryBlue, size: 24),
-          ),
+          icon: const Icon(Icons.menu_rounded, color: Color(0xFF0F172A), size: 26),
           onPressed: () => scaffoldKey.currentState?.openDrawer(),
         ),
-        title: Row(
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                'assets/images/logo.jpeg',
-                width: 32,
-                height: 32,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: 32,
-                  height: 32,
-                  color: const Color(0xFF10B981),
-                  child: const Icon(Icons.sports_tennis, color: Colors.white, size: 18),
+            RichText(
+              text: const TextSpan(
+                text: '{',
+                style: TextStyle(
+                  color: Color(0xFFE11D48),
+                  fontWeight: FontWeight.w900,
+                  fontSize: 19,
                 ),
+                children: [
+                  TextSpan(
+                    text: 'LEVEL',
+                    style: TextStyle(
+                      color: Color(0xFF0F172A),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 19,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  TextSpan(
+                    text: '}',
+                    style: TextStyle(
+                      color: Color(0xFF0284C7),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 19,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Text(
-                'Level Pádel',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: AppTheme.textDark),
-                overflow: TextOverflow.ellipsis,
+            const Text(
+              'CENTRO DEPORTIVO',
+              style: TextStyle(
+                color: Color(0xFF65A30D),
+                fontSize: 8,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.8,
               ),
             ),
           ],
         ),
         actions: [
+          // Bookings quick access
           IconButton(
             tooltip: 'Mis Reservas',
             icon: Stack(
               children: [
-                const Icon(Icons.confirmation_number_outlined, color: AppTheme.primaryBlue, size: 24),
+                const Icon(Icons.confirmation_number_outlined, color: Color(0xFF0284C7), size: 22),
                 if (appState.bookings.isNotEmpty)
                   Positioned(
                     right: 0,
@@ -132,12 +155,12 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                     child: Container(
                       padding: const EdgeInsets.all(3),
                       decoration: const BoxDecoration(
-                        color: AppTheme.accentRed,
+                        color: Color(0xFFEF4444),
                         shape: BoxShape.circle,
                       ),
                       child: Text(
                         '${appState.bookings.length}',
-                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                        style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -150,22 +173,41 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
               );
             },
           ),
-          IconButton(
-            tooltip: 'Mi Perfil',
-            icon: const Icon(Icons.account_circle_outlined, color: AppTheme.textDark, size: 24),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
-            },
+
+          // Purple Shield Icon (matches Screenshot 1 top-right)
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                );
+              },
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3E8FF),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFC084FC), width: 1.2),
+                ),
+                child: const Icon(Icons.shield_outlined, color: Color(0xFF7E22CE), size: 19),
+              ),
+            ),
           ),
-          const SizedBox(width: 8),
         ],
       ),
       drawer: AppDrawer(
         selectedIndex: _currentIndex,
-        onSelectTab: (index) => setState(() => _currentIndex = index),
+        onSelectTab: (index, {String? subCategory, String? sport}) {
+          setState(() {
+            _currentIndex = index;
+            _selectedCategory = subCategory;
+            _selectedSport = sport ?? 'padel';
+          });
+        },
       ),
       body: pages[_currentIndex],
     );

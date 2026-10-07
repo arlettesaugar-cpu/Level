@@ -1,207 +1,371 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> galleryPhotos = [
-      {'title': 'Pista 1: Pádel Cristal Pro (Azul)', 'url': 'assets/images/cancha_padel_1.jpg'},
-      {'title': 'Pista 2: Pádel Panorámica VIP (Verde)', 'url': 'assets/images/cancha_padel_2.jpg'},
-      {'title': 'Cancha Grama Sintética Pro', 'url': 'assets/images/cancha_grama_7.jpg'},
-      {'title': 'Cancha de Entrenamientos 5', 'url': 'assets/images/cancha_sintetica_5.jpg'},
-      {'title': 'Cancha Techada & Alumbrado LED', 'url': 'assets/images/cancha_techada.jpg'},
-    ];
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Quiénes Somos 📜'),
-      ),
+      backgroundColor: const Color(0xFFF8FAFC),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 30),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hero Card with Logo & Tacámbaro Badge
+            // CARD 1: Hero Image + Floating Level Logo + Level Title + Location Pill
             Container(
-              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4)),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
               ),
-              child: Row(
+              child: Column(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      'assets/images/logo.jpeg',
-                      width: 70,
-                      height: 70,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        width: 70,
-                        height: 70,
-                        color: const Color(0xFF10B981),
-                        child: const Icon(Icons.sports_tennis, color: Colors.white, size: 36),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Level Tacámbaro',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                  // Court Image with overlapping logo
+                  Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                        child: Image.asset(
+                          'assets/images/cancha_padel_2.jpg',
+                          width: double.infinity,
+                          height: 190,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            height: 190,
+                            color: const Color(0xFF0F172A),
+                            child: const Icon(Icons.sports_tennis, color: Colors.white, size: 50),
                           ),
                         ),
-                        SizedBox(height: 4),
-                        Text(
-                          '📍 Valentín Gómez Farías #3, Tacámbaro, Mich.',
-                          style: TextStyle(color: Color(0xFF10B981), fontSize: 11, fontWeight: FontWeight.w600),
+                      ),
+                      // Floating Brand Badge Overlapping Image Border
+                      Positioned(
+                        bottom: -22,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 7),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: const Color(0xFF10B981), width: 1.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.12),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              RichText(
+                                text: const TextSpan(
+                                  text: '{',
+                                  style: TextStyle(
+                                    color: Color(0xFFE11D48),
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 16,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: 'LEVEL',
+                                      style: TextStyle(
+                                        color: Color(0xFF0F172A),
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 16,
+                                        letterSpacing: 1.5,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '}',
+                                      style: TextStyle(
+                                        color: Color(0xFF0284C7),
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 1),
+                              const Text(
+                                'CENTRO DEPORTIVO',
+                                style: TextStyle(
+                                  color: Color(0xFF65A30D),
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(height: 4),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Title: "Level"
+                  const Text(
+                    'Level',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Location Pill: "Tacambaro, Michoacan Mexico"
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE0F2FE),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.location_on, size: 15, color: Color(0xFF0284C7)),
+                        SizedBox(width: 6),
                         Text(
-                          'Centro Deportivo de Alto Nivel',
-                          style: TextStyle(color: Colors.white70, fontSize: 11),
+                          'Tacambaro, Michoacan Mexico',
+                          style: TextStyle(
+                            color: Color(0xFF0284C7),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
                   ),
+
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
 
-            const Text(
-              'Nuestra Historia y Visión',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Level Tacámbaro nació con la visión de consolidar el primer centro deportivo de pádel de alto nivel en Tacámbaro, Michoacán. Nuestro club cuenta con 2 pistas de tecnología profesional (Pádel Cristal Pro y Panorámica VIP), cancha reglamentaria de Fútbol 7, iluminación LED nocturna de alta definición, área de espectadores, servicio de pro shop con alquiler de palas y pelotas, y atención personalizada las 24 horas del día.',
-              style: TextStyle(fontSize: 14, height: 1.6, color: AppTheme.textSecondary),
-            ),
             const SizedBox(height: 16),
-            const Text(
-              'Ubicados estratégicamente en Valentín Gómez Farías #3 (frente a las instalaciones de Protección Civil en Tacámbaro de Codallos), fomentamos la sana convivencia, clínicas deportivas, torneos locales y pasión por el deporte en Michoacán.',
-              style: TextStyle(fontSize: 14, height: 1.6, color: AppTheme.textSecondary),
-            ),
-            const SizedBox(height: 24),
 
-            // Facilities Photo Gallery
-            const Text(
-              'Nuestras Instalaciones',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 160,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: galleryPhotos.length,
-                separatorBuilder: (c, i) => const SizedBox(width: 12),
-                itemBuilder: (context, index) {
-                  final photo = galleryPhotos[index];
-                  return Container(
-                    width: 220,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
+            // CARD 2: Quiénes Somos & Filosofía
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.book_rounded, color: Color(0xFF10B981), size: 18),
+                      SizedBox(width: 8),
+                      Text(
+                        'QUIENES SOMOS & FILOSOFIA',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF0F172A),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Level Tacambaro nacio con la vision de consolidar el primer centro deportivo de padel de alto nivel en Tacambaro, Michoacan. Nuestro club cuenta con 2 pistas de tecnologia profesional (Padel Cristal Pro y Panoramica VIP), iluminacion LED nocturna de alta definicion, area de espectadores, servicio de pro shop con alquiler de palas y pelotas.',
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 1.55,
+                      color: Color(0xFF475569),
+                      fontWeight: FontWeight.w500,
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Stack(
-                        fit: StackFit.expand,
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // CARD 3: Galería de Instalaciones (2 Fotos)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Row(
                         children: [
-                          Image.asset(
-                            photo['url']!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              color: const Color(0xFF0F172A),
-                              child: const Icon(Icons.image, color: Colors.white54),
-                            ),
-                          ),
-                          Container(
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [Colors.transparent, Colors.black87],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 10,
-                            left: 10,
-                            right: 10,
-                            child: Text(
-                              photo['title']!,
-                              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                              maxLines: 2,
+                          Icon(Icons.photo_library_rounded, color: Color(0xFF0284C7), size: 18),
+                          SizedBox(width: 8),
+                          Text(
+                            'Galería de Instalaciones',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF0F172A),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  );
-                },
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE0F2FE),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text(
+                          '2 Fotos',
+                          style: TextStyle(
+                            color: Color(0xFF0284C7),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+
+                  // 2 Photos Side by Side
+                  Row(
+                    children: [
+                      // Photo 1: Pista 2: Padel Panoramica
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: SizedBox(
+                            height: 125,
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Image.asset(
+                                  'assets/images/cancha_padel_2.jpg',
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => Container(
+                                    color: const Color(0xFF0F172A),
+                                  ),
+                                ),
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Colors.transparent, Colors.black87],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      stops: [0.5, 1.0],
+                                    ),
+                                  ),
+                                ),
+                                const Positioned(
+                                  left: 8,
+                                  right: 8,
+                                  bottom: 8,
+                                  child: Text(
+                                    'Pista 2: Padel Panoramica',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+
+                      // Photo 2: images (1)
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: SizedBox(
+                            height: 125,
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Image.asset(
+                                  'assets/images/cancha_padel_1.jpg',
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => Container(
+                                    color: const Color(0xFF0F172A),
+                                  ),
+                                ),
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Colors.transparent, Colors.black87],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      stops: [0.5, 1.0],
+                                    ),
+                                  ),
+                                ),
+                                const Positioned(
+                                  left: 8,
+                                  right: 8,
+                                  bottom: 8,
+                                  child: Text(
+                                    'images (1)',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
-
-            // Values & Commitments
-            _buildFeatureTile(Icons.verified_rounded, 'Calidad Profesional', 'Pistas de cristal templado 12mm y medidas FIP oficiales'),
-            _buildFeatureTile(Icons.nights_stay_rounded, 'Horarios Extendidos', 'Abierto de 8:00 AM a 11:00 PM todos los días'),
-            _buildFeatureTile(Icons.sports_tennis_rounded, 'Pro Shop & Alquiler', 'Palas oficiales, tubos de pelotas, grips y bebidas'),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildFeatureTile(IconData icon, String title, String desc) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: const Color(0xFF10B981), size: 22),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                Text(desc, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

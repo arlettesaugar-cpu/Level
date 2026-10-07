@@ -22,9 +22,34 @@ class CourtDetailScreen extends StatefulWidget {
 
 class _CourtDetailScreenState extends State<CourtDetailScreen> {
   String? selectedSlot;
+  int selectedDurationHours = 1; // 1, 2, or 3 consecutive hours
   String selectedPaymentMethod = 'Efectivo en Mostrador';
   DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
   bool _acceptedTerms = true;
+
+  List<String> _calculateConsecutiveSlots(Court currentCourt) {
+    if (selectedSlot == null) return [];
+    final allSlots = currentCourt.availableSlots;
+    final startIndex = allSlots.indexOf(selectedSlot!);
+    if (startIndex == -1) return [selectedSlot!];
+
+    final List<String> slots = [];
+    for (int i = 0; i < selectedDurationHours; i++) {
+      final idx = startIndex + i;
+      if (idx < allSlots.length) {
+        slots.add(allSlots[idx]);
+      }
+    }
+    return slots;
+  }
+
+  bool _isSelectionValid(Court currentCourt, List<String> slots) {
+    if (slots.length < selectedDurationHours) return false;
+    for (final s in slots) {
+      if (currentCourt.slotStatuses[s] == 'booked') return false;
+    }
+    return true;
+  }
 
   void _showTermsDialog() {
     showDialog(
@@ -49,7 +74,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
               ),
               SizedBox(height: 2),
               Text(
-                'Toda reservación aparta el horario seleccionado. Si reservas y no asistes (No-Show), te comprometes a saldar el monto del turno (\$300.00 MXN / hora). El sistema registrará el adeudo y bloqueará nuevas reservas hasta liquidar en mostrador.',
+                'Toda reservación aparta el horario seleccionado. Si reservas y no asistes (No-Show), te comprometes a saldar el monto del turno (\$300.00 MXN / hora reservada). El sistema registrará el adeudo y bloqueará nuevas reservas hasta liquidar en mostrador.',
                 style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.3),
               ),
               SizedBox(height: 12),
@@ -91,15 +116,30 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
     }
 
     final appState = Provider.of<AppState>(context, listen: false);
+    final currentCourt = appState.courts.firstWhere((c) => c.id == widget.court.id, orElse: () => widget.court);
+    final slotsToBook = _calculateConsecutiveSlots(currentCourt);
+
+    if (!_isSelectionValid(currentCourt, slotsToBook)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Uno de los horarios en la duración seleccionada no está disponible. Selecciona otro horario de inicio.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
     final result = appState.createBooking(
       court: widget.court,
       date: selectedDate,
-      slot: selectedSlot!,
+      slots: slotsToBook,
       paymentMethod: selectedPaymentMethod,
     );
 
     if (result['success'] == true) {
       final booking = result['booking'];
+      final totalPrice = widget.court.pricePerHour * selectedDurationHours;
+
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -111,33 +151,53 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
               Text('¡Reserva Exitosa!'),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Folio: ${booking.id}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              const SizedBox(height: 6),
-              Text('Pista: ${widget.court.name}'),
-              Text('Fecha: ${DateFormat('dd/MM/yyyy').format(selectedDate)}'),
-              Text('Horario: $selectedSlot (1 hora)'),
-              Text('Total: \$${widget.court.pricePerHour.toStringAsFixed(0)} MXN'),
-              Text('Método: $selectedPaymentMethod'),
-              if (selectedPaymentMethod.contains('BBVA')) ...[
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.blue.shade200),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Folio: ${booking.id}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 6),
+                Text('Pista: ${widget.court.name}'),
+                Text('Fecha: ${DateFormat('dd/MM/yyyy').format(selectedDate)}'),
+                Text('Horario: ${booking.timeSlot}'),
+                Text('Duración: $selectedDurationHours hora(s) registrada(s)'),
+                Text('Total: \$${totalPrice.toStringAsFixed(0)} MXN', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF10B981))),
+                Text('Método: $selectedPaymentMethod'),
+                if (selectedPaymentMethod.contains('BBVA') || selectedPaymentMethod.contains('SPEI')) ...[
+                  const SizedBox(height: 12),
+                  // Clean Bank Info: No physical address, no location references
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF93C5FD)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(Icons.account_balance, color: Color(0xFF1D4ED8), size: 16),
+                            SizedBox(width: 6),
+                            Text('Datos Bancarios BBVA', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF1E40AF))),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        const Text('Banco: BBVA México', style: TextStyle(fontSize: 12, color: Color(0xFF1E3A8A))),
+                        const Text('Beneficiario: Level Centro Deportivo', style: TextStyle(fontSize: 12, color: Color(0xFF1E3A8A))),
+                        const Text('CLABE: 012 320 00112233456', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A))),
+                        const Text('Tarjeta: 4152 3138 9012 1234', style: TextStyle(fontSize: 12, color: Color(0xFF1E3A8A))),
+                        const SizedBox(height: 4),
+                        Text('Concepto: ${booking.id}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF2563EB))),
+                      ],
+                    ),
                   ),
-                  child: const Text(
-                    'CLABE BBVA: 012 320 001122334455 6\nConcepto: Tu Nombre y Folio de reserva',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF0369A1)),
-                  ),
-                ),
+                ],
               ],
-            ],
+            ),
           ),
           actions: [
             ElevatedButton(
@@ -177,8 +237,10 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
-    // Find current court in appState to get live slotStatuses
     final currentCourt = appState.courts.firstWhere((c) => c.id == widget.court.id, orElse: () => widget.court);
+    final selectedConsecutiveSlots = _calculateConsecutiveSlots(currentCourt);
+    final isDurationValid = _isSelectionValid(currentCourt, selectedConsecutiveSlots);
+    final totalPrice = widget.court.pricePerHour * selectedDurationHours;
 
     return Scaffold(
       body: Stack(
@@ -235,7 +297,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                             ),
                           ),
                           Text(
-                            '\$${widget.court.pricePerHour.toStringAsFixed(0)} MXN / hora',
+                            '\$${widget.court.pricePerHour.toStringAsFixed(0)} MXN / hr',
                             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF10B981)),
                           ),
                         ],
@@ -305,13 +367,107 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Slot Picker
+                      // Multi-Hour Duration Picker (1, 2, or 3 hours)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Duración de la Reserva',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                          ),
+                          Text(
+                            '$selectedDurationHours hr(s) = \$${totalPrice.toStringAsFixed(0)} MXN',
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF10B981)),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [1, 2, 3].map((hours) {
+                          final isSelected = selectedDurationHours == hours;
+                          return Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              child: InkWell(
+                                onTap: () => setState(() => selectedDurationHours = hours),
+                                borderRadius: BorderRadius.circular(12),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: isSelected ? const Color(0xFF10B981) : Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isSelected ? const Color(0xFF10B981) : Colors.grey.shade300,
+                                      width: isSelected ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '$hours ${hours == 1 ? "Hora" : "Horas"}',
+                                      style: TextStyle(
+                                        color: isSelected ? Colors.white : const Color(0xFF0F172A),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Time Slot Picker (Starting Slot)
+                      Text(
+                        'Horario de Inicio ${selectedDurationHours > 1 ? "(Se reservarán $selectedDurationHours horas consecutivas)" : ""}',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+                      ),
+                      const SizedBox(height: 8),
                       TimeSlotPicker(
                         slots: currentCourt.availableSlots,
                         selectedSlot: selectedSlot,
                         slotStatuses: currentCourt.slotStatuses,
                         onSlotSelected: (slot) => setState(() => selectedSlot = slot),
                       ),
+
+                      // Consecutive slots summary preview
+                      if (selectedSlot != null) ...[
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isDurationValid ? const Color(0xFFECFDF5) : const Color(0xFFFEF2F2),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: isDurationValid ? const Color(0xFF6EE7B7) : const Color(0xFFFCA5A5),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                isDurationValid ? Icons.check_circle_outline : Icons.error_outline,
+                                color: isDurationValid ? const Color(0xFF059669) : const Color(0xFFDC2626),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  isDurationValid
+                                      ? 'Horarios a reservar: ${selectedConsecutiveSlots.join(", ")} ($selectedDurationHours horas)'
+                                      : 'Conflicto: Uno o más turnos continuos ya están ocupados. Elige otro inicio.',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: isDurationValid ? const Color(0xFF065F46) : const Color(0xFF991B1B),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 20),
 
                       // Payment Method Selector
@@ -338,7 +494,7 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                             const Divider(height: 1),
                             RadioListTile<String>(
                               title: const Text('Transferencia BBVA / SPEI', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                              subtitle: const Text('Pago instantáneo con CLABE interbancaria', style: TextStyle(fontSize: 11)),
+                              subtitle: const Text('Pago instantáneo con CLABE interbancaria (012 320 00112233456)', style: TextStyle(fontSize: 11)),
                               value: 'Transferencia BBVA / SPEI',
                               groupValue: selectedPaymentMethod,
                               onChanged: (val) => setState(() => selectedPaymentMethod = val!),
@@ -390,9 +546,9 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Total a pagar', style: TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+                        Text('Total ($selectedDurationHours hr${selectedDurationHours > 1 ? "s" : ""})', style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
                         Text(
-                          '\$${widget.court.pricePerHour.toStringAsFixed(0)} MXN',
+                          '\$${totalPrice.toStringAsFixed(0)} MXN',
                           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF0F172A)),
                         ),
                       ],
@@ -400,15 +556,15 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
                     const SizedBox(width: 20),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: _confirmBooking,
+                        onPressed: isDurationValid ? _confirmBooking : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF10B981),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         ),
-                        child: const Text(
-                          'Confirmar Reserva',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                        child: Text(
+                          'Confirmar Reserva ($selectedDurationHours hr${selectedDurationHours > 1 ? "s" : ""})',
+                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                       ),
                     ),
