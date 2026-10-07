@@ -29,6 +29,47 @@ class Court {
     required this.surfaceType,
   });
 
+  factory Court.fromJson(Map<String, dynamic> json) {
+    Map<String, String> statuses = {};
+    if (json['slotStatuses'] is Map) {
+      (json['slotStatuses'] as Map).forEach((k, v) {
+        statuses[k.toString()] = v.toString();
+      });
+    }
+    List<String> feats = [];
+    if (json['features'] is List) {
+      feats = List<String>.from(json['features'].map((e) => e.toString()));
+    } else {
+      feats = ['Pista Profesional', 'Iluminación LED Nocturna'];
+    }
+    List<String> sList = [];
+    if (json['slots'] is List) {
+      sList = List<String>.from(json['slots'].map((e) => e.toString()));
+    } else if (json['availableSlots'] is List) {
+      sList = List<String>.from(json['availableSlots'].map((e) => e.toString()));
+    } else {
+      sList = standardSlots;
+    }
+
+    return Court(
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      category: json['category']?.toString() ?? 'Padel Cristal Pro',
+      location: json['location']?.toString() ?? 'Tacambaro, Michoacan',
+      pricePerHour: (json['price'] != null)
+          ? (json['price'] as num).toDouble()
+          : ((json['pricePerHour'] != null) ? (json['pricePerHour'] as num).toDouble() : 300.0),
+      rating: json['rating'] != null ? (json['rating'] as num).toDouble() : 4.9,
+      reviewsCount: json['reviewsCount'] != null ? (json['reviewsCount'] as num).toInt() : 120,
+      imagePath: json['image']?.toString() ?? json['imagePath']?.toString() ?? 'assets/images/cancha_padel_1.jpg',
+      features: feats,
+      availableSlots: sList,
+      slotStatuses: statuses,
+      dimensions: json['dimensions']?.toString() ?? '10m x 20m (Oficial FIP)',
+      surfaceType: json['surfaceType']?.toString() ?? 'Cesped Sintetico Pro',
+    );
+  }
+
   static const List<String> standardSlots = [
     '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00',
     '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'

@@ -3,6 +3,8 @@ $prefix = "http://localhost:$port/"
 $webRoot = Join-Path $PSScriptRoot "web_preview"
 $adminRoot = Join-Path $PSScriptRoot "web_admin"
 $lockObj = New-Object object
+$global:lockObj = $lockObj
+$global:sseClients = [System.Collections.ArrayList]::Synchronized((New-Object System.Collections.ArrayList))
 
 # In-Memory DB State for 2 Padel Courts in Tacámbaro, Michoacán (8:00 AM - 11:00 PM)
 $all24hSlots = @("08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00")
@@ -578,6 +580,7 @@ $historyData = @{
         @{ title = "Cancha de Entrenamientos 5"; url = "assets/images/cancha_sintetica_5.jpg" },
         @{ title = "Cancha Techada & Alumbrado LED"; url = "assets/images/cancha_techada.jpg" }
     )
+    liveStreamUrl = "https://www.youtube.com/@levelpadeltacambaro"
 }
 
 # ==========================================
@@ -639,11 +642,18 @@ $cancelledBookingsFilePath = Join-Path $dataDir "cancelled_bookings.json"
 function Broadcast-Event($eventName, $dataObj) {
     try {
         if ($null -eq $global:sseClients -or $global:sseClients.Count -eq 0) { return }
-        $evtData = @{ event = $eventName; data = $dataObj }
+        $evtData = @{ 
+            event = $eventName
+            type = $eventName
+            data = $dataObj 
+        }
+        if ($null -ne $dataObj -and $dataObj -is [System.Collections.IDictionary]) {
+            foreach ($k in $dataObj.Keys) {
+                $evtData[$k] = $dataObj[$k]
+            }
+        }
         $json = ConvertTo-Json -InputObject $evtData -Depth 5 -Compress
-        $payload = "data: $json
-
-"
+        $payload = "data: $json`n`n"
         $bytes = [System.Text.Encoding]::UTF8.GetBytes($payload)
         $toRemove = @()
         [System.Threading.Monitor]::Enter($global:lockObj)
@@ -882,6 +892,7 @@ if ($dbClub -and $dbClub.Length -gt 0 -and $dbClub[0].dataJson) {
             if ($savedHist.description) { $historyData.description = $savedHist.description }
             if ($savedHist.logo) { $historyData.logo = $savedHist.logo }
             if ($savedHist.coverImage) { $historyData.coverImage = $savedHist.coverImage }
+            if ($savedHist.liveStreamUrl) { $historyData.liveStreamUrl = $savedHist.liveStreamUrl }
             if ($savedHist.gallery -ne $null) { $historyData.gallery = [System.Collections.ArrayList]@($savedHist.gallery) }
         }
     } catch {}
@@ -897,7 +908,21 @@ if ($dbClub -and $dbClub.Length -gt 0 -and $dbClub[0].dataJson) {
                 if ($savedHist.description) { $historyData.description = $savedHist.description }
                 if ($savedHist.logo) { $historyData.logo = $savedHist.logo }
                 if ($savedHist.coverImage) { $historyData.coverImage = $savedHist.coverImage }
+                if ($savedHist.liveStreamUrl) { $historyData.liveStreamUrl = $savedHist.liveStreamUrl }
                 if ($savedHist.gallery -ne $null) { $historyData.gallery = [System.Collections.ArrayList]@($savedHist.gallery) }
+            }
+        }
+    } catch {}
+}
+
+$liveStreamFile = Join-Path $dataDir "live_stream.json"
+if (Test-Path $liveStreamFile) {
+    try {
+        $liveRaw = [System.IO.File]::ReadAllText($liveStreamFile, [System.Text.Encoding]::UTF8)
+        if (-not [string]::IsNullOrWhiteSpace($liveRaw)) {
+            $liveObj = ConvertFrom-Json $liveRaw
+            if ($liveObj -and $liveObj.url) {
+                $historyData.liveStreamUrl = $liveObj.url
             }
         }
     } catch {}
@@ -1161,7 +1186,7 @@ try {
             try {
                 $pingBytes = [System.Text.Encoding]::UTF8.GetBytes(": heartbeat`n`n")
                 $toRemove = @()
-                foreach ($clientResp in $sseClients) {
+                foreach ($clientResp in $global:sseClients) {
                     try {
                         $clientResp.OutputStream.Write($pingBytes, 0, $pingBytes.Length)
                         $clientResp.OutputStream.Flush()
@@ -1170,7 +1195,7 @@ try {
                     }
                 }
                 foreach ($rem in $toRemove) {
-                    $sseClients.Remove($rem) | Out-Null
+                    $global:sseClients.Remove($rem) | Out-Null
                     try { $rem.OutputStream.Close() } catch {}
                     try { $rem.Close() } catch {}
                 }
@@ -1214,11 +1239,11 @@ try {
                     $initBytes = [System.Text.Encoding]::UTF8.GetBytes("retry: 5000`n: sse-ok`n`n")
                     $response.OutputStream.Write($initBytes, 0, $initBytes.Length)
                     $response.OutputStream.Flush()
-                    [System.Threading.Monitor]::Enter($lockObj)
+                    [System.Threading.Monitor]::Enter($global:lockObj)
                     try {
-                        $sseClients.Add($response) | Out-Null
+                        $global:sseClients.Add($response) | Out-Null
                     } finally {
-                        [System.Threading.Monitor]::Exit($lockObj)
+                        [System.Threading.Monitor]::Exit($global:lockObj)
                     }
                 } catch {
                     try { $response.OutputStream.Close() } catch {}
@@ -1596,15 +1621,58 @@ try {
                     if ($body.description) { $historyData.description = $body.description }
                     if ($body.logo) { $historyData.logo = $body.logo }
                     if ($body.coverImage) { $historyData.coverImage = $body.coverImage }
+                    if ($body.liveStreamUrl -ne $null) { 
+                        $historyData.liveStreamUrl = $body.liveStreamUrl 
+                        try {
+                            $liveObj = @{ url = $body.liveStreamUrl; updatedAt = (Get-Date -Format "yyyy-MM-dd HH:mm:ss") }
+                            $livePath = Join-Path $dataDir "live_stream.json"
+                            [System.IO.File]::WriteAllText($livePath, (ConvertTo-Json -InputObject $liveObj), [System.Text.Encoding]::UTF8)
+                        } catch {}
+                    }
                     if ($body.gallery -ne $null) { $historyData.gallery = [System.Collections.ArrayList]@($body.gallery) }
                     Save-HistoryData
                 } finally {
                     [System.Threading.Monitor]::Exit($lockObj)
                 }
 
-                Broadcast-Event "HISTORY_UPDATED" @{ history = $historyData }
+                Broadcast-Event "HISTORY_UPDATED" @{ history = $historyData; url = $historyData.liveStreamUrl }
+                Broadcast-Event "LIVE_STREAM_UPDATED" @{ url = $historyData.liveStreamUrl; history = $historyData }
                 $response.ContentType = "application/json; charset=utf-8"
                 $resObj = @{ success = $true; history = $historyData }
+                $buffer = [System.Text.Encoding]::UTF8.GetBytes((ConvertTo-Json -InputObject $resObj -Depth 5))
+                $response.OutputStream.Write($buffer, 0, $buffer.Length)
+            }
+            elseif ($path -eq "/api/live-stream" -and $request.HttpMethod -eq "GET") {
+                $streamUrl = if ($historyData.liveStreamUrl) { $historyData.liveStreamUrl } else { "https://www.youtube.com/@levelpadeltacambaro" }
+                $resObj = @{ success = $true; url = $streamUrl }
+                $json = ConvertTo-Json -InputObject $resObj -Depth 5
+                $buffer = [System.Text.Encoding]::UTF8.GetBytes($json)
+                $response.ContentType = "application/json; charset=utf-8"
+                $response.OutputStream.Write($buffer, 0, $buffer.Length)
+            }
+            elseif ($path -eq "/api/live-stream" -and $request.HttpMethod -eq "POST") {
+                $reader = New-Object System.IO.StreamReader($request.InputStream, [System.Text.Encoding]::UTF8)
+                $body = ConvertFrom-Json ($reader.ReadToEnd())
+
+                [System.Threading.Monitor]::Enter($lockObj)
+                try {
+                    if ($body.url) {
+                        $historyData.liveStreamUrl = $body.url
+                        Save-HistoryData
+                        try {
+                            $liveObj = @{ url = $body.url; updatedAt = (Get-Date -Format "yyyy-MM-dd HH:mm:ss") }
+                            $livePath = Join-Path $dataDir "live_stream.json"
+                            [System.IO.File]::WriteAllText($livePath, (ConvertTo-Json -InputObject $liveObj), [System.Text.Encoding]::UTF8)
+                        } catch {}
+                    }
+                } finally {
+                    [System.Threading.Monitor]::Exit($lockObj)
+                }
+
+                Broadcast-Event "HISTORY_UPDATED" @{ history = $historyData; url = $historyData.liveStreamUrl }
+                Broadcast-Event "LIVE_STREAM_UPDATED" @{ url = $historyData.liveStreamUrl; history = $historyData }
+                $response.ContentType = "application/json; charset=utf-8"
+                $resObj = @{ success = $true; url = $historyData.liveStreamUrl }
                 $buffer = [System.Text.Encoding]::UTF8.GetBytes((ConvertTo-Json -InputObject $resObj -Depth 5))
                 $response.OutputStream.Write($buffer, 0, $buffer.Length)
             }

@@ -51,6 +51,7 @@ let clubHistoryData = {
   phone: '459 102 3849',
   logo: 'assets/images/logo.jpeg',
   description: 'Level Tacámbaro nació con la visión de consolidar el primer centro deportivo de pádel de alto nivel en Tacámbaro, Michoacán. Nuestro club cuenta con 2 pistas de tecnología profesional (Pádel Cristal Pro y Panorámica VIP), iluminación LED nocturna de alta definición, área de espectadores, servicio de pro shop con alquiler de palas y pelotas, y atención personalizada las 24 horas del día.',
+  liveStreamUrl: 'https://www.youtube.com/@levelpadeltacambaro',
   gallery: [
     { title: 'Pista 1: Pádel Cristal Pro (Azul)', url: 'assets/images/cancha_padel_1.jpg' },
     { title: 'Pista 2: Pádel Panorámica VIP (Verde)', url: 'assets/images/cancha_padel_2.jpg' },
@@ -98,6 +99,7 @@ let _lastTournamentsJson = '';
 let _lastProductsJson = '';
 let _lastHistoryJson = '';
 let _lastBankInfoJson = '';
+let _lastUsersJson = '';
 
 document.addEventListener('DOMContentLoaded', () => {
   renderAllInstances();
@@ -106,6 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchTournamentsData();
   fetchProductsData();
   fetchHistoryData();
+  fetchBankInfoData();
+  fetchUsersData();
+  setupSSE();
   updateClocks();
   setInterval(updateClocks, 10000);
   setInterval(() => {
@@ -113,7 +118,10 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchBookingsData(true);
     fetchTournamentsData(true);
     fetchProductsData(true);
-  }, 3000);
+    fetchHistoryData(true);
+    fetchBankInfoData(true);
+    fetchUsersData(true);
+  }, 1000);
 });
 
 async function fetchCourtsData(isBackgroundPolling = false) {
@@ -126,6 +134,11 @@ async function fetchCourtsData(isBackgroundPolling = false) {
         if (str !== _lastCourtsJson) {
           _lastCourtsJson = str;
           courtsData = data;
+          ['single', 'phoneA', 'phoneB'].forEach(k => {
+            if (instanceStates[k] && instanceStates[k].selectedCourt) {
+              instanceStates[k].selectedCourt = courtsData.find(c => c.id === instanceStates[k].selectedCourt.id) || instanceStates[k].selectedCourt;
+            }
+          });
           renderAllInstances(isBackgroundPolling);
         }
       }
@@ -194,17 +207,31 @@ async function fetchProductsData(isBackgroundPolling = false) {
 
 async function fetchHistoryData(isBackgroundPolling = false) {
   try {
-    const res = await fetch('api/history').catch(() => null);
-    if (res && res.ok) {
-      const data = await res.json().catch(() => null);
+    const [resHist, resLive] = await Promise.all([
+      fetch('api/history').catch(() => null),
+      fetch('api/live-stream').catch(() => null)
+    ]);
+    let changed = false;
+    if (resLive && resLive.ok) {
+      const liveData = await resLive.json().catch(() => null);
+      if (liveData && liveData.url && clubHistoryData.liveStreamUrl !== liveData.url) {
+        clubHistoryData.liveStreamUrl = liveData.url;
+        changed = true;
+      }
+    }
+    if (resHist && resHist.ok) {
+      const data = await resHist.json().catch(() => null);
       if (data) {
         const str = JSON.stringify(data || {});
         if (str !== _lastHistoryJson) {
           _lastHistoryJson = str;
           clubHistoryData = { ...clubHistoryData, ...data };
-          renderAllInstances(isBackgroundPolling);
+          changed = true;
         }
       }
+    }
+    if (changed) {
+      renderAllInstances(isBackgroundPolling);
     }
   } catch (e) { }
 }
@@ -221,6 +248,31 @@ async function fetchBankInfoData(isBackgroundPolling = false) {
           if (data && data.bankName) {
             bankInfoData = data;
           }
+          renderAllInstances(isBackgroundPolling);
+        }
+      }
+    }
+  } catch (e) { }
+}
+
+async function fetchUsersData(isBackgroundPolling = false) {
+  try {
+    const res = await fetch('api/users').catch(() => null);
+    if (res && res.ok) {
+      const data = await res.json().catch(() => null);
+      if (Array.isArray(data)) {
+        const str = JSON.stringify(data);
+        if (str !== _lastUsersJson) {
+          _lastUsersJson = str;
+          ['single', 'phoneA', 'phoneB'].forEach(k => {
+            const st = instanceStates[k];
+            if (st && st.loggedInUser) {
+              const fresh = data.find(u => u.id === st.loggedInUser.id || (u.username && u.username.toLowerCase() === st.loggedInUser.username.toLowerCase()));
+              if (fresh) {
+                st.loggedInUser = fresh;
+              }
+            }
+          });
           renderAllInstances(isBackgroundPolling);
         }
       }
@@ -246,17 +298,33 @@ function setupSSE() {
       appSSESource.onmessage = (event) => {
         try {
           const payload = JSON.parse(event.data);
-          if (payload.type === 'BOOKING_CREATED' || payload.type === 'SLOT_TOGGLED' || (payload.type && payload.type.startsWith('COURT_'))) {
+          const eventType = payload.type || payload.event || '';
+          const eventData = payload.data || payload || {};
+
+          if (eventType === 'BOOKING_CREATED' || eventType === 'BOOKING_CANCELLED' || eventType === 'BOOKING_UPDATED' || eventType === 'BOOKING_DELETED' || eventType === 'SLOT_TOGGLED' || eventType.startsWith('COURT_')) {
             fetchCourtsData();
             fetchBookingsData();
-          } else if (payload.type && payload.type.startsWith('TOURNAMENT_')) {
+          } else if (eventType.startsWith('TOURNAMENT_')) {
             fetchTournamentsData();
-          } else if (payload.type === 'HISTORY_UPDATED') {
+          } else if (eventType === 'HISTORY_UPDATED' || eventType === 'LIVE_STREAM_UPDATED') {
+            if (eventData.url) clubHistoryData.liveStreamUrl = eventData.url;
+            if (eventData.history) clubHistoryData = { ...clubHistoryData, ...eventData.history };
             fetchHistoryData();
-          } else if (payload.type === 'BANK_INFO_UPDATED') {
+            renderAllInstances();
+          } else if (eventType === 'BANK_INFO_UPDATED') {
             fetchBankInfoData();
-          } else if (payload.type && payload.type.startsWith('PRODUCT_')) {
+          } else if (eventType.startsWith('PRODUCT_')) {
             fetchProductsData();
+          } else if (eventType.startsWith('USER_')) {
+            fetchUsersData();
+          } else {
+            fetchCourtsData(true);
+            fetchBookingsData(true);
+            fetchTournamentsData(true);
+            fetchProductsData(true);
+            fetchHistoryData(true);
+            fetchBankInfoData(true);
+            fetchUsersData(true);
           }
         } catch (err) { }
       };
@@ -269,7 +337,7 @@ function setupSSE() {
           appSSERetryTimer = setTimeout(() => {
             appSSERetryTimer = null;
             setupSSE();
-          }, 5000);
+          }, 3000);
         }
       };
     } catch (e) { }
@@ -859,9 +927,7 @@ async function handleClientChangePasswordSubmit(e, instKey) {
 const drawerSubmenusState = {
   padel: false,
   futbol: false,
-  former: false,
-  formerFuncional: false,
-  formerBungee: false
+  former: false
 };
 
 function toggleDrawerSubmenu(moduleName, instKey) {
@@ -961,7 +1027,7 @@ function renderDrawerOverlay(state, instKey) {
           </div>
         ` : ''}
 
-        <!-- 🧘‍♀️ Former Group (Funcional & Bungee) -->
+        <!-- 🧘‍♀️ Former Group (Reservas & Productos) -->
         <div class="drawer-brand-card" onclick="toggleDrawerSubmenu('former', '${instKey}')" style="cursor: pointer;">
           <div class="brand-icon-box purple"><i data-lucide="flame" style="width: 18px; height: 18px;"></i></div>
           <div class="brand-card-content">
@@ -972,43 +1038,15 @@ function renderDrawerOverlay(state, instKey) {
         </div>
         ${drawerSubmenusState.former ? `
           <div class="drawer-submenu-list">
-            <!-- 🏋️‍♀️ Funcional Sub-Accordion -->
-            <div class="drawer-subitem ${drawerSubmenusState.formerFuncional ? 'expanded' : ''}" onclick="toggleDrawerSubmenu('formerFuncional', '${instKey}')" style="justify-content: space-between;">
-              <span style="display: flex; align-items: center; gap: 8px;">
-                <i data-lucide="dumbbell" style="width: 14px; height: 14px; color: #A855F7;"></i>
-                <span>Funcional</span>
-              </span>
-              <i data-lucide="${drawerSubmenusState.formerFuncional ? 'chevron-down' : 'chevron-right'}" style="width: 12px; height: 12px; opacity: 0.8;"></i>
+            <div class="drawer-subitem ${state.activeTab === 'former_productos' ? 'active' : ''}" onclick="selectTabFromDrawer('former_productos', '${instKey}')">
+              <i data-lucide="shopping-bag" style="width: 14px; height: 14px;"></i> Productos Former
             </div>
-            ${drawerSubmenusState.formerFuncional ? `
-              <div class="drawer-nested-list">
-                <div class="drawer-subitem ${state.activeTab === 'former_funcional_reservas' ? 'active' : ''}" onclick="selectTabFromDrawer('former_funcional_reservas', '${instKey}')" style="font-size: 11.5px; padding: 8px 12px; background: rgba(168, 85, 247, 0.18); border-color: rgba(168, 85, 247, 0.3);">
-                  <i data-lucide="clipboard-list" style="width: 13px; height: 13px;"></i> Reservas (Membresías)
-                </div>
-                <div class="drawer-subitem ${state.activeTab === 'former_funcional_productos' ? 'active' : ''}" onclick="selectTabFromDrawer('former_funcional_productos', '${instKey}')" style="font-size: 11.5px; padding: 8px 12px; background: rgba(168, 85, 247, 0.18); border-color: rgba(168, 85, 247, 0.3);">
-                  <i data-lucide="shopping-bag" style="width: 13px; height: 13px;"></i> Productos
-                </div>
-              </div>
-            ` : ''}
-
-            <!-- 🪂 Bungee Sub-Accordion -->
-            <div class="drawer-subitem ${drawerSubmenusState.formerBungee ? 'expanded' : ''}" onclick="toggleDrawerSubmenu('formerBungee', '${instKey}')" style="justify-content: space-between;">
-              <span style="display: flex; align-items: center; gap: 8px;">
-                <i data-lucide="zap" style="width: 14px; height: 14px; color: #EC4899;"></i>
-                <span>Bungee</span>
-              </span>
-              <i data-lucide="${drawerSubmenusState.formerBungee ? 'chevron-down' : 'chevron-right'}" style="width: 12px; height: 12px; opacity: 0.8;"></i>
+            <div class="drawer-subitem ${state.activeTab === 'former_funcional_reservas' ? 'active' : ''}" onclick="selectTabFromDrawer('former_funcional_reservas', '${instKey}')">
+              <i data-lucide="maximize-2" style="width: 14px; height: 14px;"></i> Entrenamiento Funcional
             </div>
-            ${drawerSubmenusState.formerBungee ? `
-              <div class="drawer-nested-list">
-                <div class="drawer-subitem ${state.activeTab === 'former_bungee_reservas' ? 'active' : ''}" onclick="selectTabFromDrawer('former_bungee_reservas', '${instKey}')" style="font-size: 11.5px; padding: 8px 12px; background: rgba(236, 72, 153, 0.18); border-color: rgba(236, 72, 153, 0.3);">
-                  <i data-lucide="clipboard-list" style="width: 13px; height: 13px;"></i> Reservas (Membresías)
-                </div>
-                <div class="drawer-subitem ${state.activeTab === 'former_bungee_productos' ? 'active' : ''}" onclick="selectTabFromDrawer('former_bungee_productos', '${instKey}')" style="font-size: 11.5px; padding: 8px 12px; background: rgba(236, 72, 153, 0.18); border-color: rgba(236, 72, 153, 0.3);">
-                  <i data-lucide="shopping-bag" style="width: 13px; height: 13px;"></i> Productos
-                </div>
-              </div>
-            ` : ''}
+            <div class="drawer-subitem ${state.activeTab === 'former_bungee_reservas' ? 'active' : ''}" onclick="selectTabFromDrawer('former_bungee_reservas', '${instKey}')">
+              <i data-lucide="activity" style="width: 14px; height: 14px;"></i> Bungee Fitness
+            </div>
           </div>
         ` : ''}
 
@@ -1177,7 +1215,7 @@ function renderCourtsView(state, instKey, sport = 'padel') {
     </div>
 
     <!-- Live Stream Card -->
-    <div onclick="window.open('https://www.youtube.com/@levelpadeltacambaro', '_blank')" style="margin-bottom: 14px; background: linear-gradient(135deg, #881337 0%, #0F172A 100%); border-radius: 16px; padding: 12px 14px; color: #FFF; display: flex; align-items: center; justify-content: space-between; cursor: pointer; box-shadow: 0 4px 14px rgba(239,68,68,0.25);">
+    <div onclick="window.open(clubHistoryData.liveStreamUrl || 'https://www.youtube.com/@levelpadeltacambaro', '_blank')" style="margin-bottom: 14px; background: linear-gradient(135deg, #881337 0%, #0F172A 100%); border-radius: 16px; padding: 12px 14px; color: #FFF; display: flex; align-items: center; justify-content: space-between; cursor: pointer; box-shadow: 0 4px 14px rgba(239,68,68,0.25);">
       <div style="display: flex; align-items: center; gap: 10px;">
         <div style="background: rgba(255,255,255,0.15); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
           <i data-lucide="tv" style="width: 20px; height: 20px; color: #FFF;"></i>
@@ -1185,7 +1223,7 @@ function renderCourtsView(state, instKey, sport = 'padel') {
         <div>
           <div style="font-size: 10px; font-weight: 800; color: #FCA5A5; letter-spacing: 0.8px; text-transform: uppercase;">🔴 Transmisión en Vivo</div>
           <div style="font-size: 12px; font-weight: 800; color: #FFF;">Ver Partidos & Torneos en Directo</div>
-          <div style="font-size: 10px; color: rgba(255,255,255,0.7);">Clic para abrir YouTube / Facebook</div>
+          <div style="font-size: 10px; color: rgba(255,255,255,0.7);">Clic para abrir transmisión oficial</div>
         </div>
       </div>
       <span style="background: #EF4444; color: #FFF; font-size: 11px; font-weight: 800; padding: 5px 10px; border-radius: 8px;">Ver →</span>

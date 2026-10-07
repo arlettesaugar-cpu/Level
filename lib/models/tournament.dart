@@ -46,6 +46,31 @@ class Tournament {
     required this.teams,
   });
 
+  factory Tournament.fromJson(Map<String, dynamic> json) {
+    List<TournamentTeam> tms = [];
+    if (json['teams'] is List) {
+      for (var item in json['teams']) {
+        if (item is Map<String, dynamic>) {
+          tms.add(TournamentTeam.fromJson(item));
+        } else if (item is Map) {
+          tms.add(TournamentTeam.fromJson(Map<String, dynamic>.from(item)));
+        }
+      }
+    }
+    return Tournament(
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      category: json['category']?.toString() ?? 'Libre',
+      dates: json['dates']?.toString() ?? 'Próximamente',
+      prize: json['prize']?.toString() ?? '\$0 MXN',
+      sport: json['sport']?.toString() ?? 'padel',
+      imageUrl: json['imageUrl']?.toString() ?? 'assets/images/cancha_padel_2.jpg',
+      maxTeams: json['maxTeams'] != null ? (json['maxTeams'] as num).toInt() : 16,
+      status: json['status']?.toString() ?? 'Inscripciones Abiertas',
+      teams: tms,
+    );
+  }
+
   int get registeredCount => teams.length;
 
   static List<Tournament> get mockTournaments => [

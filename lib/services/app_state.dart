@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../models/user.dart';
 import '../models/court.dart';
 import '../models/tournament.dart';
@@ -42,12 +46,159 @@ class AppState extends ChangeNotifier {
     ],
   };
 
+  Timer? _syncTimer;
+  String _baseUrl = 'http://localhost:8085';
+  bool _isSyncing = false;
+
   AppState() {
     // Default to Administrador 2 for direct instant testing
     _currentUser = _allUsers.firstWhere(
       (u) => u.username == 'admin2',
       orElse: () => _allUsers.first,
     );
+    startRealtimeSync();
+  }
+
+  @override
+  void dispose() {
+    _syncTimer?.cancel();
+    super.dispose();
+  }
+
+  void setBaseUrl(String url) {
+    _baseUrl = url.replaceAll(RegExp(r'/+$'), '');
+  }
+
+  void startRealtimeSync() {
+    _syncTimer?.cancel();
+    syncAllFromBackend();
+    _syncTimer = Timer.periodic(const Duration(milliseconds: 1500), (_) {
+      syncAllFromBackend();
+    });
+  }
+
+  Future<void> syncAllFromBackend() async {
+    if (_isSyncing) return;
+    _isSyncing = true;
+    bool changed = false;
+
+    try {
+      final base = kIsWeb ? '' : _baseUrl;
+
+      // 1. Live Stream URL
+      try {
+        final res = await http.get(Uri.parse('$base/api/live-stream')).timeout(const Duration(seconds: 3));
+        if (res.statusCode == 200) {
+          final data = jsonDecode(res.body);
+          if (data is Map && data['url'] != null && data['url'] != liveStreamUrl) {
+            liveStreamUrl = data['url'].toString();
+            changed = true;
+          }
+        }
+      } catch (_) {}
+
+      // 2. Club History & Philosophy
+      try {
+        final res = await http.get(Uri.parse('$base/api/history')).timeout(const Duration(seconds: 3));
+        if (res.statusCode == 200) {
+          final data = jsonDecode(res.body);
+          if (data is Map) {
+            if (data['liveStreamUrl'] != null && data['liveStreamUrl'] != liveStreamUrl) {
+              liveStreamUrl = data['liveStreamUrl'].toString();
+              changed = true;
+            }
+            if (data['name'] != null && data['name'] != historyData['name']) {
+              historyData['name'] = data['name'];
+              changed = true;
+            }
+            if (data['description'] != null && data['description'] != historyData['description']) {
+              historyData['description'] = data['description'];
+              changed = true;
+            }
+            if (data['gallery'] is List) {
+              historyData['gallery'] = data['gallery'];
+              changed = true;
+            }
+          }
+        }
+      } catch (_) {}
+
+      // 3. Courts & Availability
+      try {
+        final res = await http.get(Uri.parse('$base/api/courts')).timeout(const Duration(seconds: 3));
+        if (res.statusCode == 200) {
+          final data = jsonDecode(res.body);
+          if (data is List && data.isNotEmpty) {
+            _courts = data.map((c) => Court.fromJson(Map<String, dynamic>.from(c))).toList();
+            changed = true;
+          }
+        }
+      } catch (_) {}
+
+      // 4. Tournaments
+      try {
+        final res = await http.get(Uri.parse('$base/api/tournaments')).timeout(const Duration(seconds: 3));
+        if (res.statusCode == 200) {
+          final data = jsonDecode(res.body);
+          if (data is List && data.isNotEmpty) {
+            _tournaments = data.map((t) => Tournament.fromJson(Map<String, dynamic>.from(t))).toList();
+            changed = true;
+          }
+        }
+      } catch (_) {}
+
+      // 5. Bookings
+      try {
+        final res = await http.get(Uri.parse('$base/api/bookings')).timeout(const Duration(seconds: 3));
+        if (res.statusCode == 200) {
+          final data = jsonDecode(res.body);
+          if (data is List) {
+            _bookings = data.map((b) => Booking.fromJson(Map<String, dynamic>.from(b))).toList();
+            changed = true;
+          }
+        }
+      } catch (_) {}
+
+      // 6. Bank Info
+      try {
+        final res = await http.get(Uri.parse('$base/api/bank-info')).timeout(const Duration(seconds: 3));
+        if (res.statusCode == 200) {
+          final data = jsonDecode(res.body);
+          if (data is Map && data.isNotEmpty) {
+            data.forEach((k, v) {
+              bankInfo[k.toString()] = v.toString();
+            });
+            changed = true;
+          }
+        }
+      } catch (_) {}
+
+      // 7. Users & Debts
+      try {
+        final res = await http.get(Uri.parse('$base/api/users')).timeout(const Duration(seconds: 3));
+        if (res.statusCode == 200) {
+          final data = jsonDecode(res.body);
+          if (data is List && data.isNotEmpty) {
+            _allUsers = data.map((u) => AppUser.fromJson(Map<String, dynamic>.from(u))).toList();
+            if (_currentUser != null) {
+              final updated = _allUsers.firstWhere(
+                (u) => u.id == _currentUser!.id || u.username.toLowerCase() == _currentUser!.username.toLowerCase(),
+                orElse: () => _currentUser!,
+              );
+              _currentUser = updated;
+            }
+            changed = true;
+          }
+        }
+      } catch (_) {}
+
+    } catch (_) {
+    } finally {
+      _isSyncing = false;
+      if (changed) {
+        notifyListeners();
+      }
+    }
   }
 
   AppUser? get currentUser => _currentUser;
@@ -304,10 +455,5 @@ class AppState extends ChangeNotifier {
 
     notifyListeners();
     return {'success': true, 'message': '¡Inscripción exitosa para "$teamName"!'};
-  }
-
-  void setLiveStreamUrl(String newUrl) {
-    liveStreamUrl = newUrl;
-    notifyListeners();
   }
 }

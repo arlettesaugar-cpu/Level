@@ -400,42 +400,42 @@ let currentTpvFilter = 'all';
 function fixMojibake(str) {
   if (typeof str !== 'string' || !str) return str || '';
   return str
-    .replace(/P√É;del|P√É¬°del|P√Édel|P√°del/gi, 'Padel')
-    .replace(/Tac√É;mbaro|Tac√É¬°mbaro|Tac√Émbaro|Tac√°mbaro|TacAmbaro/gi, 'Tacambaro')
-    .replace(/Michoac√É;n|Michoac√É¬°n|Michoac√Én|Michoac√°n/gi, 'Michoacan')
-    .replace(/Panor√É;mica|Panor√É¬°mica|Panor√°mica/gi, 'Panoramica')
-    .replace(/Categor√É;a|Categor√Éa|Categor√≠a/gi, 'Categoria')
-    .replace(/Pr√É;ximamente|Pr√É¬≥ximamente|Pr√Éximamente|Pr√≥ximamente/gi, 'Proximamente')
-    .replace(/Contrase√É¬±a|Contrase√±a/gi, 'Contrasena')
-    .replace(/PArez|P√É¬©rez|P√É@rez|P√©rez/g, 'Perez')
-    .replace(/Sof√Éa|Sof√≠a/gi, 'Sofia')
-    .replace(/Vald√É¬©s|Vald√©s/gi, 'Valdes')
-    .replace(/Asisti√≥/gi, 'Asistio')
-    .replace(/√É;/g, 'a')
-    .replace(/√É¬°/g, 'a')
-    .replace(/√É¬©/g, 'e')
-    .replace(/√É¬≠/g, 'i')
-    .replace(/√É\u00AD/g, 'i')
-    .replace(/√É¬≥/g, 'o')
-    .replace(/√É¬∫/g, 'u')
-    .replace(/√É¬±/g, 'n')
-    .replace(/√É/g, 'A')
-    .replace(/√Ç¬™|√É¬™|¬™/g, 'a')
-    .replace(/√Ç¬∫|¬∫/g, 'o')
-    .replace(/√Ç¬©|√É¬©|¬©/g, 'e')
-    .replace(/√Ç/g, '')
-    .replace(/[√°√§√†√¢]/g, 'a')
-    .replace(/[√©√´√®√™]/g, 'e')
-    .replace(/[√≠√Ø√¨√Æ]/g, 'i')
-    .replace(/[√≥√∂√≤√¥]/g, 'o')
-    .replace(/[√∫√º√π√ª]/g, 'u')
+    .replace(/P√;del|P√°del|P√del|P·del/gi, 'Padel')
+    .replace(/Tac√;mbaro|Tac√°mbaro|Tac√mbaro|Tac·mbaro|TacAmbaro/gi, 'Tacambaro')
+    .replace(/Michoac√;n|Michoac√°n|Michoac√n|Michoac·n/gi, 'Michoacan')
+    .replace(/Panor√;mica|Panor√°mica|Panor·mica/gi, 'Panoramica')
+    .replace(/Categor√;a|Categor√a|CategorÌa/gi, 'Categoria')
+    .replace(/Pr√;ximamente|Pr√≥ximamente|Pr√ximamente|PrÛximamente/gi, 'Proximamente')
+    .replace(/Contrase√±a|ContraseÒa/gi, 'Contrasena')
+    .replace(/PArez|P√©rez|P√@rez|PÈrez/g, 'Perez')
+    .replace(/Sof√a|SofÌa/gi, 'Sofia')
+    .replace(/Vald√©s|ValdÈs/gi, 'Valdes')
+    .replace(/AsistiÛ/gi, 'Asistio')
+    .replace(/√;/g, 'a')
+    .replace(/√°/g, 'a')
+    .replace(/√©/g, 'e')
+    .replace(/√≠/g, 'i')
+    .replace(/√\u00AD/g, 'i')
+    .replace(/√≥/g, 'o')
+    .replace(/√∫/g, 'u')
     .replace(/√±/g, 'n')
-    .replace(/[√Å√Ñ√Ä√Ç]/g, 'A')
-    .replace(/[√â√ã√à√ä]/g, 'E')
-    .replace(/[√ç√è√å√é]/g, 'I')
-    .replace(/[√ì√ñ√í√î]/g, 'O')
-    .replace(/[√ö√ú√ô√õ]/g, 'U')
-    .replace(/√ë/g, 'N');
+    .replace(/√/g, 'A')
+    .replace(/¬™|√™|™/g, 'a')
+    .replace(/¬∫|∫/g, 'o')
+    .replace(/¬©|√©|©/g, 'e')
+    .replace(/¬/g, '')
+    .replace(/[·‰‡‚]/g, 'a')
+    .replace(/[ÈÎËÍ]/g, 'e')
+    .replace(/[ÌÔÏÓ]/g, 'i')
+    .replace(/[ÛˆÚÙ]/g, 'o')
+    .replace(/[˙¸˘˚]/g, 'u')
+    .replace(/Ò/g, 'n')
+    .replace(/[¡ƒ¿¬]/g, 'A')
+    .replace(/[…À» ]/g, 'E')
+    .replace(/[ÕœÃŒ]/g, 'I')
+    .replace(/[”÷“‘]/g, 'O')
+    .replace(/[⁄‹Ÿ€]/g, 'U')
+    .replace(/—/g, 'N');
 }
 
 
@@ -457,18 +457,18 @@ function updateCashUI() {
 
   if (isShiftOpen && activeShift) {
     if (bannerTitle) {
-      bannerTitle.textContent = 'üü¢ Caja Abierta (Turno Activo)';
+      bannerTitle.textContent = '?? Caja Abierta (Turno Activo)';
       bannerTitle.style.color = '#166534';
     }
     if (bannerSubtitle) {
       const openTime = (activeShift.openTime || 'Hoy').replace('T', ' ');
-      const resp = activeShift.responsible || 'Administrador Level Tac√°mbaro';
+      const resp = activeShift.responsible || 'Administrador Level Tac·mbaro';
       bannerSubtitle.textContent = 'Apertura: ' + openTime + ' | Responsable: ' + resp;
       bannerSubtitle.style.color = '#15803D';
     }
   } else {
     if (bannerTitle) {
-      bannerTitle.textContent = 'üîí Caja Cerrada (Sin Turno Activo)';
+      bannerTitle.textContent = '?? Caja Cerrada (Sin Turno Activo)';
       bannerTitle.style.color = '#991B1B';
     }
     if (bannerSubtitle) {
@@ -532,7 +532,7 @@ async function handleMarkAttendance(bookingId, attendance) {
 async function handleMarkPaid(bookingId, paymentMethod) {
   if (!bookingId) return;
   if (!isCashShiftOpen()) {
-    showNotification('warning', 'Caja Cerrada üîí', 'Debes abrir un turno de caja antes de registrar el cobro de la reserva.');
+    showNotification('warning', 'Caja Cerrada ??', 'Debes abrir un turno de caja antes de registrar el cobro de la reserva.');
     if (typeof openOpenCashModal === 'function') openOpenCashModal();
     return;
   }
@@ -580,11 +580,11 @@ function handleAdminLoginSubmit(e) {
 
   if (!username || !password) {
     if (alertBox && alertText) {
-      alertText.textContent = 'Por favor ingresa tu usuario y contrase√É¬±a.';
+      alertText.textContent = 'Por favor ingresa tu usuario y contrase√±a.';
       alertBox.style.display = 'flex';
       if (window.lucide) lucide.createIcons();
     }
-    if (typeof showNotification === 'function') showNotification('error', 'Campos Incompletos √¢≈°¬†√Ø¬∏¬è', 'Por favor ingresa tu usuario y contrase√É¬±a.');
+    if (typeof showNotification === 'function') showNotification('error', 'Campos Incompletos ‚ö†Ô∏è', 'Por favor ingresa tu usuario y contrase√±a.');
     return;
   }
 
@@ -599,15 +599,15 @@ function handleAdminLoginSubmit(e) {
     localStorage.setItem('adminLoggedIn', 'true');
     const overlay = document.getElementById('adminLoginOverlay') || document.getElementById('adminLoginModalOverlay');
     if (overlay) overlay.style.display = 'none';
-    if (typeof showNotification === 'function') showNotification('success', '√Ç¬°Bienvenido! √∞≈∏‚Äò‚Äπ', 'Has iniciado sesi√É¬≥n exitosamente en el Panel Administrador Level Tac√É¬°mbaro.');
+    if (typeof showNotification === 'function') showNotification('success', '¬°Bienvenido! üëã', 'Has iniciado sesi√≥n exitosamente en el Panel Administrador Level Tac√°mbaro.');
     if (typeof fetchAdminData === 'function') fetchAdminData();
   } else {
     if (alertBox && alertText) {
-      alertText.textContent = 'Usuario o contrase√É¬±a incorrectos. Por favor verifica tus datos.';
+      alertText.textContent = 'Usuario o contrase√±a incorrectos. Por favor verifica tus datos.';
       alertBox.style.display = 'flex';
       if (window.lucide) lucide.createIcons();
     }
-    if (typeof showNotification === 'function') showNotification('error', 'Usuario o contrase√É¬±a incorrectos √¢¬ù≈í', 'El usuario o la contrase√É¬±a ingresados no son v√É¬°lidos. Por favor verifica tus datos.');
+    if (typeof showNotification === 'function') showNotification('error', 'Usuario o contrase√±a incorrectos ‚ùå', 'El usuario o la contrase√±a ingresados no son v√°lidos. Por favor verifica tus datos.');
   }
 }
 function openChangePasswordModal() {
@@ -644,22 +644,22 @@ async function handleSaveNewPassword(e) {
 
   if (!newPass || newPass.length < 4) {
     if (alertBox && alertText) {
-      alertText.textContent = 'La contrase√±a debe tener al menos 4 caracteres.';
+      alertText.textContent = 'La contraseÒa debe tener al menos 4 caracteres.';
       alertBox.style.display = 'flex';
     }
     if (typeof showNotification === 'function') {
-      showNotification('error', 'Clave Muy Corta ‚ö†Ô∏è', 'La contrase√±a debe tener al menos 4 caracteres.');
+      showNotification('error', 'Clave Muy Corta ??', 'La contraseÒa debe tener al menos 4 caracteres.');
     }
     return;
   }
 
   if (newPass !== confirmPass) {
     if (alertBox && alertText) {
-      alertText.textContent = 'Las contrase√±as no coinciden. Por favor verifica.';
+      alertText.textContent = 'Las contraseÒas no coinciden. Por favor verifica.';
       alertBox.style.display = 'flex';
     }
     if (typeof showNotification === 'function') {
-      showNotification('error', 'No Coinciden ‚ö†Ô∏è', 'Las contrase√±as no coinciden.');
+      showNotification('error', 'No Coinciden ??', 'Las contraseÒas no coinciden.');
     }
     return;
   }
@@ -675,20 +675,20 @@ async function handleSaveNewPassword(e) {
       localStorage.setItem('adminPassword', newPass);
       closeChangePasswordModal();
       if (typeof showNotification === 'function') {
-        showNotification('success', '¬°Contrase√±a Actualizada! üîë', 'La clave del Administrador fue cambiada con √©xito.');
+        showNotification('success', '°ContraseÒa Actualizada! ??', 'La clave del Administrador fue cambiada con Èxito.');
       }
     } else {
       localStorage.setItem('adminPassword', newPass);
       closeChangePasswordModal();
       if (typeof showNotification === 'function') {
-        showNotification('success', '¬°Contrase√±a Actualizada! üîë', 'La clave del Administrador fue actualizada.');
+        showNotification('success', '°ContraseÒa Actualizada! ??', 'La clave del Administrador fue actualizada.');
       }
     }
   } catch (err) {
     localStorage.setItem('adminPassword', newPass);
     closeChangePasswordModal();
     if (typeof showNotification === 'function') {
-      showNotification('success', '¬°Contrase√±a Actualizada! üîë', 'La clave del Administrador fue actualizada.');
+      showNotification('success', '°ContraseÒa Actualizada! ??', 'La clave del Administrador fue actualizada.');
     }
   }
 }
@@ -847,7 +847,7 @@ function setupRealtimeEvents() {
     } catch (e) { }
   }
 
-  adminPollInterval = setInterval(fetchAdminData, 10000);
+  adminPollInterval = setInterval(fetchAdminData, 3000);
 }
 
 function getBookingDuration(timeSlotStr) {
@@ -982,7 +982,7 @@ function handleRealtimeEvent(event) {
 }
 
 /* ==========================================
-   NAVEGACI√ìN DE MESES Y CALENDARIO MENSUAL
+   NAVEGACI”N DE MESES Y CALENDARIO MENSUAL
    ========================================== */
 
 function navigateCalendarMonth(delta) {
@@ -1069,20 +1069,20 @@ function renderMonthlyCalendar() {
     const matchCount = bookingsData.filter(b => b.date && String(b.date).startsWith(dayISO)).length;
 
     let occClass = 'occ-low';
-    let occText = `üü¢ ${matchCount} Partido${matchCount !== 1 ? 's' : ''}`;
+    let occText = `?? ${matchCount} Partido${matchCount !== 1 ? 's' : ''}`;
 
     if (isToday) {
       occClass = 'occ-high';
-      occText = `‚ö° ${matchCount} Partido${matchCount !== 1 ? 's' : ''} (HOY)`;
+      occText = `? ${matchCount} Partido${matchCount !== 1 ? 's' : ''} (HOY)`;
     } else if (matchCount >= 24) {
       occClass = 'occ-full';
-      occText = 'üî• Al 100% Ocupado';
+      occText = '?? Al 100% Ocupado';
     } else if (matchCount > 0) {
       occClass = 'occ-medium';
-      occText = `üü¢ ${matchCount} Partido${matchCount !== 1 ? 's' : ''}`;
+      occText = `?? ${matchCount} Partido${matchCount !== 1 ? 's' : ''}`;
     } else {
       occClass = 'occ-low';
-      occText = `üü¢ 0 Partidos`;
+      occText = `?? 0 Partidos`;
     }
 
     html += `
@@ -1108,7 +1108,7 @@ function getDayNameForDate(yr, monthIdx, day) {
 }
 
 /* ==========================================
-   MODAL DE DISPONIBILIDAD DEL D√çA (24 HORAS)
+   MODAL DE DISPONIBILIDAD DEL DÕA (24 HORAS)
    ========================================== */
 
 function renderDayModalCourtTabs() {
@@ -1116,7 +1116,7 @@ function renderDayModalCourtTabs() {
   if (!container) return;
 
   if (!courtsData || courtsData.length === 0) {
-    container.innerHTML = `<button class="court-tab-btn active">üéæ Cancha Principal</button>`;
+    container.innerHTML = `<button class="court-tab-btn active">?? Cancha Principal</button>`;
     return;
   }
 
@@ -1131,7 +1131,7 @@ function renderDayModalCourtTabs() {
 
     return `
       <button class="court-tab-btn ${isActive ? 'active' : ''}" onclick="switchDayModalCourt('${court.id}')">
-        üéæ ${cleanName} (${priceText})
+        ?? ${cleanName} (${priceText})
       </button>
     `;
   }).join('');
@@ -1142,7 +1142,7 @@ function populateCourtDropdowns() {
   if (!courtSelect) return;
 
   if (!courtsData || courtsData.length === 0) {
-    courtSelect.innerHTML = `<option value="c1">Pista 1 - P√°del Cristal Pro ($300 MXN/h)</option>`;
+    courtSelect.innerHTML = `<option value="c1">Pista 1 - P·del Cristal Pro ($300 MXN/h)</option>`;
     return;
   }
 
@@ -1150,7 +1150,7 @@ function populateCourtDropdowns() {
   courtSelect.innerHTML = courtsData.map(court => {
     const priceText = court.price ? `$${court.price} MXN/h` : '$300 MXN/h';
     const cleanName = fixMojibake(court.name || `Pista ${court.id}`);
-    return `<option value="${court.id}">üéæ ${cleanName} (${priceText})</option>`;
+    return `<option value="${court.id}">?? ${cleanName} (${priceText})</option>`;
   }).join('');
 
   if (currentVal && courtsData.some(c => c.id === currentVal)) {
@@ -1199,7 +1199,7 @@ function renderDay24hGrid() {
 
   const court = (courtsData && courtsData.length > 0 ? courtsData.find(c => c.id === currentDayModalCourt) : null) || {
     id: currentDayModalCourt || 'c1',
-    name: currentDayModalCourt === 'c2' ? 'Pista 2 - P√°del Panor√°mica VIP' : 'Pista 1 - P√°del Cristal Pro',
+    name: currentDayModalCourt === 'c2' ? 'Pista 2 - P·del Panor·mica VIP' : 'Pista 1 - P·del Cristal Pro',
     slotStatuses: {}
   };
 
@@ -1220,27 +1220,27 @@ function renderDay24hGrid() {
     const isBooked = !!realBooking;
 
     if (isBooked) {
-      const clientName = realBooking ? (realBooking.clientName || 'Jugador Tac√°mbaro') : 'Jugador Tac√°mbaro';
+      const clientName = realBooking ? (realBooking.clientName || 'Jugador Tac·mbaro') : 'Jugador Tac·mbaro';
       const infoText = realBooking && realBooking.clientPhone ? `Tel: ${realBooking.clientPhone}` : 'Confirmada';
       const cleanClientName = fixMojibake(clientName);
 
       return `
         <div class="time-slot-card booked" onclick="openBookingModal('${court.id}', '${h}')" title="Clic para ver reserva de ${cleanClientName}">
-          <div>üî¥ ${h}</div>
+          <div>?? ${h}</div>
           <small>${cleanClientName} (${infoText})</small>
         </div>
       `;
     } else if (isBlockedSlot) {
       return `
         <div class="time-slot-card blocked" onclick="openBookingModal('${court.id}', '${h}')" title="Clic para desbloquear">
-          <div>‚ö™ ${h}</div>
+          <div>? ${h}</div>
           <small>Bloqueado</small>
         </div>
       `;
     } else {
       return `
         <div class="time-slot-card free" onclick="openBookingModal('${court.id}', '${h}')" title="Clic para reservar a las ${h}">
-          <div>üü¢ ${h}</div>
+          <div>?? ${h}</div>
           <small>Disponible</small>
         </div>
       `;
@@ -1310,17 +1310,17 @@ function renderBookingsTable() {
     }
 
     tbodyFull.innerHTML = displayBookings.length === 0
-      ? `<tr><td colspan="8" style="text-align: center; color: #94A3B8; padding: 24px; font-weight: 600;">No hay reservas registradas para el filtro seleccionado. üéæ</td></tr>`
+      ? `<tr><td colspan="8" style="text-align: center; color: #94A3B8; padding: 24px; font-weight: 600;">No hay reservas registradas para el filtro seleccionado. ??</td></tr>`
       : displayBookings.map(b => {
           const attLower = (b.attendance || '').toLowerCase();
-          const isConfirmedAtt = attLower.includes('asistio') || attLower.includes('asisti√≥');
+          const isConfirmedAtt = attLower.includes('asistio') || attLower.includes('asistiÛ');
           const isNoShow = attLower.includes('no asist') || attLower.includes('deuda');
 
           let attPill = `<span class="badge-status-pill" style="background:#FFFBEB; color:#D97706; border:1px solid #FDE68A; padding:4px 10px; border-radius:20px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="clock" style="width:12px; height:12px;"></i> Pendiente</span>`;
           if (isNoShow) {
-            attPill = `<span class="badge-status-pill" style="background:#FEF2F2; color:#DC2626; border:1px solid #FECACA; padding:4px 10px; border-radius:20px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="user-x" style="width:12px; height:12px;"></i> No Asisti√≥</span>`;
+            attPill = `<span class="badge-status-pill" style="background:#FEF2F2; color:#DC2626; border:1px solid #FECACA; padding:4px 10px; border-radius:20px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="user-x" style="width:12px; height:12px;"></i> No AsistiÛ</span>`;
           } else if (isConfirmedAtt) {
-            attPill = `<span class="badge-status-pill" style="background:#ECFDF5; color:#059669; border:1px solid #A7F3D0; padding:4px 10px; border-radius:20px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="check-circle-2" style="width:12px; height:12px;"></i> Asisti√≥</span>`;
+            attPill = `<span class="badge-status-pill" style="background:#ECFDF5; color:#059669; border:1px solid #A7F3D0; padding:4px 10px; border-radius:20px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="check-circle-2" style="width:12px; height:12px;"></i> AsistiÛ</span>`;
           }
 
           let paidPill = `<span class="badge-status-pill" style="background:#FFF1F2; color:#E11D48; border:1px solid #FECDD3; padding:4px 10px; border-radius:20px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="alert-circle" style="width:12px; height:12px;"></i> Pendiente</span>`;
@@ -1336,7 +1336,7 @@ function renderBookingsTable() {
           }
 
           const pmLower = (b.paymentMethod || '').toLowerCase();
-          const hasReceipt = b.receiptUrl || b.receiptImage || b.receipt || pmLower.includes('transferencia') || pmLower.includes('deposito') || pmLower.includes('dep√≥sito') || pmLower.includes('tarjeta');
+          const hasReceipt = b.receiptUrl || b.receiptImage || b.receipt || pmLower.includes('transferencia') || pmLower.includes('deposito') || pmLower.includes('depÛsito') || pmLower.includes('tarjeta');
           let receiptBtn = '';
           if (hasReceipt) {
             receiptBtn = `
@@ -1351,8 +1351,8 @@ function renderBookingsTable() {
           let actionButtons = [];
           if (!isConfirmedAtt) {
             actionButtons.push(`
-              <button class="btn-head-action" style="padding: 6px 12px; font-size: 11px; background: #059669; color: #FFF; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="handleMarkAttendance('${b.id}', 'Asistio')" title="Confirmar asistencia y marcar pagado autom√°ticamente">
-                <i data-lucide="user-check" style="width: 13px; height: 13px;"></i> ${b.paid ? 'Asisti√≥' : 'Asisti√≥ y Pagado'}
+              <button class="btn-head-action" style="padding: 6px 12px; font-size: 11px; background: #059669; color: #FFF; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="handleMarkAttendance('${b.id}', 'Asistio')" title="Confirmar asistencia y marcar pagado autom·ticamente">
+                <i data-lucide="user-check" style="width: 13px; height: 13px;"></i> ${b.paid ? 'AsistiÛ' : 'AsistiÛ y Pagado'}
               </button>
             `);
           }
@@ -1368,7 +1368,7 @@ function renderBookingsTable() {
           if (!isNoShow) {
             actionButtons.push(`
               <button class="btn-head-action" style="padding: 6px 12px; font-size: 11px; background: #EF4444; color: #FFF; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="handleMarkAttendance('${b.id}', 'No Asistio')" title="Marcar inasistencia (aplica deuda y bloqueo)">
-                <i data-lucide="user-x" style="width: 13px; height: 13px;"></i> No Asisti√≥
+                <i data-lucide="user-x" style="width: 13px; height: 13px;"></i> No AsistiÛ
               </button>
             `);
           }
@@ -1477,7 +1477,7 @@ function openBookingModal(courtId, startHour) {
   const targetDateISO = selectedModalFullDate || `${currentYear}-${String(currentMonthIndex + 1).padStart(2, '0')}-${String(selectedModalDay).padStart(2, '0')}`;
   const timeTextEl = document.getElementById('modalSelectedTimeText');
   if (timeTextEl) {
-    timeTextEl.textContent = `üìÖ Fecha: ${targetDateISO} | üïí Hora elegida: ${currentSelectedStartHour} hrs`;
+    timeTextEl.textContent = `?? Fecha: ${targetDateISO} | ?? Hora elegida: ${currentSelectedStartHour} hrs`;
   }
 
   calculateModalTotal();
@@ -1545,17 +1545,17 @@ function showNotification(type, title, message) {
   toast.className = `toast-item toast-${type}`;
 
   const iconMap = {
-    success: '‚ú®',
-    warning: '‚ö†Ô∏è',
-    error: '‚ùå',
-    info: '‚ÑπÔ∏è'
+    success: '?',
+    warning: '??',
+    error: '?',
+    info: '??'
   };
 
-  const cleanTitle = fixMojibake(title || 'Notificaci√≥n');
+  const cleanTitle = fixMojibake(title || 'NotificaciÛn');
   const cleanMessage = fixMojibake(message || '');
 
   toast.innerHTML = `
-    <div class="toast-icon">${iconMap[type] || 'üîî'}</div>
+    <div class="toast-icon">${iconMap[type] || '??'}</div>
     <div class="toast-content">
       <h4>${cleanTitle}</h4>
       <p>${cleanMessage}</p>
@@ -1586,7 +1586,7 @@ async function handleModalSubmit(event) {
   const targetDateISO = selectedModalFullDate || `${currentYear}-${String(currentMonthIndex + 1).padStart(2, '0')}-${String(selectedModalDay).padStart(2, '0')}`;
 
   if (!clientName || !clientPhone) {
-    showNotification('warning', 'Campos Requeridos', 'Por favor selecciona un cliente registrado o ingresa Nombre y Tel√©fono.');
+    showNotification('warning', 'Campos Requeridos', 'Por favor selecciona un cliente registrado o ingresa Nombre y TelÈfono.');
     return;
   }
 
@@ -1617,7 +1617,7 @@ async function handleModalSubmit(event) {
       const endHourNum = (startHourNum + durationHours) % 24;
       const rangeStr = `${currentSelectedStartHour} a ${String(endHourNum).padStart(2, '0')}:00`;
 
-      showNotification('success', '¬°Se Guard√≥ la Reserva Correctamente! üìÖ', `Cliente: ${clientName}\nFecha: ${targetDateISO}\nHorario: ${rangeStr} (${durationHours} hrs continuas)\nTotal: $${data.booking.price}.00 MXN`);
+      showNotification('success', '°Se GuardÛ la Reserva Correctamente! ??', `Cliente: ${clientName}\nFecha: ${targetDateISO}\nHorario: ${rangeStr} (${durationHours} hrs continuas)\nTotal: $${data.booking.price}.00 MXN`);
       closeBookingModal();
       renderDay24hGrid();
       renderMonthlyCalendar();
@@ -1625,7 +1625,7 @@ async function handleModalSubmit(event) {
       updateKPIs();
       fetchAdminData();
     } else {
-      showNotification('error', 'Reserva No Disponible', data.message || 'El horario seleccionado ya no est√° disponible.');
+      showNotification('error', 'Reserva No Disponible', data.message || 'El horario seleccionado ya no est· disponible.');
     }
   } catch (err) {
     /* silent error */
@@ -1637,11 +1637,11 @@ async function handleModalBlockSlot() {
   const courtId = document.getElementById('modalCourtSelect').value;
   await toggleAdminSlot(courtId, currentSelectedStartHour);
   closeBookingModal();
-  showNotification('info', 'Horario Actualizado', `Se modific√≥ el estado del horario a las ${currentSelectedStartHour}.`);
+  showNotification('info', 'Horario Actualizado', `Se modificÛ el estado del horario a las ${currentSelectedStartHour}.`);
 }
 
 /* ==========================================
-   GESTI√ìN DE USUARIOS, WHATSAPP Y EDICI√ìN
+   GESTI”N DE USUARIOS, WHATSAPP Y EDICI”N
    ========================================== */
 
 function populateClientDropdown() {
@@ -1653,7 +1653,7 @@ function populateClientDropdown() {
 
   clients.forEach(c => {
     const cleanName = fixMojibake(c.name);
-    html += `<option value="${c.id}">${cleanName} (üì± ${c.phone})</option>`;
+    html += `<option value="${c.id}">${cleanName} (?? ${c.phone})</option>`;
   });
 
   html += `<option value="custom">+ Registrar cliente no en lista...</option>`;
@@ -1705,7 +1705,7 @@ async function handleCreateUserSubmit(event) {
   const role = document.getElementById('newUserRole').value;
 
   if (!name || !phone || !username) {
-    showNotification('warning', 'Campos Incompletos', 'Ingresa Usuario, Nombre y Tel√©fono.');
+    showNotification('warning', 'Campos Incompletos', 'Ingresa Usuario, Nombre y TelÈfono.');
     return;
   }
 
@@ -1722,7 +1722,7 @@ async function handleCreateUserSubmit(event) {
       document.getElementById('createUserModalForm').reset();
       fetchAdminUsers();
 
-      showNotification('success', '¬°Se Registr√≥ el Usuario Correctamente! üë§', `Usuario: ${data.user.username}\nCliente: ${data.user.name}\nClave Temporal: ${data.user.tempPassword}`);
+      showNotification('success', '°Se RegistrÛ el Usuario Correctamente! ??', `Usuario: ${data.user.username}\nCliente: ${data.user.name}\nClave Temporal: ${data.user.tempPassword}`);
 
       // Auto open WhatsApp chat with client
       sendWhatsAppCredentials(data.user.id);
@@ -1746,10 +1746,10 @@ function sendWhatsAppCredentials(userId) {
   const cleanPhone = rawPhone;
   const usernameDisplay = user.username || user.phone;
 
-  const message = `üéæ *Level Tac√°mbaro*\n\n¬°Hola *${user.name}*! Te enviamos tus credenciales de acceso para la App M√≥vil:\n\nüë§ *Usuario:* ${usernameDisplay}\nüîë *Contrase√±a Temporal:* ${user.tempPassword}\n\n‚ö†Ô∏è *Importante:* Al ingresar por primera vez a la aplicaci√≥n, se te solicitar√° cambiar tu contrase√±a por seguridad.\n\nüìç Level Tac√°mbaro, Michoac√°n.`;
+  const message = `?? *Level Tac·mbaro*\n\n°Hola *${user.name}*! Te enviamos tus credenciales de acceso para la App MÛvil:\n\n?? *Usuario:* ${usernameDisplay}\n?? *ContraseÒa Temporal:* ${user.tempPassword}\n\n?? *Importante:* Al ingresar por primera vez a la aplicaciÛn, se te solicitar· cambiar tu contraseÒa por seguridad.\n\n?? Level Tac·mbaro, Michoac·n.`;
 
   window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
-  showNotification('info', 'WhatsApp Abierto', `Se abri√≥ el chat con ${user.name} para enviar sus credenciales.`);
+  showNotification('info', 'WhatsApp Abierto', `Se abriÛ el chat con ${user.name} para enviar sus credenciales.`);
 }
 
 function openEditUserModal(userId) {
@@ -1782,7 +1782,7 @@ async function handleEditUserSubmit(event) {
   const role = document.getElementById('editUserRole').value;
 
   if (!name || !phone || !username) {
-    showNotification('warning', 'Campos Incompletos', 'Completa Usuario, Nombre y Tel√©fono.');
+    showNotification('warning', 'Campos Incompletos', 'Completa Usuario, Nombre y TelÈfono.');
     return;
   }
 
@@ -1799,7 +1799,7 @@ async function handleEditUserSubmit(event) {
       if (idx !== -1) {
         usersData[idx] = { ...usersData[idx], ...data.user };
       }
-      showNotification('success', '¬°Se Edit√≥ el Usuario Correctamente! ‚úèÔ∏è', `Se guardaron los cambios para @${data.user.username || data.user.name}.`);
+      showNotification('success', '°Se EditÛ el Usuario Correctamente! ??', `Se guardaron los cambios para @${data.user.username || data.user.name}.`);
       closeEditUserModal();
       fetchAdminUsers();
     } else {
@@ -1824,7 +1824,7 @@ async function handleResetUserPassword(userId) {
     const data = await res.json();
 
     if (res.ok && data.success) {
-      showNotification('success', '¬°Se Restableci√≥ la Clave Correctamente! üîë', `Nueva clave temporal para ${data.user.name}: ${data.user.tempPassword}`);
+      showNotification('success', '°Se RestableciÛ la Clave Correctamente! ??', `Nueva clave temporal para ${data.user.name}: ${data.user.tempPassword}`);
       fetchAdminUsers();
       sendWhatsAppCredentials(userId);
     } else {
@@ -1852,9 +1852,9 @@ async function handleDeleteUser(userId) {
   const cleanName = user ? fixMojibake(user.name) : 'este usuario';
 
   showConfirmModal(
-    '¬øEliminar Usuario?',
-    `¬øEst√°s seguro de que deseas eliminar permanentemente a ${cleanName}? Se borrar√° su acceso a la App.`,
-    'S√≠, Eliminar Usuario',
+    'øEliminar Usuario?',
+    `øEst·s seguro de que deseas eliminar permanentemente a ${cleanName}? Se borrar· su acceso a la App.`,
+    'SÌ, Eliminar Usuario',
     async () => {
       try {
         const res = await fetch('api/users/delete', {
@@ -1864,7 +1864,7 @@ async function handleDeleteUser(userId) {
         });
         const data = await res.json();
         if (res.ok && data.success) {
-          showNotification('success', 'Usuario Eliminado', `Se elimin√≥ a ${cleanName} correctamente.`);
+          showNotification('success', 'Usuario Eliminado', `Se eliminÛ a ${cleanName} correctamente.`);
           fetchAdminUsers();
         } else {
           showNotification('error', 'Error al Eliminar', data.message || 'No se pudo eliminar el usuario.');
@@ -1881,7 +1881,7 @@ function renderUsersTable() {
   if (!tbody) return;
 
   if (usersData.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94A3B8; padding: 16px;">No hay usuarios registrados a√∫n.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94A3B8; padding: 16px;">No hay usuarios registrados a˙n.</td></tr>`;
     return;
   }
 
@@ -1943,7 +1943,7 @@ function renderUsersTable() {
           <button class="btn-head-action btn-cyan" style="padding: 5px 10px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;" onclick="sendWhatsAppCredentials('${u.id}')" title="Enviar clave por WhatsApp">
             <i data-lucide="message-square" style="width: 13px; height: 13px;"></i> WhatsApp
           </button>
-          <button class="btn-head-action btn-dark" style="padding: 5px 10px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;" onclick="openEditUserModal('${u.id}')" title="Editar Nombre/Tel√©fono/Rol">
+          <button class="btn-head-action btn-dark" style="padding: 5px 10px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;" onclick="openEditUserModal('${u.id}')" title="Editar Nombre/TelÈfono/Rol">
             <i data-lucide="edit-3" style="width: 13px; height: 13px;"></i> Editar
           </button>
           <button class="btn-head-action btn-green" style="padding: 5px 10px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;" onclick="handleResetUserPassword('${u.id}')" title="Generar nueva clave temporal">
@@ -1962,7 +1962,7 @@ function renderUsersTable() {
 }
 
 /* ==========================================
-   M√ìDULO DE FINANZAS & CONTROL DE CAJA
+   M”DULO DE FINANZAS & CONTROL DE CAJA
    ========================================== */
 
 let currentFinanceFilter = 'all';
@@ -2014,7 +2014,7 @@ function renderFinancesTable() {
       id: f.id,
       date: f.date,
       clientName: f.clientName || 'Cliente Mostrador',
-      concept: f.concept || f.description || f.reason || 'Devoluci√≥n Cancelaci√≥n',
+      concept: f.concept || f.description || f.reason || 'DevoluciÛn CancelaciÛn',
       category: f.category || 'General',
       paymentMethod: f.paymentMethod || 'Efectivo',
       amount: f.amount || 0,
@@ -2078,7 +2078,7 @@ function renderFinancesTable() {
     let catBadge = '<span class="badge-status-pill" style="background:#FEF3C7; color:#B45309; border:1px solid #FDE68A; padding:4px 8px; border-radius:12px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="shopping-bag" style="width:12px; height:12px;"></i> Tienda</span>';
     
     if (cat.includes('devoluc') || cat.includes('cancelac') || conceptLower.includes('devoluc')) {
-      catBadge = '<span class="badge-status-pill" style="background:#FEF2F2; color:#DC2626; border:1px solid #FCA5A5; padding:4px 8px; border-radius:12px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="rotate-ccw" style="width:12px; height:12px;"></i> Devoluci√≥n Cancelaci√≥n</span>';
+      catBadge = '<span class="badge-status-pill" style="background:#FEF2F2; color:#DC2626; border:1px solid #FCA5A5; padding:4px 8px; border-radius:12px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="rotate-ccw" style="width:12px; height:12px;"></i> DevoluciÛn CancelaciÛn</span>';
     } else if (f.id && f.id.indexOf('MOV-') === 0) {
       if (f.movementType === 'salida') {
         catBadge = '<span class="badge-status-pill" style="background:#FEE2E2; color:#B91C1C; border:1px solid #FCA5A5; padding:4px 8px; border-radius:12px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="arrow-up-right" style="width:12px; height:12px;"></i> Salida / Gasto</span>';
@@ -2093,7 +2093,7 @@ function renderFinancesTable() {
       catBadge = '<span class="badge-status-pill" style="background:#F1F5F9; color:#475569; border:1px solid #CBD5E1; padding:4px 8px; border-radius:12px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="arrow-right-left" style="width:12px; height:12px;"></i> Operacion</span>';
     }
 
-    const cleanConcept = fixMojibake(f.concept || f.description || 'Devoluci√≥n Cancelaci√≥n');
+    const cleanConcept = fixMojibake(f.concept || f.description || 'DevoluciÛn CancelaciÛn');
     const cleanClient = fixMojibake(f.clientName || 'Cliente Mostrador');
     const isSalida = f.type === 'egreso' || cat.includes('devoluc') || conceptLower.includes('devoluc') || (f.isManualMovement && f.movementType === 'salida');
     
@@ -2103,7 +2103,7 @@ function renderFinancesTable() {
     
     let statusPill = '<span class="badge-status-pill" style="background:#F0FDF4; color:#15803D; border:1px solid #86EFAC; padding:4px 10px; border-radius:20px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="check-circle" style="width:12px; height:12px;"></i> Ingresado</span>';
     if (isSalida) {
-      statusPill = '<span class="badge-status-pill" style="background:#FEF2F2; color:#B91C1C; border:1px solid #FCA5A5; padding:4px 10px; border-radius:20px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="arrow-up-right" style="width:12px; height:12px;"></i> Devoluci√≥n</span>';
+      statusPill = '<span class="badge-status-pill" style="background:#FEF2F2; color:#B91C1C; border:1px solid #FCA5A5; padding:4px 10px; border-radius:20px; font-weight:700; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="arrow-up-right" style="width:12px; height:12px;"></i> DevoluciÛn</span>';
     }
 
     htmlRows += '<tr>' +
@@ -2177,7 +2177,7 @@ function renderFinancesKPIs() {
 
 function openPosSaleModal() {
   if (!isCashShiftOpen()) {
-    showNotification('warning', 'Caja Cerrada üîí', 'Debes abrir un turno de caja antes de realizar el cobro de adeudos.');
+    showNotification('warning', 'Caja Cerrada ??', 'Debes abrir un turno de caja antes de realizar el cobro de adeudos.');
     if (typeof openOpenCashModal === 'function') openOpenCashModal();
     return;
   }
@@ -2219,7 +2219,7 @@ function openPosSaleModal() {
       debtorSel.innerHTML = '<option value="">-- No hay deudores pendientes registrados --</option>';
     } else {
       debtorSel.innerHTML = '<option value="">-- Seleccionar cliente deudor --</option>' +
-        debtorList.map(d => `<option value="${d.name}" data-amount="${d.amount}">${d.name} ‚Äî Adeudo: $${d.amount}.00 MXN (${d.reason})</option>`).join('');
+        debtorList.map(d => `<option value="${d.name}" data-amount="${d.amount}">${d.name} ó Adeudo: $${d.amount}.00 MXN (${d.reason})</option>`).join('');
     }
   }
 
@@ -2241,11 +2241,11 @@ function openPosSaleForUser(userName, debtAmount) {
   const presetSel = document.getElementById('posPresetSelect');
   if (presetSel) presetSel.value = 'adeudo';
   const conceptInp = document.getElementById('posConceptInput');
-  if (conceptInp) conceptInp.value = `Recuperaci√≥n de Adeudo Atrasado: ${userName} (No-Show)`;
+  if (conceptInp) conceptInp.value = `RecuperaciÛn de Adeudo Atrasado: ${userName} (No-Show)`;
   const amountInp = document.getElementById('posAmountInput');
   if (amountInp) amountInp.value = debtAmount || 300;
   const categorySel = document.getElementById('posCategorySelect');
-  if (categorySel) categorySel.value = 'Recuperaci√≥n de Adeudo';
+  if (categorySel) categorySel.value = 'RecuperaciÛn de Adeudo';
   const clientInp = document.getElementById('posClientInput');
   if (clientInp) clientInp.value = userName;
 }
@@ -2266,7 +2266,7 @@ function handlePosPresetChange(selectEl) {
     if (amountInput && price) amountInput.value = price;
 
     if (selectEl.value === 'adeudo') {
-      if (categorySelect) categorySelect.value = 'Recuperaci√≥n de Adeudo';
+      if (categorySelect) categorySelect.value = 'RecuperaciÛn de Adeudo';
     } else if (selectEl.value === 'pala' || selectEl.value === 'overgrip') {
       if (categorySelect) categorySelect.value = 'Alquiler Equipo';
     } else if (selectEl.value === 'bebida' || selectEl.value === 'agua') {
@@ -2287,12 +2287,12 @@ async function handlePosSaleSubmit(e) {
 
   const concept = conceptInp ? conceptInp.value.trim() : '';
   const amount = amountInp ? parseFloat(amountInp.value) : 0;
-  const category = categoryEl ? categoryEl.value : 'Recuperaci√É¬≥n de Adeudo';
+  const category = categoryEl ? categoryEl.value : 'Recuperaci√≥n de Adeudo';
   const paymentMethod = pmSel ? pmSel.value : 'Efectivo en Mostrador';
   const clientName = clientInp ? (clientInp.value.trim() || 'Cliente Mostrador') : 'Cliente Mostrador';
 
   if (!concept || isNaN(amount) || amount <= 0) {
-    showNotification('error', 'Datos Inv√É¬°lidos', 'Por favor ingresa un concepto y monto v√É¬°lido mayor a $0.');
+    showNotification('error', 'Datos Inv√°lidos', 'Por favor ingresa un concepto y monto v√°lido mayor a $0.');
     return;
   }
 
@@ -2321,38 +2321,39 @@ async function handlePosSaleSubmit(e) {
 
       const isDebt = category.includes('Adeudo') || concept.toLowerCase().includes('adeudo') || concept.toLowerCase().includes('deuda');
       if (isDebt) {
-        showNotification('success', '√Ç¬°Adeudo Cobrado Correctamente! √∞≈∏‚Äô¬≥', `Se ingresaron $${amount}.00 MXN a caja por cobro de adeudo atrasado. El cliente "${clientName}" ha sido desbloqueado.`);
+        showNotification('success', '¬°Adeudo Cobrado Correctamente! üí≥', `Se ingresaron $${amount}.00 MXN a caja por cobro de adeudo atrasado. El cliente "${clientName}" ha sido desbloqueado.`);
       } else {
-        showNotification('success', '√Ç¬°Venta Registrada Correctamente! √∞≈∏‚Ä∫‚Äô', `Se ingresaron $${amount}.00 MXN a caja por: ${concept}`);
+        showNotification('success', '¬°Venta Registrada Correctamente! üõí', `Se ingresaron $${amount}.00 MXN a caja por: ${concept}`);
       }
       if (typeof fetchAdminData === 'function') fetchAdminData();
       if (typeof fetchAdminUsers === 'function') fetchAdminUsers();
       if (typeof fetchAdminFinances === 'function') fetchAdminFinances();
     } else {
-      showNotification('error', 'Error al Registrar', data.message || 'No se pudo guardar la transacci√É¬≥n.');
+      showNotification('error', 'Error al Registrar', data.message || 'No se pudo guardar la transacci√≥n.');
     }
   } catch (err) {
     console.error('Error in handlePosSaleSubmit:', err);
-    showNotification('error', 'Error Servidor', 'Ocurri√É¬≥√É¬≥ un detalle: ' + (err.message || 'No se pudo conectar con el servidor.'));
+    showNotification('error', 'Error Servidor', 'Ocurri√≥√≥ un detalle: ' + (err.message || 'No se pudo conectar con el servidor.'));
   }
 }
 /* ==========================================
-   M√ìDULO DE HISTORIA, MARCA Y GALER√çA MULTIMEDIA
+   M”DULO DE HISTORIA, MARCA Y GALERÕA MULTIMEDIA
    ========================================== */
 
 let clubHistoryData = {
-  name: 'Level Tac√°mbaro',
-  address: 'Valent√≠n G√≥mez Far√≠as #3, Tac√°mbaro, Michoac√°n (frente a Protecci√≥n Civil)',
+  name: 'Level Tac·mbaro',
+  address: 'ValentÌn GÛmez FarÌas #3, Tac·mbaro, Michoac·n (frente a ProtecciÛn Civil)',
   phone: '459 102 3849',
   logo: 'assets/images/logo.jpeg',
-  description: 'Level Tac√°mbaro naci√≥ con la visi√≥n de consolidar el primer centro deportivo de p√°del de alto nivel en Tac√°mbaro, Michoac√°n. Nuestro club cuenta con 2 pistas de tecnolog√≠a profesional (P√°del Cristal Pro y Panor√°mica VIP), iluminaci√≥n LED nocturna de alta definici√≥n, √°rea de espectadores, servicio de pro shop con alquiler de palas y pelotas, y atenci√≥n personalizada las 24 horas del d√≠a.',
+  description: 'Level Tac·mbaro naciÛ con la visiÛn de consolidar el primer centro deportivo de p·del de alto nivel en Tac·mbaro, Michoac·n. Nuestro club cuenta con 2 pistas de tecnologÌa profesional (P·del Cristal Pro y Panor·mica VIP), iluminaciÛn LED nocturna de alta definiciÛn, ·rea de espectadores, servicio de pro shop con alquiler de palas y pelotas, y atenciÛn personalizada las 24 horas del dÌa.',
   gallery: [
-    { title: 'Pista 1: P√°del Cristal Pro (Azul)', url: 'assets/images/cancha_padel_1.jpg' },
-    { title: 'Pista 2: P√°del Panor√°mica VIP (Verde)', url: 'assets/images/cancha_padel_2.jpg' },
-    { title: 'Cancha Grama Sint√©tica Pro', url: 'assets/images/cancha_grama_7.jpg' },
+    { title: 'Pista 1: P·del Cristal Pro (Azul)', url: 'assets/images/cancha_padel_1.jpg' },
+    { title: 'Pista 2: P·del Panor·mica VIP (Verde)', url: 'assets/images/cancha_padel_2.jpg' },
+    { title: 'Cancha Grama SintÈtica Pro', url: 'assets/images/cancha_grama_7.jpg' },
     { title: 'Cancha de Entrenamientos 5', url: 'assets/images/cancha_sintetica_5.jpg' },
     { title: 'Cancha Techada & Alumbrado LED', url: 'assets/images/cancha_techada.jpg' }
-  ]
+  ],
+  liveStreamUrl: 'https://www.youtube.com/@levelpadeltacambaro'
 };
 
 async function fetchHistoryData() {
@@ -2385,7 +2386,13 @@ function populateHistoryFields() {
   if (elDesc) elDesc.value = clubHistoryData.description || '';
   if (elLogo && clubHistoryData.logo) elLogo.src = clubHistoryData.logo;
   if (elCover && clubHistoryData.coverImage) elCover.src = clubHistoryData.coverImage;
-  if (elTitle) elTitle.textContent = clubHistoryData.name || 'Level Tac√°mbaro';
+  if (elTitle) elTitle.textContent = clubHistoryData.name || 'Level Tac·mbaro';
+
+    const elLive = document.getElementById('historyLiveStreamUrl');
+  const elModalLive = document.getElementById('modalLiveStreamUrl');
+  const currentStreamUrl = clubHistoryData.liveStreamUrl || 'https://www.youtube.com/@levelpadeltacambaro';
+  if (elLive) elLive.value = currentStreamUrl;
+  if (elModalLive) elModalLive.value = currentStreamUrl;
 
   renderHistoryGallery();
 }
@@ -2396,13 +2403,13 @@ function renderHistoryGallery() {
   const count = (clubHistoryData.gallery || []).length;
 
   if (titleCountEl) {
-    titleCountEl.innerHTML = `üñºÔ∏è Galer√≠a Fotogr√°fica de Instalaciones <span style="font-size: 12px; font-weight: 700; color: #0284C7; background: rgba(2,132,199,0.1); padding: 2px 8px; border-radius: 10px;">(${count} fotos cargadas)</span>`;
+    titleCountEl.innerHTML = `??? GalerÌa Fotogr·fica de Instalaciones <span style="font-size: 12px; font-weight: 700; color: #0284C7; background: rgba(2,132,199,0.1); padding: 2px 8px; border-radius: 10px;">(${count} fotos cargadas)</span>`;
   }
 
   if (!container) return;
 
   if (!clubHistoryData.gallery || clubHistoryData.gallery.length === 0) {
-    container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #94A3B8; padding: 24px; border: 2px dashed #E2E8F0; border-radius: 12px;">No hay im√°genes en la galer√≠a a√∫n. Haz clic en "+ Subir Nuevas Im√°genes".</div>`;
+    container.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #94A3B8; padding: 24px; border: 2px dashed #E2E8F0; border-radius: 12px;">No hay im·genes en la galerÌa a˙n. Haz clic en "+ Subir Nuevas Im·genes".</div>`;
     return;
   }
 
@@ -2412,7 +2419,7 @@ function renderHistoryGallery() {
         <img src="${item.url}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' fill=\'%23f1f5f9\'><rect width=\'100\' height=\'100\' fill=\'%23e2e8f0\'/><text x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2364748b\' font-size=\'12\'>Imagen</text></svg>';">
       </div>
       <div style="padding: 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-        <input type="text" style="width: 100%; padding: 6px 8px; border: 1px solid #E2E8F0; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 8px;" value="${item.title || 'Foto de Instalaci√≥n'}" onchange="updateGalleryTitle(${index}, this.value)">
+        <input type="text" style="width: 100%; padding: 6px 8px; border: 1px solid #E2E8F0; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 8px;" value="${item.title || 'Foto de InstalaciÛn'}" onchange="updateGalleryTitle(${index}, this.value)">
         <button class="btn-head-action btn-danger" style="padding: 4px 8px; font-size: 11px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 4px;" onclick="removeGalleryItem(${index})">
           <i data-lucide="trash-2"></i> Eliminar Foto
         </button>
@@ -2433,7 +2440,7 @@ function removeGalleryItem(index) {
     clubHistoryData.gallery.splice(index, 1);
     renderHistoryGallery();
     handleSaveHistory(true);
-    showNotification('info', 'Foto Eliminada', 'Se elimin√≥ la imagen de la galer√≠a y se guard√≥ en el servidor.');
+    showNotification('info', 'Foto Eliminada', 'Se eliminÛ la imagen de la galerÌa y se guardÛ en el servidor.');
   }
 }
 
@@ -2448,7 +2455,7 @@ function handleLogoFileSelect(event) {
     const elLogo = document.getElementById('historyLogoPreview');
     if (elLogo) elLogo.src = logoUrl;
     handleSaveHistory(true);
-    showNotification('success', 'Nuevo Logo Cargado', 'Se guard√≥ el nuevo logo en el servidor.');
+    showNotification('success', 'Nuevo Logo Cargado', 'Se guardÛ el nuevo logo en el servidor.');
   };
   reader.readAsDataURL(file);
 }
@@ -2464,7 +2471,7 @@ function handleCoverFileSelect(event) {
     const elCover = document.getElementById('historyCoverPreview');
     if (elCover) elCover.src = coverUrl;
     handleSaveHistory(true);
-    showNotification('success', 'Nueva Foto de Portada', 'Se guard√≥ la nueva foto de fondo en el servidor y se actualiz√≥ la App.');
+    showNotification('success', 'Nueva Foto de Portada', 'Se guardÛ la nueva foto de fondo en el servidor y se actualizÛ la App.');
   };
   reader.readAsDataURL(file);
 }
@@ -2485,7 +2492,7 @@ function handleGalleryFilesSelect(event) {
       if (loadedCount === files.length) {
         renderHistoryGallery();
         handleSaveHistory(true);
-        showNotification('success', 'Im√°genes Agregadas', `Se agregaron y guardaron ${files.length} nueva(s) imagen(es).`);
+        showNotification('success', 'Im·genes Agregadas', `Se agregaron y guardaron ${files.length} nueva(s) imagen(es).`);
       }
     };
     reader.readAsDataURL(file);
@@ -2502,6 +2509,9 @@ async function handleSaveHistory(isSilent = false) {
   if (elAddress && elAddress.value.trim()) clubHistoryData.address = elAddress.value.trim();
   if (elPhone && elPhone.value.trim()) clubHistoryData.phone = elPhone.value.trim();
   if (elDesc && elDesc.value.trim()) clubHistoryData.description = elDesc.value.trim();
+
+  const elLiveUrl = document.getElementById('historyLiveStreamUrl') || document.getElementById('modalLiveStreamUrl');
+  if (elLiveUrl && elLiveUrl.value.trim()) clubHistoryData.liveStreamUrl = elLiveUrl.value.trim();
 
   try {
     const res = await fetch('api/history/update', {
@@ -2522,7 +2532,7 @@ async function handleSaveHistory(isSilent = false) {
       }
       populateHistoryFields();
       if (!isSilent) {
-        showNotification('success', '¬°Quienes Somos & Galeria Guardados! üíæ', 'Los cambios se guardaron exitosamente y ya estan sincronizados en tiempo real.');
+        showNotification('success', '°Quienes Somos & Galeria Guardados! ??', 'Los cambios se guardaron exitosamente y ya estan sincronizados en tiempo real.');
       }
     } else {
       if (!isSilent) showNotification('error', 'Error al Guardar', 'No se pudieron guardar los cambios de historia.');
@@ -2533,8 +2543,96 @@ async function handleSaveHistory(isSilent = false) {
 }
 
 /* ==========================================
-   M√ìDULO DE GESTI√ìN DE PRODUCTOS E INVENTARIO
+   M”DULO DE GESTI”N DE PRODUCTOS E INVENTARIO
    ========================================== */
+
+
+/* ==========================================
+   GESTION DE TRANSMISION EN VIVO (LIVE STREAM)
+   ========================================== */
+
+function openLiveStreamModal() {
+  const currentUrl = clubHistoryData.liveStreamUrl || (document.getElementById('historyLiveStreamUrl')?.value) || 'https://www.youtube.com/@levelpadeltacambaro';
+  const modalInput = document.getElementById('modalLiveStreamUrl');
+  if (modalInput) modalInput.value = currentUrl;
+  const overlay = document.getElementById('liveStreamModalOverlay');
+  if (overlay) overlay.style.display = 'flex';
+}
+
+function closeLiveStreamModal() {
+  const overlay = document.getElementById('liveStreamModalOverlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+function testLiveStreamUrl() {
+  const url = (document.getElementById('historyLiveStreamUrl')?.value || clubHistoryData.liveStreamUrl || 'https://www.youtube.com/@levelpadeltacambaro').trim();
+  window.open(url, '_blank');
+}
+
+function testModalLiveStreamUrl() {
+  const url = (document.getElementById('modalLiveStreamUrl')?.value || clubHistoryData.liveStreamUrl || 'https://www.youtube.com/@levelpadeltacambaro').trim();
+  window.open(url, '_blank');
+}
+
+async function handleSaveLiveStream() {
+  const inputEl = document.getElementById('historyLiveStreamUrl');
+  const newUrl = inputEl ? inputEl.value.trim() : '';
+  if (!newUrl) {
+    showNotification('warning', 'URL Requerida', 'Por favor ingresa un link valido para la transmision.');
+    return;
+  }
+  await saveLiveStreamApi(newUrl);
+}
+
+async function handleSaveLiveStreamFromModal(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const inputEl = document.getElementById('modalLiveStreamUrl');
+  const newUrl = inputEl ? inputEl.value.trim() : '';
+  if (!newUrl) {
+    showNotification('warning', 'URL Requerida', 'Por favor ingresa un link valido para la transmision.');
+    return;
+  }
+  await saveLiveStreamApi(newUrl);
+  closeLiveStreamModal();
+}
+
+async function saveLiveStreamApi(newUrl) {
+  clubHistoryData.liveStreamUrl = newUrl;
+  const elLive = document.getElementById('historyLiveStreamUrl');
+  const elModal = document.getElementById('modalLiveStreamUrl');
+  if (elLive) elLive.value = newUrl;
+  if (elModal) elModal.value = newUrl;
+
+  try {
+    const res = await fetch('api/live-stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ url: newUrl })
+    });
+    if (res.ok) {
+      showNotification('success', 'Transmision Guardada', 'El enlace de transmision se ha actualizado correctamente en la App y la Web.');
+      return;
+    }
+  } catch (e) { }
+
+  try {
+    await fetch('api/history/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify(clubHistoryData)
+    });
+    showNotification('success', 'Transmision Guardada', 'El enlace de transmision se ha actualizado en tiempo real.');
+  } catch (err) {
+    showNotification('error', 'Error Servidor', 'No se pudo guardar el link de transmision.');
+  }
+}
+
+window.openLiveStreamModal = openLiveStreamModal;
+window.closeLiveStreamModal = closeLiveStreamModal;
+window.testLiveStreamUrl = testLiveStreamUrl;
+window.testModalLiveStreamUrl = testModalLiveStreamUrl;
+window.handleSaveLiveStream = handleSaveLiveStream;
+window.handleSaveLiveStreamFromModal = handleSaveLiveStreamFromModal;
 
 let currentProductFilter = 'all';
 
@@ -2557,7 +2655,7 @@ async function fetchAdminProducts() {
   }
 }
 
-/* Categor√≠as Din√°micas */
+/* CategorÌas Din·micas */
 function openAddCategoryModal() {
   const overlay = document.getElementById('modalAddCategoryOverlay');
   if (overlay) {
@@ -2588,7 +2686,7 @@ function handleAddCategorySubmit(e) {
   const prodCatSelect = document.getElementById('prodCategorySelect');
   if (prodCatSelect) prodCatSelect.value = catName;
 
-  showNotification('success', 'Categor√≠a Creada', `Se agreg√≥ "${catName}" a la lista de categor√≠as.`);
+  showNotification('success', 'CategorÌa Creada', `Se agregÛ "${catName}" a la lista de categorÌas.`);
 }
 
 function updateCategoryDropdowns() {
@@ -2683,7 +2781,7 @@ function renderProductsTable() {
   }
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94A3B8; padding: 20px;">No hay productos registrados en esta categor√≠a.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94A3B8; padding: 20px;">No hay productos registrados en esta categorÌa.</td></tr>`;
     return;
   }
 
@@ -2767,7 +2865,7 @@ function addToTpvTicket(productId) {
     if (existing.qty < p.stock) {
       existing.qty++;
     } else {
-      showNotification('error', 'L√≠mite de Stock', `Solo hay ${p.stock} unidades disponibles de ${p.name}.`);
+      showNotification('error', 'LÌmite de Stock', `Solo hay ${p.stock} unidades disponibles de ${p.name}.`);
     }
   } else {
     tpvTicketCart.push({
@@ -2796,7 +2894,7 @@ function updateTicketItemQty(productId, delta) {
 
   const p = productsData.find(prod => prod.id === productId);
   if (p && newQty > p.stock) {
-    showNotification('error', 'L√≠mite de Stock', `Supera el stock disponible (${p.stock} uds).`);
+    showNotification('error', 'LÌmite de Stock', `Supera el stock disponible (${p.stock} uds).`);
     return;
   }
 
@@ -2823,7 +2921,7 @@ function renderTpvTicket() {
   if (tpvTicketCart.length === 0) {
     container.innerHTML = `
       <div style="text-align: center; color: #94A3B8; padding: 40px 10px; font-size: 13px;">
-        üõí El ticket est√° vac√≠o.<br>Haz clic en los productos para agregarlos.
+        ?? El ticket est· vacÌo.<br>Haz clic en los productos para agregarlos.
       </div>
     `;
     if (subtotalEl) subtotalEl.textContent = '$0.00 MXN';
@@ -2850,7 +2948,7 @@ function renderTpvTicket() {
           <span style="font-weight: 800; font-size: 13px; width: 18px; text-align: center;">${item.qty}</span>
           <button type="button" onclick="updateTicketItemQty('${item.id}', 1)" style="background: #E2E8F0; border: none; border-radius: 4px; width: 22px; height: 22px; font-weight: 900; cursor: pointer;">+</button>
           <span style="font-weight: 900; font-size: 13px; color: #16A34A; min-width: 54px; text-align: right;">$${itemTotal}.00</span>
-          <button type="button" onclick="removeFromTpvTicket('${item.id}')" style="background: none; border: none; color: #EF4444; font-weight: 900; font-size: 14px; cursor: pointer; margin-left: 4px;">‚úï</button>
+          <button type="button" onclick="removeFromTpvTicket('${item.id}')" style="background: none; border: none; color: #EF4444; font-weight: 900; font-size: 14px; cursor: pointer; margin-left: 4px;">?</button>
         </div>
       </div>
     `;
@@ -2864,13 +2962,13 @@ let tpvCurrentTicketTotal = 0;
 
 function openTpvCashModal() {
   if (!isCashShiftOpen()) {
-    showNotification('warning', 'Caja Cerrada üîí', 'Debes abrir un turno de caja antes de realizar cobros en el Punto de Venta.');
+    showNotification('warning', 'Caja Cerrada ??', 'Debes abrir un turno de caja antes de realizar cobros en el Punto de Venta.');
     if (typeof openOpenCashModal === 'function') openOpenCashModal();
     return;
   }
 
   if (tpvTicketCart.length === 0) {
-    showNotification('error', 'Ticket Vac√≠o', 'Agrega al menos un producto al ticket de mostrador.');
+    showNotification('error', 'Ticket VacÌo', 'Agrega al menos un producto al ticket de mostrador.');
     return;
   }
 
@@ -2942,7 +3040,7 @@ async function handleTpvCashSubmit(e) {
 
 async function checkoutTpvSale(paymentMethod, changeAmount = 0) {
   if (tpvTicketCart.length === 0) {
-    showNotification('error', 'Ticket Vac√≠o', 'Agrega al menos un producto al ticket de mostrador.');
+    showNotification('error', 'Ticket VacÌo', 'Agrega al menos un producto al ticket de mostrador.');
     return;
   }
 
@@ -2989,10 +3087,10 @@ async function checkoutTpvSale(paymentMethod, changeAmount = 0) {
     renderFinancesKPIs();
     renderTpvGrid();
     clearTpvTicket();
-    showNotification('success', `üíµ Cobro Exitoso ($${totalAmount}.00 MXN)`, `Venta cobrada. Cambio a entregar: $${changeAmount}.00 MXN. (${itemSummary})`);
+    showNotification('success', `?? Cobro Exitoso ($${totalAmount}.00 MXN)`, `Venta cobrada. Cambio a entregar: $${changeAmount}.00 MXN. (${itemSummary})`);
     fetchAdminData();
   } else {
-    showNotification('error', 'Error en Cobro', 'Ocurri√É¬≥√≥ un inconveniente al procesar la venta.');
+    showNotification('error', 'Error en Cobro', 'Ocurri√≥Û un inconveniente al procesar la venta.');
   }
 }
 
@@ -3026,7 +3124,7 @@ function renderTpvGrid() {
   }
 
   if (filtered.length === 0) {
-    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #94A3B8; padding: 40px;">No hay productos disponibles en esta categor√≠a.</div>`;
+    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #94A3B8; padding: 40px;">No hay productos disponibles en esta categorÌa.</div>`;
     return;
   }
 
@@ -3125,7 +3223,7 @@ async function handleProductFormSubmit(e) {
   const imageUrl = document.getElementById('prodImageInput') ? document.getElementById('prodImageInput').value.trim() : '';
 
   if (!name || isNaN(price) || price <= 0 || isNaN(stock) || stock < 0) {
-    showNotification('error', 'Datos Inv√°lidos', 'Revisa el nombre, precio y stock del producto.');
+    showNotification('error', 'Datos Inv·lidos', 'Revisa el nombre, precio y stock del producto.');
     return;
   }
 
@@ -3150,13 +3248,13 @@ async function handleProductFormSubmit(e) {
       if (isEdit) {
         const idx = productsData.findIndex(p => p.id === id);
         if (idx !== -1) productsData[idx] = prod;
-        showNotification('success', '¬°Se Edit√≥ el Producto Correctamente! ‚úèÔ∏è', `Se guardaron los cambios de ${name}.`);
+        showNotification('success', '°Se EditÛ el Producto Correctamente! ??', `Se guardaron los cambios de ${name}.`);
       } else {
         const exists = productsData.some(p => p.id === prod.id);
         if (!exists) {
           productsData.unshift(prod);
         }
-        showNotification('success', '¬°Se Agreg√≥ el Producto Correctamente! üì¶', `Se agreg√≥ el producto ${name} al inventario.`);
+        showNotification('success', '°Se AgregÛ el Producto Correctamente! ??', `Se agregÛ el producto ${name} al inventario.`);
       }
       renderProductsTable();
       renderTpvGrid();
@@ -3173,7 +3271,7 @@ async function handleProductFormSubmit(e) {
 function showConfirmModal(title, message, confirmButtonText, onConfirmCallback) {
   if (typeof confirmButtonText === 'function') {
     onConfirmCallback = confirmButtonText;
-    confirmButtonText = 'S√≠, Eliminar';
+    confirmButtonText = 'SÌ, Eliminar';
   }
   const overlay = document.getElementById('modalConfirmOverlay');
   if (!overlay) return;
@@ -3182,7 +3280,7 @@ function showConfirmModal(title, message, confirmButtonText, onConfirmCallback) 
   document.getElementById('confirmModalMessage').textContent = message;
   const btn = document.getElementById('confirmModalActionButton');
   if (btn) {
-    btn.textContent = (typeof confirmButtonText === 'string' && confirmButtonText) ? confirmButtonText : 'S√≠, Eliminar';
+    btn.textContent = (typeof confirmButtonText === 'string' && confirmButtonText) ? confirmButtonText : 'SÌ, Eliminar';
     btn.onclick = () => {
       closeConfirmModal();
       if (onConfirmCallback) onConfirmCallback();
@@ -3201,9 +3299,9 @@ function handleDeleteProduct(productId) {
   if (!p) return;
 
   showConfirmModal(
-    '¬øEliminar Producto?',
-    `¬øEst√°s seguro de eliminar "${p.name}" del cat√°logo de ventas e inventario?`,
-    'üóëÔ∏è S√≠, Eliminar',
+    'øEliminar Producto?',
+    `øEst·s seguro de eliminar "${p.name}" del cat·logo de ventas e inventario?`,
+    '??? SÌ, Eliminar',
     async () => {
       try {
         const res = await fetch('api/products/delete', {
@@ -3220,7 +3318,7 @@ function handleDeleteProduct(productId) {
           productsData = productsData.filter(item => item.id !== productId);
           renderProductsTable();
           renderTpvGrid();
-          showNotification('success', '¬°Se Elimin√≥ el Producto Correctamente! üóëÔ∏è', `Se elimin√≥ "${p.name}" del cat√°logo.`);
+          showNotification('success', '°Se EliminÛ el Producto Correctamente! ???', `Se eliminÛ "${p.name}" del cat·logo.`);
         } else {
           showNotification('error', 'Error al Eliminar', data.message || 'No se pudo borrar el producto.');
         }
@@ -3232,13 +3330,13 @@ function handleDeleteProduct(productId) {
   );
 }
 
-/* Venta R√°pida en Efectivo Modal */
+/* Venta R·pida en Efectivo Modal */
 let activeQuickSaleProduct = null;
 
 function openQuickSaleModal(productId) {
   const isShiftOpen = !!(cashStatusData && cashStatusData.activeShift && cashStatusData.activeShift.status === 'abierta');
   if (!isShiftOpen) {
-    showNotification('warning', 'Caja Cerrada √∞≈∏‚Äù‚Äô', 'No hay un turno de caja abierto para registrar ventas en la tienda.');
+    showNotification('warning', 'Caja Cerrada üîí', 'No hay un turno de caja abierto para registrar ventas en la tienda.');
     openOpenCashModal();
     return;
   }
@@ -3250,7 +3348,7 @@ function openQuickSaleModal(productId) {
   if (!overlay) return;
 
   document.getElementById('quickSaleProdId').value = p.id;
-  document.getElementById('quickSaleProdName').textContent = `${p.icon || 'üì¶'} ${p.name}`;
+  document.getElementById('quickSaleProdName').textContent = `${p.icon || '??'} ${p.name}`;
   document.getElementById('quickSaleProdPrice').textContent = `$${p.price}.00 MXN`;
   document.getElementById('quickSaleProdStock').textContent = `${p.stock} unidades`;
   document.getElementById('quickSaleQtyInput').value = '1';
@@ -3285,7 +3383,7 @@ async function handleQuickSaleSubmit(e) {
   const quantity = parseInt(document.getElementById('quickSaleQtyInput').value, 10);
 
   if (isNaN(quantity) || quantity <= 0) {
-    showNotification('error', 'Cantidad Inv√°lida', 'Ingresa una cantidad mayor a 0.');
+    showNotification('error', 'Cantidad Inv·lida', 'Ingresa una cantidad mayor a 0.');
     return;
   }
 
@@ -3310,7 +3408,7 @@ async function handleQuickSaleSubmit(e) {
       closeQuickSaleModal();
 
       const totalSold = (activeQuickSaleProduct.price * quantity);
-      showNotification('success', 'üíµ Venta en Efectivo Registrada', `Se ingresaron $${totalSold}.00 MXN a caja chica por venta de ${quantity}x ${activeQuickSaleProduct.name}.`);
+      showNotification('success', '?? Venta en Efectivo Registrada', `Se ingresaron $${totalSold}.00 MXN a caja chica por venta de ${quantity}x ${activeQuickSaleProduct.name}.`);
       fetchAdminData();
     } else {
       showNotification('error', 'Error en Venta', data.message || 'No se pudo realizar la venta.');
@@ -3330,11 +3428,11 @@ function exportFinancesReportCSV() {
     return;
   }
 
-  const headers = ['ID Transacci√≥n', 'Fecha y Hora', 'Cliente', 'Concepto', 'Categor√≠a', 'M√©todo de Pago', 'Monto Cobrado ($ MXN)', 'Estado Caja'];
+  const headers = ['ID TransacciÛn', 'Fecha y Hora', 'Cliente', 'Concepto', 'CategorÌa', 'MÈtodo de Pago', 'Monto Cobrado ($ MXN)', 'Estado Caja'];
   const rows = financesData.map(f => [
     `"${f.id || ''}"`,
     `"${f.date || ''}"`,
-    `"${(f.clientName || 'Cliente Tac√°mbaro').replace(/"/g, '""')}"`,
+    `"${(f.clientName || 'Cliente Tac·mbaro').replace(/"/g, '""')}"`,
     `"${(f.concept || '').replace(/"/g, '""')}"`,
     `"${(f.category || '').replace(/"/g, '""')}"`,
     `"${(f.paymentMethod || '').replace(/"/g, '""')}"`,
@@ -3354,10 +3452,10 @@ function exportFinancesReportCSV() {
   link.click();
   document.body.removeChild(link);
 
-  showNotification('success', '¬°Informe Exportado Correctamente! üì•', `Se descarg√≥ el archivo "Informe_Financiero_Level_Tacambaro_${todayStr}.csv" con ${financesData.length} registros para Excel.`);
+  showNotification('success', '°Informe Exportado Correctamente! ??', `Se descargÛ el archivo "Informe_Financiero_Level_Tacambaro_${todayStr}.csv" con ${financesData.length} registros para Excel.`);
 }
 
-/* Populaci√≥n de Deudores para Modal Finanzas */
+/* PopulaciÛn de Deudores para Modal Finanzas */
 function handleDebtorSelectChange(selectEl) {
   const selectedOpt = selectEl.options[selectEl.selectedIndex];
   if (!selectEl.value) return;
@@ -3367,11 +3465,11 @@ function handleDebtorSelectChange(selectEl) {
 
   document.getElementById('posClientInput').value = clientName;
   document.getElementById('posAmountInput').value = amount;
-  document.getElementById('posConceptInput').value = `Recuperaci√≥n de Adeudo: ${clientName} (No-Show)`;
+  document.getElementById('posConceptInput').value = `RecuperaciÛn de Adeudo: ${clientName} (No-Show)`;
 }
 
 /* ==========================================
-   M√ìDULO TORNEOS & LIGAS (CRUD & INSCRITOS)
+   M”DULO TORNEOS & LIGAS (CRUD & INSCRITOS)
    ========================================== */
 let tournamentsData = [];
 
@@ -3439,7 +3537,7 @@ function renderTournamentsTable() {
     const imgUrl = t.imageUrl || 'assets/images/cancha_padel_2.jpg';
 
     let badgeClass = 'badge-status-pill status-playing';
-    if (cleanStatus === 'Pr√≥ximamente') badgeClass = 'badge-status-pill status-reserved';
+    if (cleanStatus === 'PrÛximamente') badgeClass = 'badge-status-pill status-reserved';
     else if (cleanStatus === 'Finalizado') badgeClass = 'badge-status-pill status-maintenance';
 
     return `
@@ -3457,7 +3555,7 @@ function renderTournamentsTable() {
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-weight: 800; color: #0F172A;">${teamCount} / ${t.maxTeams} Parejas</span>
             <button class="btn-head-action btn-cyan" style="padding: 2px 8px; font-size: 10px;" onclick="openTournamentTeamsModal('${t.id}')" title="Ver lista de parejas inscritas">
-              üë• Ver Inscritos
+              ?? Ver Inscritos
             </button>
           </div>
         </td>
@@ -3484,7 +3582,7 @@ function openCreateTournamentModal() {
   document.getElementById('modalTournamentTitle').textContent = 'Crear Nuevo Torneo';
   document.getElementById('tournEditId').value = '';
   document.getElementById('tournTitleInput').value = '';
-  document.getElementById('tournCategoryInput').value = '2¬™ Categor√≠a Libre';
+  document.getElementById('tournCategoryInput').value = '2™ CategorÌa Libre';
   document.getElementById('tournDatesInput').value = '';
   document.getElementById('tournPrizeInput').value = '$10,000 MXN';
   document.getElementById('tournMaxTeamsInput').value = '16';
@@ -3554,7 +3652,7 @@ async function handleTournamentFormSubmit(e) {
   const imageUrl = document.getElementById('tournImageUrlInput') ? document.getElementById('tournImageUrlInput').value : '';
 
   if (!title || !category || !dates || isNaN(maxTeams) || maxTeams < 2) {
-    showNotification('error', 'Datos Inv√°lidos', 'Completa los campos obligatorios del torneo.');
+    showNotification('error', 'Datos Inv·lidos', 'Completa los campos obligatorios del torneo.');
     return;
   }
 
@@ -3577,7 +3675,7 @@ async function handleTournamentFormSubmit(e) {
     }
     if (res.ok && (data.success || data.tournament)) {
       closeTournamentModal();
-      showNotification('success', isEdit ? '¬°Se Edit√≥ el Torneo Correctamente! üèÜ' : '¬°Se Agreg√≥ el Torneo Correctamente! üèÜ', `Se guard√≥ "${title}" exitosamente.`);
+      showNotification('success', isEdit ? '°Se EditÛ el Torneo Correctamente! ??' : '°Se AgregÛ el Torneo Correctamente! ??', `Se guardÛ "${title}" exitosamente.`);
       fetchAdminTournaments();
     } else {
       showNotification('error', 'Error al Guardar', data.message || 'No se pudo guardar el torneo.');
@@ -3592,7 +3690,7 @@ function handleDeleteTournament(id) {
   const t = tournamentsData.find(item => item.id === id);
   if (!t) return;
 
-  showConfirmModal('¬øEliminar Torneo?', `¬øEst√°s seguro de eliminar el torneo "${t.title}"?`, 'S√≠, Eliminar Torneo', async () => {
+  showConfirmModal('øEliminar Torneo?', `øEst·s seguro de eliminar el torneo "${t.title}"?`, 'SÌ, Eliminar Torneo', async () => {
     try {
       const res = await fetch('api/tournaments/delete', {
         method: 'POST',
@@ -3600,7 +3698,7 @@ function handleDeleteTournament(id) {
         body: JSON.stringify({ id })
       });
       if (res.ok) {
-        showNotification('success', '¬°Se Elimin√≥ el Torneo Correctamente! üóëÔ∏è', `Se elimin√≥ "${t.title}".`);
+        showNotification('success', '°Se EliminÛ el Torneo Correctamente! ???', `Se eliminÛ "${t.title}".`);
         fetchAdminTournaments();
       } else {
         showNotification('error', 'Error Eliminando', 'No se pudo eliminar el torneo.');
@@ -3627,7 +3725,7 @@ function openTournamentTeamsModal(id) {
   if (teams.length === 0) {
     container.innerHTML = `
       <div style="text-align: center; color: #94A3B8; padding: 30px 10px;">
-        üë• A√∫n no hay equipos inscritos en este torneo.<br>Los clientes pueden registrarse desde la App M√≥vil.
+        ?? A˙n no hay equipos inscritos en este torneo.<br>Los clientes pueden registrarse desde la App MÛvil.
       </div>
     `;
   } else {
@@ -3638,7 +3736,7 @@ function openTournamentTeamsModal(id) {
           <span style="font-size: 10px; color: #64748B; background: #E2E8F0; padding: 2px 6px; border-radius: 4px;">${team.registeredAt || 'Fecha N/A'}</span>
         </div>
         <div style="font-size: 12px; color: #0284C7; font-weight: 700;">
-          üë• Participantes: <span style="color: #334155; font-weight: 500;">${fixMojibake(team.participants || '')}</span>
+          ?? Participantes: <span style="color: #334155; font-weight: 500;">${fixMojibake(team.participants || '')}</span>
         </div>
       </div>
     `).join('');
@@ -3653,14 +3751,14 @@ function closeTournamentTeamsModal() {
   if (overlay) overlay.style.display = 'none';
 }
 
-/* Cerrar Sesi√≥n del Administrador */
+/* Cerrar SesiÛn del Administrador */
 function handleLogout() {
   showConfirmModal(
-    '¬øCerrar Sesi√≥n?',
-    '¬øEst√°s seguro de que deseas salir del Panel Administrador?',
-    'S√≠, Cerrar Sesi√≥n',
+    'øCerrar SesiÛn?',
+    'øEst·s seguro de que deseas salir del Panel Administrador?',
+    'SÌ, Cerrar SesiÛn',
     () => {
-      showNotification('info', 'Sesi√≥n Cerrada', 'Has cerrado sesi√≥n exitosamente.');
+      showNotification('info', 'SesiÛn Cerrada', 'Has cerrado sesiÛn exitosamente.');
       setTimeout(() => {
         window.location.reload();
       }, 1000);
@@ -3668,28 +3766,28 @@ function handleLogout() {
   );
 }
 
-/* GESTI√ìN DE CANCHAS (CRUD) */
+/* GESTI”N DE CANCHAS (CRUD) */
 function fixMojibake(str) {
   if (typeof str !== 'string' || !str) return str || '';
   return str
-    .replace(/P√°del|Padel|P√É¬°del|P√É;del|P√É¬©del/gi, 'Padel')
-    .replace(/Tac√°mbaro|Tacambaro|Tac√É¬°mbaro|Tac√É;mbaro/gi, 'Tacambaro')
-    .replace(/Michoac√°n|Michoacan|Michoac√É¬°n|Michoac√É;n/gi, 'Michoacan')
-    .replace(/Panor√°mica|Panoramica|Panor√É¬°mica|Panor√É;mica/gi, 'Panoramica')
-    .replace(/Categor√≠a|Categoria|Categor√Éa|Categor√É;a/gi, 'Categoria')
-    .replace(/Pr√≥ximamente|Proximamente|Pr√É¬≥ximamente|Pr√É;ximamente/gi, 'Proximamente')
-    .replace(/P√©rez|Perez|P√É¬©rez/gi, 'Perez')
-    .replace(/Sof√≠a|Sofia|Sof√Éa/gi, 'Sofia')
-    .replace(/Vald√©s|Valdes|Vald√É¬©s/gi, 'Valdes')
-    .replace(/Valent√≠n|Valentin|Valent√Én/gi, 'Valentin')
-    .replace(/G√≥mez|Gomez|G√É¬≥mez/gi, 'Gomez')
-    .replace(/Far√≠as|Farias|Far√Éas/gi, 'Farias')
-    .replace(/tel√©fono|telefono|tel√É¬©fono|tel√É;fono/gi, 'telefono')
-    .replace(/Asisti√≥|Asistio|Asisti√É¬≥/gi, 'Asistio')
-    .replace(/D√©bito|Debito|D√É¬©bito/gi, 'Debito')
-    .replace(/D√≠a|Dia|D√Éa/gi, 'Dia')
-    .replace(/Mi√©rcoles|Miercoles|Mi√É¬©rcoles/gi, 'Miercoles')
-    .replace(/S√°bado|Sabado|S√É¬°bado/gi, 'Sabado')
+    .replace(/P·del|Padel|P√°del|P√;del|P√©del/gi, 'Padel')
+    .replace(/Tac·mbaro|Tacambaro|Tac√°mbaro|Tac√;mbaro/gi, 'Tacambaro')
+    .replace(/Michoac·n|Michoacan|Michoac√°n|Michoac√;n/gi, 'Michoacan')
+    .replace(/Panor·mica|Panoramica|Panor√°mica|Panor√;mica/gi, 'Panoramica')
+    .replace(/CategorÌa|Categoria|Categor√a|Categor√;a/gi, 'Categoria')
+    .replace(/PrÛximamente|Proximamente|Pr√≥ximamente|Pr√;ximamente/gi, 'Proximamente')
+    .replace(/PÈrez|Perez|P√©rez/gi, 'Perez')
+    .replace(/SofÌa|Sofia|Sof√a/gi, 'Sofia')
+    .replace(/ValdÈs|Valdes|Vald√©s/gi, 'Valdes')
+    .replace(/ValentÌn|Valentin|Valent√n/gi, 'Valentin')
+    .replace(/GÛmez|Gomez|G√≥mez/gi, 'Gomez')
+    .replace(/FarÌas|Farias|Far√as/gi, 'Farias')
+    .replace(/telÈfono|telefono|tel√©fono|tel√;fono/gi, 'telefono')
+    .replace(/AsistiÛ|Asistio|Asisti√≥/gi, 'Asistio')
+    .replace(/DÈbito|Debito|D√©bito/gi, 'Debito')
+    .replace(/DÌa|Dia|D√a/gi, 'Dia')
+    .replace(/MiÈrcoles|Miercoles|Mi√©rcoles/gi, 'Miercoles')
+    .replace(/S·bado|Sabado|S√°bado/gi, 'Sabado')
     .replace(/[\u00E0-\u00E6\u00C0-\u00C6]/g, 'a')
     .replace(/[\u00E8-\u00EB\u00C8-\u00CB]/g, 'e')
     .replace(/[\u00EC-\u00EF\u00CC-\u00CF]/g, 'i')
@@ -3717,7 +3815,7 @@ function renderAdminCourtsGrid() {
 
   grid.innerHTML = courtsData.map(court => {
     const cleanName = fixMojibake(court.name);
-    const cleanLoc = fixMojibake(court.location || 'Tac√°mbaro, Michoac√°n');
+    const cleanLoc = fixMojibake(court.location || 'Tac·mbaro, Michoac·n');
     return `
       <div class="admin-court-card" style="background: #FFF; border-radius: 16px; border: 1px solid #E2E8F0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
         <div>
@@ -3731,7 +3829,7 @@ function renderAdminCourtsGrid() {
           <div style="padding: 16px;">
             <h3 style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; color: #0F172A; margin: 0 0 6px 0;">${cleanName}</h3>
             <div style="font-size: 12px; color: #64748B; margin-bottom: 12px; display: flex; align-items: center; gap: 4px;">
-              üìç <span>${cleanLoc}</span>
+              ?? <span>${cleanLoc}</span>
             </div>
 
             <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;">
@@ -3776,7 +3874,7 @@ function handleCourtImageUpload(event) {
       preview.src = dataUrl;
       container.style.display = 'block';
     }
-    showNotification('success', 'Imagen Cargada üì∑', 'La imagen de tu computadora se carg√≥ exitosamente.');
+    showNotification('success', 'Imagen Cargada ??', 'La imagen de tu computadora se cargÛ exitosamente.');
   };
   reader.readAsDataURL(file);
 }
@@ -3803,7 +3901,7 @@ function openCourtCreateModal() {
   document.getElementById('courtEditId').value = '';
   document.getElementById('courtEditName').value = '';
   document.getElementById('courtEditPrice').value = '300';
-  document.getElementById('courtEditLocation').value = 'Tac√°mbaro, Michoac√°n';
+  document.getElementById('courtEditLocation').value = 'Tac·mbaro, Michoac·n';
   document.getElementById('courtEditImage').value = 'assets/images/cancha_padel_1.jpg';
   document.getElementById('btnDeleteCourtModal').style.display = 'none';
 
@@ -3824,7 +3922,7 @@ function openCourtEditModal(id) {
   document.getElementById('courtEditId').value = court.id;
   document.getElementById('courtEditName').value = fixMojibake(court.name || '');
   document.getElementById('courtEditPrice').value = court.price || 300;
-  document.getElementById('courtEditLocation').value = fixMojibake(court.location || 'Tac√°mbaro, Michoac√°n');
+  document.getElementById('courtEditLocation').value = fixMojibake(court.location || 'Tac·mbaro, Michoac·n');
   document.getElementById('courtEditImage').value = court.image || 'assets/images/cancha_padel_1.jpg';
   document.getElementById('btnDeleteCourtModal').style.display = 'inline-flex';
 
@@ -3867,7 +3965,7 @@ async function saveCourtForm(e) {
       closeCourtModal();
       await fetchAdminData();
       renderAdminCourtsGrid();
-      showNotification('success', isEdit ? '¬°Se Edit√≥ la Cancha Correctamente! üéæ' : '¬°Se Agreg√≥ la Cancha Correctamente! üéæ', isEdit ? `La cancha "${name}" fue guardada correctamente.` : `La nueva cancha "${name}" ya est√° disponible.`);
+      showNotification('success', isEdit ? '°Se EditÛ la Cancha Correctamente! ??' : '°Se AgregÛ la Cancha Correctamente! ??', isEdit ? `La cancha "${name}" fue guardada correctamente.` : `La nueva cancha "${name}" ya est· disponible.`);
     } else {
       showNotification('error', 'Error al Guardar', 'No se pudo guardar la cancha.');
     }
@@ -3884,9 +3982,9 @@ async function deleteCourtConfirm(id) {
   const cleanName = fixMojibake(court.name);
 
   showConfirmModal(
-    '¬øEliminar Cancha?',
-    `¬øEst√°s seguro de eliminar "${cleanName}"? Esta acci√≥n remover√° la pista del cat√°logo del club.`,
-    'S√≠, Eliminar Cancha',
+    'øEliminar Cancha?',
+    `øEst·s seguro de eliminar "${cleanName}"? Esta acciÛn remover· la pista del cat·logo del club.`,
+    'SÌ, Eliminar Cancha',
     async () => {
       try {
         const res = await fetch('api/courts/delete', {
@@ -3899,7 +3997,7 @@ async function deleteCourtConfirm(id) {
           closeCourtModal();
           await fetchAdminData();
           renderAdminCourtsGrid();
-          showNotification('success', '¬°Se Elimin√≥ la Cancha Correctamente! üóëÔ∏è', `La cancha "${cleanName}" fue eliminada del sistema.`);
+          showNotification('success', '°Se EliminÛ la Cancha Correctamente! ???', `La cancha "${cleanName}" fue eliminada del sistema.`);
         } else {
           showNotification('error', 'Error al Eliminar', 'No se pudo eliminar la cancha.');
         }
@@ -3917,7 +4015,7 @@ function deleteCourtCurrent() {
 }
 
 /* ==========================================
-   GESTI√ìN DE SESI√ìN & LOGIN / CERRAR SESI√ìN ADMIN
+   GESTI”N DE SESI”N & LOGIN / CERRAR SESI”N ADMIN
    ========================================== */
 
 function checkAdminSession() {
@@ -3994,7 +4092,7 @@ function renderCashHistoryTable() {
   if (!tbody) return;
 
   if (!cashHistoryData || cashHistoryData.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; color: #94A3B8; padding: 20px;">No hay historial de cierres de caja registrados a√É¬∫n.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; color: #94A3B8; padding: 20px;">No hay historial de cierres de caja registrados a√∫n.</td></tr>';
     return;
   }
 
@@ -4160,7 +4258,7 @@ function isCashShiftOpen() {
 
 function openOpenCashModal() {
   if (isCashShiftOpen()) {
-    showNotification('warning', 'Caja Ya Abierta üü¢', 'Ya existe un turno de caja abierto en el sistema.');
+    showNotification('warning', 'Caja Ya Abierta ??', 'Ya existe un turno de caja abierto en el sistema.');
     return;
   }
   const modal = document.getElementById('modalOpenCashOverlay');
@@ -4174,7 +4272,7 @@ function closeOpenCashModal() {
 
 function openCashMovementModal() {
   if (!isCashShiftOpen()) {
-    showNotification('warning', 'Caja Cerrada üîí', 'Debes abrir un turno de caja antes de registrar movimientos de entradas o salidas.');
+    showNotification('warning', 'Caja Cerrada ??', 'Debes abrir un turno de caja antes de registrar movimientos de entradas o salidas.');
     openOpenCashModal();
     return;
   }
@@ -4207,7 +4305,7 @@ async function handleOpenCashSubmit(e) {
     const data = await res.json();
     if (res.ok && data.success) {
       if (typeof closeOpenCashModal === 'function') closeOpenCashModal();
-      showNotification('success', '¬°Caja Abierta Correctamente! üîì', 'Se abrio el turno de caja con fondo inicial de $' + initialAmount + '.00 MXN.');
+      showNotification('success', '°Caja Abierta Correctamente! ??', 'Se abrio el turno de caja con fondo inicial de $' + initialAmount + '.00 MXN.');
       await fetchCashShiftStatus();
     } else {
       showNotification('error', 'Error al Abrir Caja', data.message || 'No se pudo abrir la caja.');
@@ -4244,7 +4342,7 @@ async function handleCashMovementSubmit(e) {
     if (res.ok && data.success) {
       if (typeof closeCashMovementModal === 'function') closeCashMovementModal();
       const typeLabel = type === 'salida' ? 'Salida / Gasto' : 'Entrada / Deposito';
-      showNotification('success', '¬°Movimiento Registrado! üí∞', 'Se registro la ' + typeLabel + ' de $' + amount + '.00 MXN por: ' + concept);
+      showNotification('success', '°Movimiento Registrado! ??', 'Se registro la ' + typeLabel + ' de $' + amount + '.00 MXN por: ' + concept);
       await fetchCashShiftStatus();
     } else {
       showNotification('error', 'Error en Movimiento', data.message || 'No se pudo registrar el movimiento.');
@@ -4273,7 +4371,7 @@ async function handleCashCutSubmit(e) {
       if (typeof closeCashCutModal === 'function') closeCashCutModal();
       const diff = data.shift ? data.shift.difference : 0;
       const diffStr = diff >= 0 ? ('+$' + diff + '.00 MXN') : ('-$' + Math.abs(diff) + '.00 MXN');
-      showNotification('success', '¬°Corte de Caja Exitoso! üîí', 'Se cerro el turno de caja. Diferencia en arqueo: ' + diffStr);
+      showNotification('success', '°Corte de Caja Exitoso! ??', 'Se cerro el turno de caja. Diferencia en arqueo: ' + diffStr);
       await fetchCashShiftStatus();
     } else {
       showNotification('error', 'Error al Cerrar Caja', data.message || 'No se pudo cerrar la caja.');
@@ -4289,7 +4387,7 @@ async function openCashCutModal() {
   }
 
   if (!isCashShiftOpen()) {
-    showNotification('warning', 'Caja Cerrada üîí', 'No hay un turno de caja abierto para realizar el corte de caja.');
+    showNotification('warning', 'Caja Cerrada ??', 'No hay un turno de caja abierto para realizar el corte de caja.');
     return;
   }
 
@@ -4379,7 +4477,7 @@ function confirmAdminLogout() {
     overlay.style.display = 'flex';
     if (window.lucide) lucide.createIcons();
   }
-  showNotification('info', 'Sesi√≥n Cerrada üîí', 'Has cerrado sesi√≥n del panel de administraci√≥n.');
+  showNotification('info', 'SesiÛn Cerrada ??', 'Has cerrado sesiÛn del panel de administraciÛn.');
   setTimeout(() => {
     window.location.reload();
   }, 400);
@@ -4466,7 +4564,7 @@ async function handleSaveBankInfo(event) {
     if (res.ok && (data.success || data.bankInfo)) {
       bankInfoData = data.bankInfo || { bankName, accountHolder, clabe, cardNumber, instructions };
       populateBankInfoFields(bankInfoData);
-      showNotification('success', '¬°Datos Bancarios Guardados! üè¶', 'La informaci√≥n de transferencia ha sido actualizada en la app y panel.');
+      showNotification('success', '°Datos Bancarios Guardados! ??', 'La informaciÛn de transferencia ha sido actualizada en la app y panel.');
       closeBankInfoModal();
     } else {
       showNotification('error', 'Error al Guardar', data.message || 'No se pudieron guardar los datos bancarios.');
@@ -4537,7 +4635,7 @@ function closeRefundMethodModal() {
 
 async function confirmRefundWithMethod(method) {
   if (!activeRefundBookingId) {
-    showNotification('error', 'Error', 'No hay una reserva seleccionada para devoluci√≥n.');
+    showNotification('error', 'Error', 'No hay una reserva seleccionada para devoluciÛn.');
     return;
   }
 
@@ -4553,17 +4651,17 @@ async function confirmRefundWithMethod(method) {
 
     const data = await res.json();
     if (res.ok && data.success) {
-      showNotification('success', 'Devoluci√≥n Registrada', `Devoluci√≥n de $${activeRefundAmount.toLocaleString('es-MX')} MXN procesada con √©xito (${method.toUpperCase()}).`);
+      showNotification('success', 'DevoluciÛn Registrada', `DevoluciÛn de $${activeRefundAmount.toLocaleString('es-MX')} MXN procesada con Èxito (${method.toUpperCase()}).`);
       closeRefundMethodModal();
       await fetchCancelledBookings();
       if (typeof fetchCashShiftStatus === 'function') fetchCashShiftStatus();
       if (typeof fetchAdminData === 'function') fetchAdminData();
     } else {
-      showNotification('error', 'Error', data.message || 'Error al procesar la devoluci√≥n.');
+      showNotification('error', 'Error', data.message || 'Error al procesar la devoluciÛn.');
     }
   } catch (err) {
     console.error('Error confirming refund:', err);
-    showNotification('error', 'Error', 'Error de conexi√≥n al procesar la devoluci√≥n.');
+    showNotification('error', 'Error', 'Error de conexiÛn al procesar la devoluciÛn.');
   }
 }
 
@@ -4589,7 +4687,7 @@ function renderCancelledBookingsTable(cancelledList) {
         const phone = b.clientPhone || '-';
         const method = b.paymentMethod || 'Efectivo';
         const isPaid = (b.paid === true || b.paid === 'true' || b.paid === 1);
-        const refStatus = b.refundStatus || (isPaid ? 'Pendiente de Devoluci√≥n' : 'Sin Pago Previo (No Aplica)');
+        const refStatus = b.refundStatus || (isPaid ? 'Pendiente de DevoluciÛn' : 'Sin Pago Previo (No Aplica)');
 
         let refundBadgeHtml = '';
         let actionBtnHtml = '';
@@ -4601,8 +4699,8 @@ function renderCancelledBookingsTable(cancelledList) {
           refundBadgeHtml = `<span style="background: #F1F5F9; color: #64748B; border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 8px; font-weight: 600; font-size: 11px;">Sin Pago Previo (No Aplica)</span>`;
           actionBtnHtml = `<span style="color: #94A3B8; font-size: 12px; font-style: italic;">Sin acciones</span>`;
         } else {
-          refundBadgeHtml = `<span style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="alert-triangle" style="width:12px; height:12px;"></i> Devoluci√≥n Pendiente</span>`;
-          actionBtnHtml = `<button type="button" class="btn-head-action" style="background: #10B981; color: #FFF; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(16,185,129,0.25);" onclick="openRefundModal('${b.id}', ${b.price || 0}, '${client.replace(/'/g, "\\'")}')"><i data-lucide="hand-coins" style="width: 14px; height: 14px;"></i> Devoluci√≥n</button>`;
+          refundBadgeHtml = `<span style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="alert-triangle" style="width:12px; height:12px;"></i> DevoluciÛn Pendiente</span>`;
+          actionBtnHtml = `<button type="button" class="btn-head-action" style="background: #10B981; color: #FFF; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(16,185,129,0.25);" onclick="openRefundModal('${b.id}', ${b.price || 0}, '${client.replace(/'/g, "\\'")}')"><i data-lucide="hand-coins" style="width: 14px; height: 14px;"></i> DevoluciÛn</button>`;
         }
 
         return `

@@ -37,6 +37,50 @@ class Booking {
     this.paid = false,
   });
 
+  factory Booking.fromJson(Map<String, dynamic> json) {
+    DateTime parsedDate = DateTime.now();
+    if (json['date'] != null) {
+      try {
+        parsedDate = DateTime.parse(json['date'].toString());
+      } catch (_) {}
+    }
+    BookingStatus bStatus = BookingStatus.confirmed;
+    final statusStr = json['status']?.toString().toLowerCase() ?? '';
+    if (statusStr.contains('cancel')) {
+      bStatus = BookingStatus.cancelled;
+    } else if (statusStr.contains('pend')) {
+      bStatus = BookingStatus.pending;
+    } else if (statusStr.contains('complet') || statusStr.contains('asisti')) {
+      bStatus = BookingStatus.completed;
+    }
+
+    List<String> bSlots = [];
+    if (json['bookedSlots'] is List) {
+      bSlots = List<String>.from(json['bookedSlots'].map((e) => e.toString()));
+    }
+
+    return Booking(
+      id: json['id']?.toString() ?? '',
+      courtId: json['courtId']?.toString() ?? 'c1',
+      courtName: json['courtName']?.toString() ?? 'Cancha 1: Padel Cristal Pro (Azul)',
+      courtLocation: json['location']?.toString() ?? 'Tacambaro, Michoacan',
+      imagePath: json['imagePath']?.toString() ?? json['image']?.toString() ?? 'assets/images/cancha_padel_1.jpg',
+      date: parsedDate,
+      timeSlot: json['timeSlot']?.toString() ?? '',
+      bookedSlots: bSlots,
+      durationHours: json['durationHours'] != null ? (json['durationHours'] as num).toDouble() : 1.0,
+      totalPrice: json['price'] != null
+          ? (json['price'] as num).toDouble()
+          : ((json['totalPrice'] != null) ? (json['totalPrice'] as num).toDouble() : 300.0),
+      paymentMethod: json['paymentMethod']?.toString() ?? 'Efectivo en Mostrador',
+      status: bStatus,
+      qrCode: json['qrCode']?.toString() ?? 'LEVEL-PADEL-${json['id']}',
+      clientName: json['clientName']?.toString() ?? 'Cliente',
+      clientPhone: json['clientPhone']?.toString() ?? '',
+      paid: json['paid'] == true || json['paid'] == 'true',
+    );
+  }
+
   static List<Booking> get initialBookings => [
     Booking(
       id: 'RES-5611',

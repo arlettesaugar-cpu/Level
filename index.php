@@ -107,7 +107,16 @@ function getJsonFile($file) {
             "description" => "Level Tacambaro nacio con la vision de consolidar el primer centro deportivo de padel de alto nivel en Tacambaro, Michoacan.",
             "logoUrl" => "assets/images/logo.jpeg",
             "coverUrl" => "assets/images/cancha_padel_1.jpg",
+            "liveStreamUrl" => "https://www.youtube.com/@levelpadeltacambaro",
             "gallery" => ["assets/images/cancha_padel_1.jpg", "assets/images/cancha_padel_2.jpg"]
+        ];
+        saveJsonFile($file, $default);
+        return $default;
+    }
+    if ($file === 'live_stream.json') {
+        $default = [
+            "url" => "https://www.youtube.com/@levelpadeltacambaro",
+            "updatedAt" => date('Y-m-d H:i:s')
         ];
         saveJsonFile($file, $default);
         return $default;
@@ -844,8 +853,34 @@ if (strpos($path, '/api') !== false) {
         $body = json_decode($raw, true);
         $history = getJsonFile('history.json');
         $updatedHistory = array_merge($history, $body);
+        if (!empty($body['liveStreamUrl'])) {
+            saveJsonFile('live_stream.json', ["url" => $body['liveStreamUrl'], "updatedAt" => date('Y-m-d H:i:s')]);
+        }
         saveJsonFile('history.json', $updatedHistory);
         echo json_encode(["success" => true, "history" => $updatedHistory], JSON_UNESCAPED_UNICODE);
+        exit();
+    }
+
+    // LIVE STREAM URL (TRANSMISIÓN EN VIVO)
+    elseif ($subPath === '/live-stream' || $subPath === '/live-stream/') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $raw = file_get_contents('php://input');
+            $body = json_decode($raw, true);
+            $url = !empty($body['url']) ? trim($body['url']) : 'https://www.youtube.com/@levelpadeltacambaro';
+            $liveData = ["url" => $url, "updatedAt" => date('Y-m-d H:i:s')];
+            saveJsonFile('live_stream.json', $liveData);
+
+            $history = getJsonFile('history.json');
+            $history['liveStreamUrl'] = $url;
+            saveJsonFile('history.json', $history);
+
+            echo json_encode(["success" => true, "url" => $url], JSON_UNESCAPED_UNICODE);
+            exit();
+        }
+        $liveData = getJsonFile('live_stream.json');
+        $history = getJsonFile('history.json');
+        $url = !empty($liveData['url']) ? $liveData['url'] : (!empty($history['liveStreamUrl']) ? $history['liveStreamUrl'] : 'https://www.youtube.com/@levelpadeltacambaro');
+        echo json_encode(["success" => true, "url" => $url], JSON_UNESCAPED_UNICODE);
         exit();
     }
 
