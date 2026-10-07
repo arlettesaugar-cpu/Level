@@ -1088,14 +1088,6 @@ function renderHistoryView() {
             <i data-lucide="map-pin" style="width: 13px; height: 13px;"></i> <span>${address}</span>
           </div>
         </div>
-      </div>">">
-          <h2 style="font-family: 'Outfit', sans-serif; font-size: 21px; font-weight: 900; color: #0F172A; margin: 0 0 6px 0;">
-            ${name}
-          </h2>
-          <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #0284C7; background: #F0F9FF; padding: 6px 12px; border-radius: 20px; border: 1px solid #BAE6FD;">
-            <i data-lucide="map-pin" style="width: 13px; height: 13px;"></i> <span>${address}</span>
-          </div>
-        </div>
       </div>
 
       <!-- Reseña Histórica Card -->
@@ -1182,6 +1174,21 @@ function renderCourtsView(state, instKey, sport = 'padel') {
           <span>Mis Reservas</span>
         </button>
       </div>
+    </div>
+
+    <!-- Live Stream Card -->
+    <div onclick="window.open('https://www.youtube.com/@levelpadeltacambaro', '_blank')" style="margin-bottom: 14px; background: linear-gradient(135deg, #881337 0%, #0F172A 100%); border-radius: 16px; padding: 12px 14px; color: #FFF; display: flex; align-items: center; justify-content: space-between; cursor: pointer; box-shadow: 0 4px 14px rgba(239,68,68,0.25);">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="background: rgba(255,255,255,0.15); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+          <i data-lucide="tv" style="width: 20px; height: 20px; color: #FFF;"></i>
+        </div>
+        <div>
+          <div style="font-size: 10px; font-weight: 800; color: #FCA5A5; letter-spacing: 0.8px; text-transform: uppercase;">🔴 Transmisión en Vivo</div>
+          <div style="font-size: 12px; font-weight: 800; color: #FFF;">Ver Partidos & Torneos en Directo</div>
+          <div style="font-size: 10px; color: rgba(255,255,255,0.7);">Clic para abrir YouTube / Facebook</div>
+        </div>
+      </div>
+      <span style="background: #EF4444; color: #FFF; font-size: 11px; font-weight: 800; padding: 5px 10px; border-radius: 8px;">Ver →</span>
     </div>
 
     <div class="courts-list">
@@ -1551,31 +1558,6 @@ function renderContactView() {
           <div><strong>Nota de Pago:</strong> Ingresa tu nombre completo y número de teléfono en el concepto de pago de tu transferencia SPEI.</div>
         </div>
       </div>
-
-      <!-- Location & Reference Card -->
-      <div style="background: #FFFFFF; border-radius: 18px; border: 1px solid #E2E8F0; padding: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); border-left: 4px solid #0284C7;">
-        <div style="font-size: 12px; font-weight: 800; color: #0F172A; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-          <i data-lucide="map-pin" style="width: 15px; height: 15px; color: #0284C7;"></i> Ubicación Exacta & Referencia
-        </div>
-        
-        <p style="font-size: 12px; color: #334155; line-height: 1.5; margin: 0 0 8px 0; font-weight: 600;">
-          ${address}
-        </p>
-
-        <div style="background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 10px; padding: 8px 10px; font-size: 11px; color: #0369A1; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
-          <i data-lucide="navigation" style="width: 14px; height: 14px; color: #0284C7;"></i> Referencia: Frente a Protección Civil Tacámbaro
-        </div>
-
-        <!-- Navigation Apps Buttons -->
-        <div style="display: flex; gap: 8px;">
-          <button onclick="window.open('https://maps.google.com/?q=Valent%C3%ADn+G%C3%B3mez+Far%C3%ADas+3+Tac%C3%A1mbaro+Michoac%C3%A1n', '_blank')" style="flex: 1; background: #F8FAFC; color: #0F172A; border: 1px solid #CBD5E1; padding: 9px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
-            <i data-lucide="map" style="width: 13px; height: 13px; color: #10B981;"></i> Google Maps
-          </button>
-          <button onclick="window.open('https://waze.com/ul?q=Tacambaro+Michoacan', '_blank')" style="flex: 1; background: #F8FAFC; color: #0F172A; border: 1px solid #CBD5E1; padding: 9px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
-            <i data-lucide="navigation-2" style="width: 13px; height: 13px; color: #0284C7;"></i> Waze
-          </button>
-        </div>
-      </div>
     </div>
   `;
 }
@@ -1860,6 +1842,7 @@ function renderTimeSlotsStepView(liveCourt, state, instKey) {
             <div style="display: flex; gap: 6px;">
               <button type="button" onclick="instanceStates['${instKey}'].durationHours=1; renderAllInstances();" style="flex: 1; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 800; border: 1.5px solid ${durationHours === 1 ? '#10B981' : '#CBD5E1'}; background: ${durationHours === 1 ? '#10B981' : '#FFF'}; color: ${durationHours === 1 ? '#FFF' : '#334155'}; cursor: pointer;">1 Hora</button>
               <button type="button" onclick="instanceStates['${instKey}'].durationHours=2; renderAllInstances();" style="flex: 1; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 800; border: 1.5px solid ${durationHours === 2 ? '#10B981' : '#CBD5E1'}; background: ${durationHours === 2 ? '#10B981' : '#FFF'}; color: ${durationHours === 2 ? '#FFF' : '#334155'}; cursor: pointer;">2 Horas</button>
+              <button type="button" onclick="instanceStates['${instKey}'].durationHours=3; renderAllInstances();" style="flex: 1; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: 800; border: 1.5px solid ${durationHours === 3 ? '#10B981' : '#CBD5E1'}; background: ${durationHours === 3 ? '#10B981' : '#FFF'}; color: ${durationHours === 3 ? '#FFF' : '#334155'}; cursor: pointer;">3 Horas</button>
             </div>
           </div>
 

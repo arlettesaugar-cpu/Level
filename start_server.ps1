@@ -3115,8 +3115,13 @@ try {
                 $response.OutputStream.Write($buffer, 0, $buffer.Length)
             }
             else {
-                if ($path -eq "/" -or $path -eq "/admin") {
+                if ($path -eq "/admin") {
                     $response.Redirect("/admin/")
+                    $response.OutputStream.Close()
+                    continue
+                }
+                if ($path -eq "/") {
+                    $response.Redirect("/index.html")
                     $response.OutputStream.Close()
                     continue
                 }
