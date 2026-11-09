@@ -45,23 +45,17 @@ jobs:
 
       - name: Instalar Certificado de Apple y Perfil de Aprovisionamiento
         env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.P12_PASSWORD || 'LevelPadel2026!' }}
           KEYCHAIN_PASSWORD: "temporal_keychain_123"
+          P12_PASSWORD: "LevelPadel2026!"
         run: |
-          if [ -z "$BUILD_CERTIFICATE_BASE64" ] || [ -z "$BUILD_PROVISION_PROFILE_BASE64" ]; then
-            echo "ERROR: Faltan los secretos BUILD_CERTIFICATE_BASE64 o BUILD_PROVISION_PROFILE_BASE64 en GitHub."
-            echo "Por favor configúralos en Settings > Secrets and variables > Actions"
-            exit 1
-          fi
-
-          CERT_PATH=$RUNNER_TEMP/build_cert.p12
-          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          CERT_PATH=".github/certs/distribution.p12"
+          PP_PATH=".github/certs/Level_Profile.mobileprovision"
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o "$CERT_PATH"
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o "$PP_PATH"
+          if [ ! -f "$CERT_PATH" ] || [ ! -f "$PP_PATH" ]; then
+            echo "ERROR: No se encontraron los archivos en .github/certs/"
+            exit 1
+          fi
 
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"

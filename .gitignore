@@ -74,6 +74,9 @@ xcuserdata/
 *.pem
 scratch/
 
+# Permitir certificados del workflow
+!.github/certs/*
+
 # Executables, Large Archives & Binaries
 cloudflared.exe
 *.zip
