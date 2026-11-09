@@ -65,6 +65,14 @@ key.properties
 *.perspectivev3
 xcuserdata/
 **/ios/Flutter/.last_build_id
+*.cer
+*.key
+*.mobileprovision
+*.certSigningRequest
+*.p12
+*.p8
+*.pem
+scratch/
 
 # Executables, Large Archives & Binaries
 cloudflared.exe

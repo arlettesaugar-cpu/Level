@@ -1,4 +1,4 @@
-name: iOS CI/CD Build (Unsigned IPA)
+name: iOS Build (Oficial Firmado Apple)
 
 on:
   push:
@@ -13,9 +13,9 @@ concurrency:
 
 jobs:
   build-ios:
-    name: Compilar iOS IPA sin firma
+    name: Compilar IPA Firmado para iPhone
     runs-on: macos-14
-    timeout-minutes: 30
+    timeout-minutes: 40
 
     steps:
       - name: Clonar repositorio
@@ -30,77 +30,92 @@ jobs:
       - name: Instalar dependencias Flutter
         run: flutter pub get
 
-      - name: Generar plataforma iOS
+      - name: Generar estructura iOS
         run: |
-          flutter create . --platforms=ios
+          flutter create . --platforms=ios --org com.levelpadel
           flutter pub get
 
-      - name: Verificar estructura iOS generada
-        run: ls -la ios/ && ls -la ios/Runner.xcodeproj/ 2>/dev/null || echo "sin xcodeproj"
-
-      - name: Instalar CocoaPods si hay Podfile
+      - name: Instalar CocoaPods si aplica
         run: |
           if [ -f "ios/Podfile" ]; then
-            echo "Podfile encontrado, ejecutando pod install..."
             cd ios && pod install --repo-update && cd ..
           else
-            echo "Sin Podfile - todos los paquetes son Dart puro, CocoaPods no requerido."
+            echo "Sin Podfile nativo complejo, CocoaPods no requerido."
           fi
 
-      - name: Parchear Xcode para compilar sin cuenta Apple
+      - name: Instalar Certificado de Apple y Perfil de Aprovisionamiento
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD || 'LevelPadel2026!' }}
+          KEYCHAIN_PASSWORD: "temporal_keychain_123"
         run: |
-          if [ -f "ios/Flutter/Release.xcconfig" ]; then
-            printf '\nDEVELOPMENT_TEAM = AAAAAAAAAA\nCODE_SIGNING_ALLOWED = NO\nCODE_SIGNING_REQUIRED = NO\nCODE_SIGN_IDENTITY =\nPROVISIONING_PROFILE_SPECIFIER =\n' >> ios/Flutter/Release.xcconfig
-          fi
-          if [ -f "ios/Runner.xcodeproj/project.pbxproj" ]; then
-            python3 .github/scripts/patch_xcode.py
+          if [ -z "$BUILD_CERTIFICATE_BASE64" ] || [ -z "$BUILD_PROVISION_PROFILE_BASE64" ]; then
+            echo "ERROR: Faltan los secretos BUILD_CERTIFICATE_BASE64 o BUILD_PROVISION_PROFILE_BASE64 en GitHub."
+            echo "Por favor configúralos en Settings > Secrets and variables > Actions"
+            exit 1
           fi
 
-      - name: Compilar iOS con xcodebuild
+          CERT_PATH=$RUNNER_TEMP/build_cert.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o "$CERT_PATH"
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o "$PP_PATH"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          security import "$CERT_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security list-keychains -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/1e21bde1-5eb7-4e4f-aa66-02e4e7610db8.mobileprovision
+          echo "Certificado y perfil instalados correctamente en macOS."
+
+      - name: Configurar proyecto Xcode para firma oficial
         run: |
-          cd ios
-          if [ -d "Runner.xcworkspace" ]; then
-            BUILD_TARGET="-workspace Runner.xcworkspace"
-          elif [ -f "Runner.xcodeproj/project.pbxproj" ]; then
-            BUILD_TARGET="-project Runner.xcodeproj"
+          python3 .github/scripts/patch_xcode.py
+          cp .github/scripts/ExportOptions.plist ios/ExportOptions.plist
+
+      - name: Compilar IPA con Flutter
+        run: |
+          flutter build ipa --release --export-options-plist=ios/ExportOptions.plist || {
+            echo "Reintentando empaquetado con xcodebuild directo..."
+            cd ios
+            xcodebuild -workspace Runner.xcworkspace \
+              -scheme Runner \
+              -configuration Release \
+              -archivePath ../build/Runner.xcarchive \
+              archive
+            cd ..
+            xcodebuild -exportArchive \
+              -archivePath build/Runner.xcarchive \
+              -exportPath build/ios/ipa \
+              -exportOptionsPlist ios/ExportOptions.plist
+          }
+
+      - name: Verificar archivo IPA generado
+        run: |
+          mkdir -p build/ios/ipa
+          IPA_FILE=$(find build -name "*.ipa" | head -n 1)
+          if [ -z "$IPA_FILE" ]; then
+            echo "Empaquetando Payload de Runner.app como respaldo..."
+            mkdir -p build/ios/ipa/Payload
+            APP_PATH=$(find build -name "Runner.app" -type d | head -n 1)
+            cp -r "$APP_PATH" build/ios/ipa/Payload/
+            (cd build/ios/ipa && zip -r -q LevelPadel_iOS_Signed.ipa Payload && rm -rf Payload)
           else
-            echo "ERROR: No se encontro Runner.xcodeproj ni Runner.xcworkspace"
-            ls -la
-            exit 1
+            echo "IPA encontrado: $IPA_FILE"
+            cp "$IPA_FILE" build/ios/ipa/LevelPadel_iOS_Signed.ipa
           fi
-          echo "Usando: $BUILD_TARGET"
-          xcodebuild $BUILD_TARGET \
-            -scheme Runner \
-            -configuration Release \
-            -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
-            -derivedDataPath "../build/ios_derived" \
-            DEVELOPMENT_TEAM=AAAAAAAAAA \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY="" \
-            PROVISIONING_PROFILE_SPECIFIER="" \
-            build 2>&1 | tail -100
-          cd ..
-
-      - name: Empaquetar IPA
-        run: |
-          mkdir -p build/ios/ipa/Payload
-          APP_PATH=$(find build -name "Runner.app" -type d | head -n 1)
-          if [ -z "$APP_PATH" ]; then
-            echo "ERROR: Runner.app no encontrado"
-            find build -type d | head -20
-            exit 1
-          fi
-          echo "Runner.app en: $APP_PATH"
-          cp -r "$APP_PATH" build/ios/ipa/Payload/
-          (cd build/ios/ipa && zip -r -q LevelPadel_iOS_Unsigned.ipa Payload && rm -rf Payload)
-          echo "IPA generado:"
           ls -lh build/ios/ipa/
 
-      - name: Subir IPA como Artifact descargable
+      - name: Subir IPA de iPhone como Artifact descargable
         uses: actions/upload-artifact@v4
         with:
-          name: iOS-IPA-Build
-          path: build/ios/ipa/LevelPadel_iOS_Unsigned.ipa
+          name: Level-iPhone-App-IPA
+          path: build/ios/ipa/LevelPadel_iOS_Signed.ipa
           retention-days: 14
