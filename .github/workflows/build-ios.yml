@@ -15,7 +15,7 @@ jobs:
   build-ios:
     name: Compilar IPA Firmado para iPhone
     runs-on: macos-latest
-    timeout-minutes: 40
+    timeout-minutes: 35
 
     steps:
       - name: Clonar repositorio
@@ -33,79 +33,75 @@ jobs:
       - name: Generar estructura iOS
         run: |
           flutter create . --platforms=ios --org com.levelpadel
+          python3 .github/scripts/patch_xcode.py
           flutter pub get
 
-      - name: Instalar CocoaPods si aplica
-        run: |
-          if [ -f "ios/Podfile" ]; then
-            cd ios && pod install --repo-update && cd ..
-          else
-            echo "Sin Podfile nativo complejo, CocoaPods no requerido."
-          fi
-
-      - name: Instalar Certificado de Apple y Perfil de Aprovisionamiento
-        env:
-          KEYCHAIN_PASSWORD: "temporal_keychain_123"
-          P12_PASSWORD: "LevelPadel2026!"
+      - name: Instalar Certificado de Apple en Keychain
         run: |
           CERT_PATH=".github/certs/distribution.p12"
-          PP_PATH=".github/certs/Level_Profile.mobileprovision"
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-          if [ ! -f "$CERT_PATH" ] || [ ! -f "$PP_PATH" ]; then
-            echo "ERROR: No se encontraron los archivos en .github/certs/"
+          security create-keychain -p "temporal_123" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "temporal_123" "$KEYCHAIN_PATH"
+
+          security import "$CERT_PATH" -P "LevelPadel2026!" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security list-keychains -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "temporal_123" "$KEYCHAIN_PATH"
+          echo "Certificado importado exitosamente en el llavero."
+
+      - name: Compilar aplicacion iOS con Flutter
+        run: |
+          flutter build ios --release --no-codesign
+
+      - name: Firmar Runner.app con Certificado y Perfil Oficial
+        run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          APP_PATH=$(find build/ios -name "Runner.app" -type d | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            echo "ERROR: Runner.app no fue generado"
             exit 1
           fi
+          echo "App encontrada en: $APP_PATH"
 
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          # 1. Inyectar perfil oficial de aprovisionamiento de Apple
+          cp .github/certs/Level_Profile.mobileprovision "$APP_PATH/embedded.mobileprovision"
 
-          security import "$CERT_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
-          security list-keychains -s "$KEYCHAIN_PATH"
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          # 2. Extraer entitlements oficiales del perfil
+          security cms -D -i .github/certs/Level_Profile.mobileprovision > /tmp/profile.plist
+          /usr/libexec/PlistBuddy -x -c "Print :Entitlements" /tmp/profile.plist > /tmp/entitlements.plist
 
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/1e21bde1-5eb7-4e4f-aa66-02e4e7610db8.mobileprovision
-          echo "Certificado y perfil instalados correctamente en macOS."
-
-      - name: Configurar proyecto Xcode para firma oficial
-        run: |
-          python3 .github/scripts/patch_xcode.py
-          cp .github/scripts/ExportOptions.plist ios/ExportOptions.plist
-
-      - name: Compilar IPA con Flutter
-        run: |
-          flutter build ipa --release --export-options-plist=ios/ExportOptions.plist || {
-            echo "Reintentando empaquetado con xcodebuild directo..."
-            cd ios
-            xcodebuild -workspace Runner.xcworkspace \
-              -scheme Runner \
-              -configuration Release \
-              -archivePath ../build/Runner.xcarchive \
-              archive
-            cd ..
-            xcodebuild -exportArchive \
-              -archivePath build/Runner.xcarchive \
-              -exportPath build/ios/ipa \
-              -exportOptionsPlist ios/ExportOptions.plist
-          }
-
-      - name: Verificar archivo IPA generado
-        run: |
-          mkdir -p build/ios/ipa
-          IPA_FILE=$(find build -name "*.ipa" | head -n 1)
-          if [ -z "$IPA_FILE" ]; then
-            echo "Empaquetando Payload de Runner.app como respaldo..."
-            mkdir -p build/ios/ipa/Payload
-            APP_PATH=$(find build -name "Runner.app" -type d | head -n 1)
-            cp -r "$APP_PATH" build/ios/ipa/Payload/
-            (cd build/ios/ipa && zip -r -q LevelPadel_iOS_Signed.ipa Payload && rm -rf Payload)
-          else
-            echo "IPA encontrado: $IPA_FILE"
-            cp "$IPA_FILE" build/ios/ipa/LevelPadel_iOS_Signed.ipa
+          # 3. Obtener el nombre de identidad del certificado
+          IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" | grep "Apple Distribution" | head -1 | awk -F'"' '{print $2}')
+          if [ -z "$IDENTITY" ]; then
+            IDENTITY="Apple Distribution: Sergio Yumio Cervantes Moriya (2VY7U35749)"
           fi
-          ls -lh build/ios/ipa/
+          echo "Firmando con identidad: $IDENTITY"
+
+          # 4. Firmar Frameworks embebidos
+          if [ -d "$APP_PATH/Frameworks" ]; then
+            for fw in "$APP_PATH"/Frameworks/*; do
+              if [ -d "$fw" ] || [ -f "$fw" ]; then
+                codesign --force --sign "$IDENTITY" --keychain "$KEYCHAIN_PATH" --timestamp=none "$fw" || true
+              fi
+            done
+          fi
+
+          # 5. Firmar Runner.app con los entitlements
+          codesign --force --sign "$IDENTITY" --keychain "$KEYCHAIN_PATH" --entitlements /tmp/entitlements.plist --timestamp=none "$APP_PATH"
+
+          # 6. Validar firma
+          echo "Validando firma digital:"
+          codesign -vvv --deep --strict "$APP_PATH"
+
+      - name: Empaquetar IPA firmado para distribucion
+        run: |
+          mkdir -p build/ios/ipa/Payload
+          APP_PATH=$(find build/ios -name "Runner.app" -type d | head -n 1)
+          cp -r "$APP_PATH" build/ios/ipa/Payload/
+          (cd build/ios/ipa && zip -r -q LevelPadel_iOS_Signed.ipa Payload && rm -rf Payload)
+          echo "IPA generado exitosamente:"
+          ls -lh build/ios/ipa/LevelPadel_iOS_Signed.ipa
 
       - name: Subir IPA de iPhone como Artifact descargable
         uses: actions/upload-artifact@v4
