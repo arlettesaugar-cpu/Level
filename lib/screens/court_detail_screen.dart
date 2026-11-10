@@ -25,7 +25,6 @@ class _CourtDetailScreenState extends State<CourtDetailScreen> {
   int selectedDurationHours = 1; // 1, 2, or 3 consecutive hours
   String selectedPaymentMethod = 'Efectivo en Mostrador';
   DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
-  bool _acceptedTerms = true;
 
   List<String> _calculateConsecutiveSlots(Court currentCourt) {
     if (selectedSlot == null) return [];
