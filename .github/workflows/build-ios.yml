@@ -53,7 +53,14 @@ jobs:
 
       - name: Compilar aplicacion iOS con Flutter
         run: |
-          flutter build ios --release --no-codesign -v
+          set -o pipefail
+          flutter build ios --release --no-codesign 2>&1 | tee build_output.log
+
+      - name: Mostrar resumen de error si la compilacion falla
+        if: failure()
+        run: |
+          echo "=== ULTIMAS 100 LINEAS DEL LOG DE COMPILACION ==="
+          tail -n 100 build_output.log
 
       - name: Firmar Runner.app con Certificado y Perfil Oficial
         run: |
