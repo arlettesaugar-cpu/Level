@@ -32,6 +32,7 @@ jobs:
 
       - name: Generar estructura iOS
         run: |
+          pip3 install Pillow --break-system-packages || pip3 install Pillow || true
           flutter create . --platforms=ios --org com.levelpadel
           python3 .github/scripts/patch_xcode.py
           flutter pub get
@@ -109,3 +110,12 @@ jobs:
           name: Level-iPhone-App-IPA
           path: build/ios/ipa/LevelPadel_iOS_Signed.ipa
           retention-days: 14
+
+      - name: Subir IPA a TestFlight / App Store Connect
+        if: ${{ (secrets.applekey != '' || secrets.APPLEKEY != '') && (secrets.APPSTORE_KEY_ID != '' || secrets.KEY_ID != '') && (secrets.APPSTORE_ISSUER_ID != '' || secrets.ISSUER_ID != '') }}
+        uses: apple-actions/upload-testflight-build@v1
+        with:
+          app-path: 'build/ios/ipa/LevelPadel_iOS_Signed.ipa'
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID || secrets.ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_KEY_ID || secrets.KEY_ID }}
+          api-private-key: ${{ secrets.applekey || secrets.APPLEKEY }}
