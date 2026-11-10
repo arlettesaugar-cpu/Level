@@ -1,0 +1,29 @@
+Warning: Building for device with codesigning disabled. You will have to manually codesign before deploying to device.
+Building com.levelpadel.app for device (ios-release)...
+Upgrading AppFrameworkInfo.plist
+Running Xcode build...                                          
+Xcode build done.                                           53.2s
+Failed to build iOS app
+Error output from Xcode build:
+↳
+    ** BUILD FAILED **
+
+
+Xcode's output:
+↳
+    Writing result bundle at path:
+    	/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/flutter_tools.G9i6ro/flutter_ios_build_temp_dirAkt9IZ/temporary_xcresult_bundle
+
+    lib/screens/home_screen.dart:370:31: Error: No named parameter with the name 'border'.
+                                  border: BorderSide(
+                                  ^^^^^^
+    ../../../hostedtoolcache/flutter/stable-3.47.9-arm64/flutter/packages/flutter/lib/src/painting/rounded_rectangle_border.dart:40:9: Context: Found this candidate, but the arguments don't match.
+      const RoundedRectangleBorder({super.side, this.borderRadius = BorderRadius.zero});
+            ^^^^^^^^^^^^^^^^^^^^^^
+    Target kernel_snapshot_program failed: Exception
+    Failed to package /Users/runner/work/Level/Level.
+    Command PhaseScriptExecution failed with a nonzero exit code
+    note: Run script build phase 'Thin Binary' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'Runner' from project 'Runner')
+    note: Run script build phase 'Run Script' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'Runner' from project 'Runner')
+
+Encountered error while building for device.
