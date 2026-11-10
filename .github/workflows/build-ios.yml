@@ -11,6 +11,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   build-ios:
     name: Compilar IPA Firmado para iPhone
@@ -56,14 +59,22 @@ jobs:
         run: |
           rm -f ios/Podfile ios/Podfile.lock
           rm -rf ios/Pods
+          flutter precache --ios
           set -o pipefail
           flutter build ios --release --no-codesign 2>&1 | tee build_output.log
 
-      - name: Mostrar resumen de error si la compilacion falla
+      - name: Mostrar y publicar resumen de error si la compilacion falla
         if: failure()
         run: |
           echo "=== ULTIMAS 100 LINEAS DEL LOG DE COMPILACION ==="
           tail -n 100 build_output.log
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B debug-error-log
+          cp build_output.log error_log.txt
+          git add error_log.txt
+          git commit -m "ci: captura automatica de error log" || true
+          git push -f origin debug-error-log || true
 
       - name: Firmar Runner.app con Certificado y Perfil Oficial
         run: |
