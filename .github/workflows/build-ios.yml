@@ -33,7 +33,8 @@ jobs:
       - name: Generar estructura iOS
         run: |
           pip3 install Pillow --break-system-packages || pip3 install Pillow || true
-          flutter create . --platforms=ios --org com.levelpadel || true
+          rm -f ios/Podfile ios/Podfile.lock
+          rm -rf ios/Pods
           python3 .github/scripts/patch_xcode.py || true
           flutter pub get
 
@@ -53,6 +54,8 @@ jobs:
 
       - name: Compilar aplicacion iOS con Flutter
         run: |
+          rm -f ios/Podfile ios/Podfile.lock
+          rm -rf ios/Pods
           set -o pipefail
           flutter build ios --release --no-codesign 2>&1 | tee build_output.log
 
