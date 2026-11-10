@@ -367,7 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
-                              border: BorderSide(
+                              side: BorderSide(
                                 color: isSelected ? AppTheme.primaryBlue : Colors.grey.shade300,
                               ),
                             ),
